@@ -30,7 +30,24 @@
 
 ## 설치
 
-- Clone(or fork) [SMS Git project](https://github.com/thruthesky/sms)
+- Firebase 콘솔에서 프로젝트 생성
+- Cloud Firestore 생성
+  - `protection mode` 선택
+  - Region 은 적당히 선택. (한국인 대상 서비스는 홍콩이나 일본 추천)
+  - `What file should be used for Firestore Rules? (firestore.rules)` 에서 기본 파일 firebase.rules 선택
+  - `What file should be used for Firestore indexes? (firestore.indexes.json)` 에서 기본 파일 firebase.indexes.json 선택
+- 작업 컴퓨터에 Firebase 설치
+
+  - `# npm install -g firebase-tools`
+  - `$ cd firebase`
+  - `$ firebase login`
+  - `$ firebase init firestore`
+
+    - `Use an existing project` 선택 후, 위에서 생성한 프로젝트 선택
+
+  - 참고로 Firebase 프로젝트 변경과 같은 설정은 .firebase 에서 변경 가능.
+
+- 깃 프로젝트 [SMS Git project](https://github.com/thruthesky/sms) 클론 또는 포크
 
 ### 파이어베이스
 
@@ -70,4 +87,38 @@
 
 - `간단하고 쉬우면서 견고하게`라는 절대 원칙을 바탕으로 본 프로젝트가 수행해야하는 기능들을 올바로 완수하기 위해서 최적의 조합을 찾는 것이 목표입니다.
 
-- `Functions` 를 최대한 사용하지 않을 계획입니다. 그 이유는 `Functions` 자체가 `Flutter` 앱이나 `Vue` Frontend 개발 방식과 많이 다르기 때문입니다. 본 프로젝트의 코어 개발자가 `Functions`로 잘 개발해도 그 코드를 이해하거나 수정하기가 쉽지 않기 때문입니다.
+- `Functions` 를 사용하지 않을 계획입니다. 그 이유는 `Functions` 자체가 `Flutter` 앱이나 `Vue` Frontend 개발 방식과 많이 다르기 때문입니다. 본 프로젝트의 코어 개발자가 `Functions`로 잘 개발해도 그 코드를 이해하거나 수정하기가 쉽지 않기 때문입니다. 또한 `Functions` 가 들어가면 설치 과정이 하나 더 늘게될 것이며 이것은 초보 개발자분들에게는 또 하나의 짐이 될 것이기 때문입니다.
+
+## 파이어베이스 권한
+
+### 권한 테스트
+
+- 먼저 `$ npm i` 을 통해서 필요한 node module 을 설치합니다.
+
+- 아래와 같이 emulator 를 실행합니다.
+
+```
+$ firebase emulators:start --only firestore
+```
+
+- 그리고 아래와 같이 테스트를 합니다.
+
+```
+$ npm run test
+$ npm run test:basic
+$ npm run test:user
+$ npm run test:admin
+$ npm run test:category
+$ npm run test:post
+$ npm run test:comment
+$ npm run test:vote
+$ npm run test:user.token
+```
+
+### Publish
+
+- 테스트가 끝나면 아래와 같이 배포하면 됩니다.
+
+```
+$ firebase deploy --only firestore
+```
