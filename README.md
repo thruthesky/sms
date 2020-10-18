@@ -47,6 +47,10 @@
 
   - 참고로 Firebase 프로젝트 변경과 같은 설정은 .firebase 에서 변경 가능.
 
+- Firebase Firestore Security Rules 를 Firebase 로 업로드
+
+  - `$ firebase deploy --only firestore`
+
 - 깃 프로젝트 [SMS Git project](https://github.com/thruthesky/sms) 클론 또는 포크
 
 ### 파이어베이스
