@@ -126,3 +126,8 @@ $ npm run test:user.token
 ```
 $ firebase deploy --only firestore
 ```
+
+## 프로젝트 이슈
+
+- 문제가 있으면 [깃이슈](https://github.com/thruthesky/sms/issues)를 남겨주세요.
+- [SMS 프로젝트 관리](https://github.com/thruthesky/sms/projects/2)
