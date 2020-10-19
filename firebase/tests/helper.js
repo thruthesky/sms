@@ -11,6 +11,18 @@ const otherUid = "othe_uid";
 // Fake User Auth Data
 const myAuth = { uid: myUid, email: "my-email@gmail.com" };
 
+// admin User UID
+const adminUid = "admin_uid";
+const adminAuth = {
+  uid: adminUid,
+  email: "admin1@gmail.com",
+  isAdmin: true,
+  firebase: {
+    sign_in_provider: "password"
+  }
+};
+
+
 // Firestore intance 를 가져오는 함수
 // Get Firestore instance for CRUD work.
 function getFirestore(auth = null) {
@@ -47,3 +59,4 @@ module.exports.setup = async (auth, data) => {
 module.exports.myAuth = myAuth;
 module.exports.myUid = myUid;
 module.exports.otherUid = otherUid;
+module.exports.adminAuth = adminAuth;

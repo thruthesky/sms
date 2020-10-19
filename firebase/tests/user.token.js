@@ -10,7 +10,7 @@ describe("User Push Notification Token", () => {
       .doc(otherUid)
       .collection("tokens")
       .doc(tokenId);
-    await firebase.assertFails(tokenDoc.set({ toekn: tokenId }));
+    await firebase.assertFails(tokenDoc.set({ token: tokenId }));
   });
   it("Add token should success", async () => {
     const db = await setup(myAuth);
@@ -19,7 +19,7 @@ describe("User Push Notification Token", () => {
       .doc(myUid)
       .collection("tokens")
       .doc(tokenId);
-    await firebase.assertSucceeds(tokenDoc.set({ toekn: tokenId }));
+    await firebase.assertSucceeds(tokenDoc.set({ token: tokenId }));
   });
   it("Read token should success", async () => {
     const db = await setup();
