@@ -11,6 +11,8 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   final userController = Get.put(UserController());
+
+  /// users collection referrence
   final CollectionReference users =
       FirebaseFirestore.instance.collection('users');
 
@@ -37,9 +39,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
           print(data);
           this.nicknameController.text = data['nickname'];
           this.gender = data['gender'];
-          Timestamp bday = data['birthday'];
+          Timestamp date = data['birthday'];
           this.birthDate =
-              DateTime.fromMillisecondsSinceEpoch(bday.seconds * 1000);
+              DateTime.fromMillisecondsSinceEpoch(date.seconds * 1000);
           setState(() {});
         }
       },

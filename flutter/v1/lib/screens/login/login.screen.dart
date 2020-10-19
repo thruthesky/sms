@@ -52,6 +52,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   setState(() => loading = true);
 
                   try {
+                    /// Sign in with registered Firebase credentials.
                     await FirebaseAuth.instance.signInWithEmailAndPassword(
                       email: emailController.text,
                       password: passwordController.text,
