@@ -1,6 +1,5 @@
 const { assertFails, assertSucceeds } = require("@firebase/rules-unit-testing");
-const { setup, myAuth, myUid, otherUid } = require("./helper");
-const tokenId = "token-1";
+const { setup } = require("./helper");
 
 describe("Admin Test", () => {
   
