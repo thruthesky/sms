@@ -22,6 +22,10 @@ class _HomeScreenState extends State<HomeScreen> {
           RaisedButton(
             onPressed: () => Get.toNamed(RouteNames.login),
             child: Text('Login'),
+          ),
+          RaisedButton(
+            onPressed: () => Get.toNamed(RouteNames.register),
+            child: Text('Register'),
           )
         ],
       ),

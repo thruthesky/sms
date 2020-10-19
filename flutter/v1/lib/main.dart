@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
 import 'package:v1/screens/home/home.screen.dart';
 import 'package:v1/screens/login/login.screen.dart';
+import 'package:v1/screens/register/register.screen.dart';
 import 'package:v1/services/RouteNames.dart';
 
 void main() {
@@ -26,6 +27,7 @@ class _MainAppState extends State<MainApp> {
       getPages: [
         GetPage(name: RouteNames.home, page: () => HomeScreen()),
         GetPage(name: RouteNames.login, page: () => LoginScreen()),
+        GetPage(name: RouteNames.register, page: () => RegisterScreen()),
       ],
     );
   }
