@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>609289813427-ep7inprs35039lkqn4q8bb6mh7f7obko.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.609289813427-ep7inprs35039lkqn4q8bb6mh7f7obko</string>
+	<key>API_KEY</key>
+	<string>AIzaSyAsXXgKFRrz2Tr8M55ZHNz0hD1VLnNeLPU</string>
+	<key>GCM_SENDER_ID</key>
+	<string>609289813427</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.sonub.sms</string>
+	<key>PROJECT_ID</key>
+	<string>social-management-system</string>
+	<key>STORAGE_BUCKET</key>
+	<string>social-management-system.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:609289813427:ios:c8230e95a658e89ecb1fc6</string>
+	<key>DATABASE_URL</key>
+	<string>https://social-management-system.firebaseio.com</string>
+</dict>
+</plist>

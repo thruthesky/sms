@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:v1/services/RouteNames.dart';
+import 'package:v1/services/route-names.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
