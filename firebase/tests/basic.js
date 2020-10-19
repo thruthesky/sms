@@ -1,28 +1,31 @@
 const firebase = require("@firebase/rules-unit-testing");
-const assert = require("assert");
 const { setup, myAuth, myUid } = require("./helper");
 
 describe("Basic", () => {
   it("Read should success", async () => {
     const db = await setup();
 
-    const testDoc = db.collection("readonlytest").doc("testDoc");
+    const testDoc = db.collection("readonlytest").doc("testDocId");
 
     await firebase.assertSucceeds(testDoc.get());
   });
   it("Write should fail", async () => {
     const db = await setup();
-    const testDoc = db.collection("readonlytest").doc("testDoc");
+    const testDoc = db.collection("readonlytest").doc("testDocId");
 
-    await firebase.assertFails(testDoc.set({ foo: "bar" })); // 실패 테스트
+    // Fails due to user authentication
+    await firebase.assertFails(testDoc.set({ foo: "bar" }));
   });
-  it("Write should fail", async () => {
+
+  it("Write should success", async () => {
     const db = await setup(myAuth);
 
-    const testDoc = db.collection("readonlytest").doc(myUid);
+    const myDoc = db.collection("readonlytest").doc(myUid);
 
-    await firebase.assertSucceeds(testDoc.set({ foo: "bar" })); // 성공테스트
+    await firebase.assertSucceeds(myDoc.set({ foo: "bar" }));
   });
+
+  //
   it("Read success on public doc", async () => {
     const db = await setup();
     const testQuery = db
@@ -30,6 +33,7 @@ describe("Basic", () => {
       .where("visibility", "==", "public");
     await firebase.assertSucceeds(testQuery.get());
   });
+
   it("Read success on public doc", async () => {
     const db = await setup(myAuth);
     const testQuery = db.collection("publictest").where("uid", "==", myUid);
@@ -37,18 +41,27 @@ describe("Basic", () => {
   });
 
   // 관리자 db instance 로 private 값을 미리 지정해서, 오류 테스트
+  // Set data on firestore documents with admin permission and test.
   it("Read success on public doc", async () => {
-    const db = await setup(null, {
+    const db = await setup(myAuth, {
       "publictest/privateDocId": {
         visibility: "private"
       },
       "publictest/publicDocId": {
         visibility: "public"
+      },
+      "publictest/myDocId": {
+        visibility: "does not matter",
+        uid: myUid
       }
     });
     let testQuery = db.collection("publictest").doc("privateDocId");
     await firebase.assertFails(testQuery.get());
     testQuery = db.collection("publictest").doc("publicDocId");
     await firebase.assertSucceeds(testQuery.get());
+
+    await firebase.assertSucceeds(
+      db.collection("publictest").doc("myDocId").get()
+    );
   });
 });

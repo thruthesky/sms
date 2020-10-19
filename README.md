@@ -43,11 +43,7 @@
   - `# npm install -g firebase-tools`
   - `$ cd firebase`
   - `$ firebase login`
-  - `$ firebase init firestore`
-
-    - `Use an existing project` 선택 후, 위에서 생성한 프로젝트 선택
-
-  - 참고로 Firebase 프로젝트 변경과 같은 설정은 .firebase 에서 변경 가능.
+  - Update .firebaserc and change projects ⇒ default as your project id.
 
 - Firebase Firestore Security Rules 를 Firebase 로 업로드
 

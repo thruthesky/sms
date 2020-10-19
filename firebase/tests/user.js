@@ -1,6 +1,5 @@
 const firebase = require("@firebase/rules-unit-testing");
-const assert = require("assert");
-const { setup, myAuth, myUid, yourUid } = require("./helper");
+const { setup, myAuth, myUid, otherUid } = require("./helper");
 
 describe("User", () => {
   it("Create user doc without login", async () => {
@@ -11,7 +10,7 @@ describe("User", () => {
   it("Create user doc on other user id", async () => {
     const db = await setup(myAuth);
     await firebase.assertFails(
-      db.collection("users").doc(yourUid).set({
+      db.collection("users").doc(otherUid).set({
         data: "something"
       })
     );
@@ -40,13 +39,13 @@ describe("User", () => {
 
   it("Update on other's doc", async () => {
     const db = await setup(myAuth, {
-      ["users/" + yourUid]: {
+      ["users/" + otherUid]: {
         displayName: "displayName"
       }
     });
     usersCol = db.collection("users");
     await firebase.assertFails(
-      usersCol.doc(yourUid).update({ data: "something" })
+      usersCol.doc(otherUid).update({ data: "something" })
     );
   });
 });

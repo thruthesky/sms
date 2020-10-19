@@ -4,38 +4,50 @@ service cloud.firestore {
 
 
     // 기본적으로 모든 읽기와 쓰기를 막는다.
+    // By default, all permissions should be locked.
     match /{document=**} {
       allow read: if false;
       allow write: if false;
     }
     // 테스트를 위한 도큐먼트. 실제는 사용되지 않음.
+    // `readonlytest` is only for security rule unit testing.
     match /readonlytest/{docId} {
       allow read: if true;
       allow write: if (request.auth.uid == docId);
     }
     // 테스트를 위한 도큐먼트. 실제로는 사용되지 않음.
+    // `publictest` is only for security rule unit testing.
     match /publictest/{docId} {
-      allow read: if (resource.data.visibility == "public" || (resource.data.uid == request.auth.uid));
+      allow read: if (resource.data.visibility == "public" || ( resource.data.uid == request.auth.uid ));
+      allow write: if false;
     }
     // 사용자
+    // Security Rules for Users Colection
     match /users/{uid} {
       // 로그인을 했으면, 도큐먼트 생성 가능
+      // Create when user logged in and it's my document.
       allow create: if login() && request.auth.uid == uid;
 
       // 자신의 도큐먼트이면 읽기 가능.
+      // Read if it's my document
       allow read: if request.auth.uid == uid;
 
       // `isAdmin` 속성은 빼고 수정 가능.
       // 관리자인 경우에도, request data 로 직접 isAmdin 속성을 수정 할 수 없다.
       // `isAdmin` 은 관리자 권한을 가지는 것으로 사용자가 직접 변경해서는 안된다.
+      // Update if it's my document.
+      // Nobody can update `isAdmin` property. When it is set to true, then the user becomes admin.
       allow update: if request.auth.uid == uid && notUpdating('isAdmin');
 
       // 삭제는 불가능
+      // No delete.
       allow delete: if false;
 
 
       // 푸시 토큰
       // - 각 사용자 도큐먼트 하위에 기록
+      // Push notification tokens.
+      // Push tokens are saved unser `/users/{uid}/tokens` collection.
       match /tokens/{token} {
         allow read: if true;
         allow write: if request.auth.uid == uid;
