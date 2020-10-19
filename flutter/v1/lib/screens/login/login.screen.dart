@@ -1,19 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:v1/screens/login/login.form.dart';
 
-class LoginScreen extends StatefulWidget {
-  @override
-  _LoginScreenState createState() => _LoginScreenState();
-}
-
-class _LoginScreenState extends State<LoginScreen> {
+class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Login')),
-      body: Column(
-        children: [
-          Text('Login Screen'),
-        ],
+      body: SingleChildScrollView(
+        child: LoginForm()
       ),
     );
   }
