@@ -33,6 +33,9 @@
 ## 설치
 
 - Firebase 콘솔에서 프로젝트 생성
+  - Authentictaion => Sign-in Method 에서
+    - Email/Password Enable
+    - Anonymous Enable
 - Cloud Firestore 생성
   - `protection mode` 선택
   - Region 은 적당히 선택. (한국인 대상 서비스는 홍콩이나 일본 추천)

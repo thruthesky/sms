@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:v1/services/RouteNames.dart';
+import 'package:v1/controllers/user.controller.dart';
+import 'package:v1/services/route-names.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -8,6 +9,11 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,7 +32,12 @@ class _HomeScreenState extends State<HomeScreen> {
           RaisedButton(
             onPressed: () => Get.toNamed(RouteNames.register),
             child: Text('Register'),
-          )
+          ),
+          GetBuilder<UserController>(builder: (userController) {
+            print('user:');
+            print(userController.user);
+            return Text("UserName: ${userController.user?.uid}");
+          }),
         ],
       ),
     );
