@@ -19,25 +19,6 @@ class _RegisterFormState extends State<RegisterForm> {
 
   bool loading = false;
 
-  _onFormSubmit() {
-    /**
-     * remove any input focus.
-     */
-    FocusScope.of(context).requestFocus(new FocusNode());
-
-    if (_formKey.currentState.validate()) {
-      setState(() => loading = true);
-
-      print(emailController.text);
-      print(passController.text);
-      print(nicknameController.text);
-      print(birthDate.toString());
-      print(gender);
-
-      setState(() => loading = false);
-    }
-  }
-
   @override
   void initState() {
     final now = DateTime.now();
@@ -65,6 +46,7 @@ class _RegisterFormState extends State<RegisterForm> {
               key: ValueKey('password'),
               controller: passController,
               focusNode: passNode,
+              obscureText: true,
               onEditingComplete: nicknameNode.requestFocus,
               textInputAction: TextInputAction.done,
               keyboardType: TextInputType.text,
@@ -126,7 +108,23 @@ class _RegisterFormState extends State<RegisterForm> {
             SizedBox(height: 30),
             RaisedButton(
               child: Text("Submit"),
-              onPressed: _onFormSubmit,
+              onPressed: () {
+                // remove any input focus.
+
+                FocusScope.of(context).requestFocus(new FocusNode());
+
+                if (_formKey.currentState.validate()) {
+                  setState(() => loading = true);
+
+                  print(emailController.text);
+                  print(passController.text);
+                  print(nicknameController.text);
+                  print(birthDate.toString());
+                  print(gender);
+
+                  setState(() => loading = false);
+                }
+              },
             )
           ],
         ),
