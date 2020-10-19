@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:v1/services/app-service.dart';
 import 'package:v1/services/route-names.dart';
+import 'package:v1/services/spaces.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -23,7 +24,7 @@ class _LoginScreenState extends State<LoginScreen> {
       appBar: AppBar(title: Text('Login')),
       body: SingleChildScrollView(
         child: Container(
-          padding: EdgeInsets.all(18),
+          padding: EdgeInsets.all(Space.md),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -43,7 +44,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 keyboardType: TextInputType.text,
                 decoration: InputDecoration(labelText: "Password"),
               ),
-              SizedBox(height: 30),
+              SizedBox(height: 32),
               RaisedButton(
                 child: Text("Submit"),
                 onPressed: () async {

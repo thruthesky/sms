@@ -139,3 +139,8 @@ $ firebase deploy --only firestore
 
 - 문제가 있으면 [깃이슈](https://github.com/thruthesky/sms/issues)를 남겨주세요.
 - [SMS 프로젝트 관리](https://github.com/thruthesky/sms/projects/2)
+
+## 디자인
+
+- 여백이나 각종 크기, 영역은 가능한 2, 4, 8, 16, 32 수치로 합니다.
+  For spaces and sizes, it uses 2, 4, 8, 16, 32.

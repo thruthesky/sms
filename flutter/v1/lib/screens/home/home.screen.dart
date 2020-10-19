@@ -26,13 +26,13 @@ class _HomeScreenState extends State<HomeScreen> {
           Container(
             child: Text('Menus'),
           ),
-          GetBuilder<UserController>(builder: (userController) {
+          GetBuilder<UserController>(builder: (user) {
             // print('user:');
             // print(userController.user);
             return Column(
               children: [
-                Text("UserName: ${userController.user?.uid}"),
-                if (userController.user?.uid == null) ...[
+                Text("UserName: ${user.uid}"),
+                if (user.isNotLoggedIn) ...[
                   RaisedButton(
                     onPressed: () => Get.toNamed(RouteNames.login),
                     child: Text('Login'),
@@ -42,7 +42,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Text('Register'),
                   ),
                 ],
-                if (userController.user?.uid != null) ...[
+                if (user.isLoggedIn) ...[
                   RaisedButton(
                     onPressed: () => Get.toNamed(RouteNames.profile),
                     child: Text('Profile'),
