@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 
-class AppService {
+class Service {
   static error(dynamic e) {
     print('e.runtimeType: ${e.runtimeType}');
     print("${e.message} (${e.code})");

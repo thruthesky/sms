@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
-import 'package:v1/services/app-service.dart';
+import 'package:v1/services/service.dart';
 import 'package:v1/services/route-names.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -143,7 +143,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     Get.toNamed(RouteNames.home);
                   } catch (e) {
                     setState(() => loading = false);
-                    AppService.error(e);
+                    Service.error(e);
                   }
                 },
               )
