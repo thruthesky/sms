@@ -1,9 +1,7 @@
 import 'package:after_layout/after_layout.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:v1/controllers/user.controller.dart';
-import 'package:v1/i18n/locale.dart';
-import 'package:v1/i18n/translations.dart';
+import 'package:v1/services/translations.dart';
 import 'package:v1/screens/home/home.screen.dart';
 import 'package:v1/screens/login/login.screen.dart';
 import 'package:v1/screens/profile/profile.screen.dart';
@@ -12,10 +10,10 @@ import 'package:v1/services/route-names.dart';
 
 import 'package:get/route_manager.dart';
 import 'package:get/get.dart';
+import 'package:v1/services/service.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Service.initFirebase();
   runApp(MainApp());
 }
 
@@ -28,9 +26,9 @@ class _MainAppState extends State<MainApp> with AfterLayoutMixin<MainApp> {
   final c = Get.put(UserController());
 
   @override
-  void afterFirstLayout(BuildContext context) async {
-    String locale = await I18n.init();
-    Get.updateLocale(Locale(locale));
+  void afterFirstLayout(BuildContext context) {
+    /// When locale translation text downloaded from Firestore, update the screen.
+    Service.updateLocale(download: () => setState(() => null));
   }
 
   @override
