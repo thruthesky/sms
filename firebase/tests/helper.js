@@ -22,6 +22,7 @@ const adminAuth = {
   }
 };
 
+
 // Firestore intance 를 가져오는 함수
 // Get Firestore instance for CRUD work.
 function getFirestore(auth = null) {

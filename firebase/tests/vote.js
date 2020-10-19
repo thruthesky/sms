@@ -1,5 +1,5 @@
 const { assertFails, assertSucceeds } = require("@firebase/rules-unit-testing");
-const { setup, myAuth, myUid, otherUid } = require("./helper");
+const { setup, myAuth } = require("./helper");
 
 
 const mockData = {
