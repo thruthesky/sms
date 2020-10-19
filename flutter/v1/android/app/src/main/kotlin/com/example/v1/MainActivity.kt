@@ -1,4 +1,4 @@
-package com.example.v1
+package com.sonub.sms
 
 import io.flutter.embedding.android.FlutterActivity
 

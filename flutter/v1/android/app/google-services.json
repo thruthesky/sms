@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "609289813427",
+    "firebase_url": "https://social-management-system.firebaseio.com",
+    "project_id": "social-management-system",
+    "storage_bucket": "social-management-system.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:609289813427:android:46a451d4bf44a9d0cb1fc6",
+        "android_client_info": {
+          "package_name": "com.sonub.sms"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "609289813427-7g4jugt5s2oodj9bkvi9u02t87jh9mmu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDSHbhzbFbJmut-3aC54uhHWLnCVvXLBWM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "609289813427-7g4jugt5s2oodj9bkvi9u02t87jh9mmu.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "609289813427-ep7inprs35039lkqn4q8bb6mh7f7obko.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.sonub.sms"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

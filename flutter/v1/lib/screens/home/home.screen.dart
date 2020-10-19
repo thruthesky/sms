@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:v1/services/RouteNames.dart';
+import 'package:v1/services/route-names.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -22,6 +22,10 @@ class _HomeScreenState extends State<HomeScreen> {
           RaisedButton(
             onPressed: () => Get.toNamed(RouteNames.login),
             child: Text('Login'),
+          ),
+          RaisedButton(
+            onPressed: () => Get.toNamed(RouteNames.register),
+            child: Text('Register'),
           )
         ],
       ),
