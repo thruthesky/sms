@@ -13,14 +13,10 @@ describe("Admin Test", () => {
             isAdmin: false,
         },
     };
-    /// 로그인은 `thruthesky` 로 함.
-    const mockUser = {
-        uid: "a-user-uid",
-    };
-    const db = await setup(mockUser, mockData);
+    const db = await setup(myAuth, mockData);
     usersCol = db.collection('users');
-    await assertSucceeds(usersCol.doc(mockUser.uid).update({ birthday: 731016 }));
-    await assertFails(usersCol.doc(mockUser.uid).update({ isAdmin: true }));
+    await assertSucceeds(usersCol.doc(myAuth.uid).update({ birthday: 731016 }));
+    await assertFails(usersCol.doc(myAuth.uid).update({ isAdmin: true }));
   });
 
 
@@ -32,14 +28,10 @@ describe("Admin Test", () => {
               isAdmin: true,
           },
       };
-      /// 로그인은 `thruthesky` 로 함.
-      const mockUser = {
-          uid: "a-user-uid",
-      };
-      const db = await setup(mockUser, mockData);
+      const db = await setup(myAuth, mockData);
       usersCol = db.collection('users');
-      await assertSucceeds(usersCol.doc(mockUser.uid).update({ birthday: 731016 }));
-      await assertSucceeds(usersCol.doc(mockUser.uid).update({ isAdmin: true }));
+      await assertSucceeds(usersCol.doc(myAuth.uid).update({ birthday: 731016 }));
+      await assertSucceeds(usersCol.doc(myAuth.uid).update({ isAdmin: true }));
   });
 
 
