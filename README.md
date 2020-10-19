@@ -32,10 +32,19 @@
 
 ## 설치
 
+- 본 프로젝트에서 사용된 툴들의 버전은 아래와 같습니다. 버전이 달라서 충돌이 있을 수 있으니 참고하시기 발바니다.
+
+  - Flutter 1.22.x
+  - firebase_core:
+  - firebase_auth:
+  - clould_firestore:
+
 - Firebase 콘솔에서 프로젝트 생성
+
   - Authentictaion => Sign-in Method 에서
     - Email/Password Enable
     - Anonymous Enable
+
 - Cloud Firestore 생성
   - `protection mode` 선택
   - Region 은 적당히 선택. (한국인 대상 서비스는 홍콩이나 일본 추천)
@@ -140,7 +149,22 @@ $ firebase deploy --only firestore
 - 문제가 있으면 [깃이슈](https://github.com/thruthesky/sms/issues)를 남겨주세요.
 - [SMS 프로젝트 관리](https://github.com/thruthesky/sms/projects/2)
 
+<<<<<<< HEAD
 ## 디자인
 
 - 여백이나 각종 크기, 영역은 가능한 2, 4, 8, 16, 32 수치로 합니다.
   For spaces and sizes, it uses 2, 4, 8, 16, 32.
+=======
+## 파이어베이스 데이터베이스 구조
+
+### Admin account
+
+- 사용자 문서에 `isAdmin: true` 이면 그 사용자는 관리자이다.
+  - 이 값의 변경은 DB 에서 직접 변경을 하던지, 명령창에서 메일 주소를 기록 할 수 있다. 참고: 관리자 아이디 지정하기
+
+## 관리 및 운영
+
+### 관리자 아이디 지정하기
+
+- 관리자로 지정을 하고자 한다면, `$ node set-admin.js abc@gmail.com` 와 같이 하면 된다.
+>>>>>>> main
