@@ -11,15 +11,14 @@ const otherUid = "othe_uid";
 // Fake User Auth Data
 const myAuth = { uid: myUid, email: "my-email@gmail.com" };
 
-
-// admin User UID - My UID.
+// admin User UID
 const adminUid = "admin_uid";
-/// 로그인은 (임시) `admin_uid` 로 함.
 const adminAuth = {
   uid: adminUid,
-  email: 'admin1@gmail.com',
+  email: "admin1@gmail.com",
+  isAdmin: true,
   firebase: {
-      sign_in_provider: 'password'
+    sign_in_provider: "password"
   }
 };
 
