@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:v1/controllers/user.controller.dart';
@@ -25,18 +26,34 @@ class _HomeScreenState extends State<HomeScreen> {
           Container(
             child: Text('Menus'),
           ),
-          RaisedButton(
-            onPressed: () => Get.toNamed(RouteNames.login),
-            child: Text('Login'),
-          ),
-          RaisedButton(
-            onPressed: () => Get.toNamed(RouteNames.register),
-            child: Text('Register'),
-          ),
           GetBuilder<UserController>(builder: (userController) {
-            print('user:');
-            print(userController.user);
-            return Text("UserName: ${userController.user?.uid}");
+            // print('user:');
+            // print(userController.user);
+            return Column(
+              children: [
+                Text("UserName: ${userController.user?.uid}"),
+                if (userController.user?.uid == null) ...[
+                  RaisedButton(
+                    onPressed: () => Get.toNamed(RouteNames.login),
+                    child: Text('Login'),
+                  ),
+                  RaisedButton(
+                    onPressed: () => Get.toNamed(RouteNames.register),
+                    child: Text('Register'),
+                  ),
+                ],
+                if (userController.user?.uid != null) ...[
+                  RaisedButton(
+                    onPressed: () => Get.toNamed(RouteNames.profile),
+                    child: Text('Profile'),
+                  ),
+                  RaisedButton(
+                    onPressed: () => FirebaseAuth.instance.signOut(),
+                    child: Text('Logout'),
+                  ),
+                ]
+              ],
+            );
           }),
         ],
       ),

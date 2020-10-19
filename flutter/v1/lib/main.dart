@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:v1/controllers/user.controller.dart';
 import 'package:v1/screens/home/home.screen.dart';
 import 'package:v1/screens/login/login.screen.dart';
+import 'package:v1/screens/profile/profile.screen.dart';
 import 'package:v1/screens/register/register.screen.dart';
 import 'package:v1/services/route-names.dart';
 
@@ -35,6 +36,7 @@ class _MainAppState extends State<MainApp> {
         GetPage(name: RouteNames.home, page: () => HomeScreen()),
         GetPage(name: RouteNames.login, page: () => LoginScreen()),
         GetPage(name: RouteNames.register, page: () => RegisterScreen()),
+        GetPage(name: RouteNames.profile, page: () => ProfileScreen()),
       ],
     );
   }
