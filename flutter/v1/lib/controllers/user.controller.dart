@@ -3,6 +3,19 @@ import 'package:get/get_state_manager/get_state_manager.dart';
 
 class UserController extends GetxController {
   User user;
+
+  bool get isLoggedIn {
+    return user != null;
+  }
+
+  bool get isNotLoggedIn {
+    return !isLoggedIn;
+  }
+
+  String get uid {
+    return user?.uid;
+  }
+
   @override
   void onInit() {
     print('==>>  UserController::onInit()');
