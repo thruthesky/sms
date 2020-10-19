@@ -1,12 +1,17 @@
-import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:get/route_manager.dart';
+import 'package:flutter/material.dart';
+import 'package:v1/controllers/user.controller.dart';
 import 'package:v1/screens/home/home.screen.dart';
 import 'package:v1/screens/login/login.screen.dart';
 import 'package:v1/screens/register/register.screen.dart';
 import 'package:v1/services/route-names.dart';
 
-void main() {
+import 'package:get/route_manager.dart';
+import 'package:get/get.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(MainApp());
 }
 
@@ -16,27 +21,7 @@ class MainApp extends StatefulWidget {
 }
 
 class _MainAppState extends State<MainApp> {
-  // Define an async function to initialize FlutterFire
-  void initializeFlutterFire() async {
-    try {
-      // Wait for Firebase to initialize
-      // This may cause `No Firebase App has been created` since it is asyncronously initialized.
-      await Firebase.initializeApp();
-      print("App is connected to Firebase!");
-      // setState(() {}); // App is connected to Firebase. App can do something by re-rendering.
-    } catch (e) {
-      // Set `_error` state to true if Firebase initialization fails
-      // setState(() {});
-      print("Error: failed to connect to Firebase!");
-    }
-  }
-
-  @override
-  void initState() {
-    initializeFlutterFire();
-    super.initState();
-  }
-
+  final c = Get.put(UserController());
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
@@ -45,7 +30,7 @@ class _MainAppState extends State<MainApp> {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      initialRoute: RouteNames.register,
+      initialRoute: RouteNames.home,
       getPages: [
         GetPage(name: RouteNames.home, page: () => HomeScreen()),
         GetPage(name: RouteNames.login, page: () => LoginScreen()),
