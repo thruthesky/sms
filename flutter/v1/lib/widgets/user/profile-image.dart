@@ -2,7 +2,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:v1/controllers/user.controller.dart';
-import 'package:v1/widgets/spinner.dart';
+import 'package:v1/services/spaces.dart';
+import 'package:v1/widgets/commons/spinner.dart';
 
 class ProfileImage extends StatelessWidget {
   final double size;
@@ -22,11 +23,19 @@ class ProfileImage extends StatelessWidget {
                   placeholder: (context, url) => CommonSpinner(),
                   imageBuilder: (context, provider) {
                     return CircleAvatar(
-                        backgroundImage: provider, radius: size * 2);
+                        backgroundImage: provider, radius: size);
                   },
                   errorWidget: (context, url, error) => Icon(Icons.error),
                 )
-              : CircleAvatar(backgroundColor: Colors.grey, radius: size * 2);
+              : CircleAvatar(
+                  backgroundColor: Colors.grey,
+                  radius: size,
+                  child: Icon(
+                    Icons.person,
+                    size: Space.xxxl,
+                    color: Colors.grey[300],
+                  ),
+                );
         },
       ),
     );

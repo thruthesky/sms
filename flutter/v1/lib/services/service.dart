@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:path/path.dart' as p;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:devicelocale/devicelocale.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -6,15 +7,20 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:v1/controllers/user.controller.dart';
-// import 'package:v1/services/push-notification.service.dart';
 import 'package:v1/services/definitions.dart';
 import 'package:v1/services/route-names.dart';
 import 'package:v1/services/translations.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:v1/settings.dart' as App;
+import 'package:v1/widgets/commons/photo-picker-bottom-sheet.dart';
+// import 'package:v1/widgets/commons/photo-picker.dart';
 
 class Service {
   /// [locale] has the current locale.
@@ -314,5 +320,76 @@ class Service {
         // Get.toNamed(Settings.postViewRoute, arguments: {'postId': data['postId']});
       }
     }
+  }
+
+  /// Pick photo ( or file ) from Camera or Photo Library
+  ///
+  ///
+
+  static Future<File> pickImage({
+    double maxWidth = 1024,
+    int quality = 80,
+  }) async {
+    /// instantiate image picker.
+    final picker = ImagePicker();
+
+    /// choose upload option.
+    ImageSource res = await Get.bottomSheet(
+      PhotoPickerBottomSheet(),
+      backgroundColor: Colors.white,
+    );
+
+    /// do nothing when user cancel option selection.
+    if (res == null) return null;
+
+    Permission permission =
+        res == ImageSource.camera ? Permission.camera : Permission.photos;
+
+    /// get permission status.
+    PermissionStatus permissionStatus = await permission.status;
+
+    print('permission status:');
+    print(permissionStatus);
+    print(permissionStatus.isDenied);
+
+    /// if permission is permanently denied,
+    /// the only way to grant permission is changing in AppSettings.
+    if (permissionStatus.isPermanentlyDenied) {
+      await openAppSettings();
+    }
+
+    /// check if the app have the permission to access camera or photos
+    if (permissionStatus.isUndetermined || permissionStatus.isDenied) {
+      /// request permission if not granted, or user haven't chosen permission yet.
+      await permission.request();
+    }
+
+    PickedFile pickedFile = await picker.getImage(
+      source: res,
+      maxWidth: maxWidth,
+      imageQuality: quality,
+    );
+
+    print('pickedFile.path: ${pickedFile.path} ');
+
+    File file = await FlutterImageCompress.compressAndGetFile(
+      pickedFile.path, // source file
+      await _localFileForCompression, // target file. Overwrite the source with compressed.
+      quality: quality,
+    );
+
+    return file;
+  }
+
+  static Future<String> get _localPath async {
+    final directory = await getApplicationDocumentsDirectory();
+    return directory.path;
+  }
+
+  static Future<String> get _localFileForCompression async {
+    String dir = await _localPath;
+    String path = p.join(dir, 'compressed.jpeg');
+    print('path: $path');
+    return path;
   }
 }

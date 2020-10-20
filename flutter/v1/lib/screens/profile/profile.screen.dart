@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -5,7 +7,7 @@ import 'package:v1/controllers/user.controller.dart';
 import 'package:v1/services/service.dart';
 import 'package:v1/services/spaces.dart';
 import 'package:v1/widgets/user/birthday-picker.dart';
-import 'package:v1/widgets/photo-picker.dart';
+import 'package:v1/widgets/commons/photo-picker.dart';
 import 'package:v1/widgets/user/profile-image.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -66,13 +68,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ProfileImage(),
-              PhotoPicker(
-                onFilePicked: (file) {
-                  /// do something to file ...
-                  print('file picked::');
-                  print(file);
-                },
+              Center(
+                child: GestureDetector(
+                  child: ProfileImage(
+                    size: Space.xxxl,
+                  ),
+                  onTap: () async {
+                    try {
+                      File file = await Service.pickImage();
+                      print('success: file picked: ${file.path}');
+                    } catch (e) {
+                      print('error on file pick: ');
+                      print(e);
+                      Service.error(e);
+                    }
+                  },
+                ),
               ),
               SizedBox(height: Space.md),
               Text('Email: ${userController.user.email}'),

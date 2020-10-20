@@ -5,4 +5,12 @@ class Settings {
   static bool letUserChangeLanguage = true;
 
   static String allTopic = 'allTopic';
+
+  /// When user take photo for his profile photo,
+  ///
+  /// max width of the profile photo
+  static double profilePhotoMaxWidth = 128;
+
+  /// jpeg image quality
+  static int profilePhotoImageQuality = 80;
 }

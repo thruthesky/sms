@@ -28,6 +28,8 @@ dependencies:
   cached_network_image: ^2.3.3
   flutter_image_compress: ^0.7.0
 
+  path_provider: ^1.6.21
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
