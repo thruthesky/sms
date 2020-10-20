@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:v1/services/push-notification.service.dart';
 import 'package:v1/services/service.dart';
 import 'package:v1/services/route-names.dart';
 import 'package:v1/services/spaces.dart';
@@ -28,6 +29,15 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              RaisedButton(
+                child: Text('Google Sign-in'),
+                onPressed: Service.signInWithGoogle,
+              ),
+              RaisedButton(
+                child: Text('Facebook Sign-in'),
+                onPressed: Service.signInWithFacebook,
+              ),
+              SizedBox(height: Space.xl),
               TextFormField(
                 key: ValueKey('email'),
                 controller: emailController,
@@ -54,10 +64,12 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   try {
                     /// Sign in with registered Firebase credentials.
-                    await FirebaseAuth.instance.signInWithEmailAndPassword(
+                    UserCredential user =
+                        await FirebaseAuth.instance.signInWithEmailAndPassword(
                       email: emailController.text,
                       password: passwordController.text,
                     );
+                    Service.onLogin(user);
                     Get.toNamed(RouteNames.home);
                   } catch (e) {
                     setState(() => loading = false);

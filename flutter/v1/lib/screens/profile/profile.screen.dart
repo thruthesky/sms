@@ -1,9 +1,14 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:v1/controllers/user.controller.dart';
 import 'package:v1/services/service.dart';
 import 'package:v1/services/spaces.dart';
+import 'package:v1/widgets/user/birthday-picker.dart';
+import 'package:v1/widgets/commons/photo-picker.dart';
+import 'package:v1/widgets/user/profile-image.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -31,16 +36,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void initState() {
     birthDate = DateTime.now();
     this.emailController.text = userController.user.email;
+    this.nicknameController.text = userController.displayName;
 
     /// get document with current logged in user's uid.
     users.doc(userController.user.uid).get().then(
       (DocumentSnapshot doc) {
         if (!doc.exists) {
-          Service.error({'code': '', 'message': 'User data deos not exits.'});
+          // It's not an error. User may not have documentation. see README
+          print('User has no document. fine.');
+          return;
         }
         final data = doc.data();
         print(data);
-        this.nicknameController.text = data['nickname'];
         this.gender = data['gender'];
         Timestamp date = data['birthday'];
         this.birthDate =
@@ -61,6 +68,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Center(
+                child: GestureDetector(
+                  child: ProfileImage(
+                    size: Space.xxxl,
+                  ),
+                  onTap: () async {
+                    try {
+                      File file = await Service.pickImage();
+                      print('success: file picked: ${file.path}');
+                    } catch (e) {
+                      print('error on file pick: ');
+                      print(e);
+                      Service.error(e);
+                    }
+                  },
+                ),
+              ),
+              SizedBox(height: Space.md),
               Text('Email: ${userController.user.email}'),
               TextFormField(
                 key: ValueKey('nickname'),
@@ -72,30 +97,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               SizedBox(height: Space.lg),
               Text('Birthday'),
-              Row(
-                children: [
-                  Text(
-                    '${birthDate.year} - ${birthDate.month} - ${birthDate.day}',
-                  ),
-                  Spacer(),
-                  RaisedButton(
-                    child: Text('Change'),
-                    onPressed: () async {
-                      var now = DateTime.now();
-
-                      final date = await showDatePicker(
-                        context: context,
-                        initialDate: birthDate,
-                        firstDate: DateTime(now.year - 70),
-                        lastDate: DateTime(now.year, now.month, 30),
-                      );
-                      if (date == null) return;
-                      setState(() {
-                        birthDate = date;
-                      });
-                    },
-                  ),
-                ],
+              BirthdayPicker(
+                initialValue: birthDate,
+                onChange: (date) {
+                  setState(() {
+                    this.birthDate = date;
+                  });
+                },
               ),
               SizedBox(height: 20),
               Text('Gender'),
@@ -126,13 +134,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   setState(() => loading = true);
 
                   try {
-                    await users.doc(userController.user.uid).set(
-                      {
-                        "nickname": nicknameController.text,
-                        "gender": gender,
-                        "birthday": birthDate,
-                      },
-                    );
+                    await userController.user
+                        .updateProfile(displayName: nicknameController.text);
+                    await userController.reload();
+
+                    final userDoc = users.doc(userController.user.uid);
+                    await userDoc.set({
+                      "gender": gender,
+                      "birthday": birthDate,
+                    }, SetOptions(merge: true));
                     Get.snackbar('Update', 'Profile updated!');
                   } catch (e) {
                     Service.error(e);

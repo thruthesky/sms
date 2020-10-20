@@ -8,4 +8,5 @@ class Space {
   static double lg = 24;
   static double xl = 32;
   static double xxl = 64;
+  static double xxxl = 96;
 }
