@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'package:v1/services/service.dart';
 import 'package:v1/services/route-names.dart';
+import 'package:v1/services/spaces.dart';
 import 'package:v1/widgets/user/birthday-picker.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -28,9 +29,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   void initState() {
     final now = DateTime.now();
     birthDate = now;
-
-    emailController.text = "abc1@gmail.com";
-    passwordController.text = "12345a";
     super.initState();
   }
 
@@ -44,6 +42,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              RaisedButton(
+                child: Text('Google Sign-in'),
+                onPressed: Service.signInWithGoogle,
+              ),
+              RaisedButton(
+                child: Text('Facebook Sign-in'),
+                onPressed: Service.signInWithFacebook,
+              ),
+              SizedBox(height: Space.xl),
               TextFormField(
                 key: ValueKey('email'),
                 controller: emailController,
@@ -68,7 +75,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 keyboardType: TextInputType.text,
                 decoration: InputDecoration(labelText: "Nickname"),
               ),
-              SizedBox(height: 20),
+              SizedBox(height: Space.md),
               Text('Birthday'),
               BirthdayPicker(
                 initialValue: birthDate,
@@ -78,7 +85,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   });
                 },
               ),
-              SizedBox(height: 20),
+              SizedBox(height: Space.md),
               Text('Gender - $gender'),
               RadioListTile(
                 value: 'M',
@@ -98,7 +105,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   setState(() => gender = str);
                 },
               ),
-              SizedBox(height: 30),
+              SizedBox(height: Space.xl),
               RaisedButton(
                 child: Text("Submit"),
                 onPressed: () async {
@@ -114,13 +121,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     );
                     print(userCredential.user);
 
+                    await userCredential.user
+                        .updateProfile(displayName: nicknameController.text);
+
                     /// Login Success
                     CollectionReference users =
                         FirebaseFirestore.instance.collection('users');
 
                     /// Update other user information
                     await users.doc(userCredential.user.uid).set({
-                      "nickname": nicknameController.text,
                       "gender": gender,
                       "birthday": birthDate,
                     });

@@ -32,16 +32,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void initState() {
     birthDate = DateTime.now();
     this.emailController.text = userController.user.email;
+    this.nicknameController.text = userController.displayName;
 
     /// get document with current logged in user's uid.
     users.doc(userController.user.uid).get().then(
       (DocumentSnapshot doc) {
         if (!doc.exists) {
-          Service.error({'code': '', 'message': 'User data deos not exits.'});
+          // It's not an error. User may not have documentation. see README
+          print('User has no document. fine.');
+          return;
         }
         final data = doc.data();
         print(data);
-        this.nicknameController.text = data['nickname'];
         this.gender = data['gender'];
         Timestamp date = data['birthday'];
         this.birthDate =
@@ -110,13 +112,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   setState(() => loading = true);
 
                   try {
-                    await users.doc(userController.user.uid).set(
-                      {
-                        "nickname": nicknameController.text,
-                        "gender": gender,
-                        "birthday": birthDate,
-                      },
-                    );
+                    await userController.user
+                        .updateProfile(displayName: nicknameController.text);
+                    await userController.reload();
+
+                    final userDoc = users.doc(userController.user.uid);
+                    await userDoc.set({
+                      "gender": gender,
+                      "birthday": birthDate,
+                    }, SetOptions(merge: true));
                     Get.snackbar('Update', 'Profile updated!');
                   } catch (e) {
                     Service.error(e);

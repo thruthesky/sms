@@ -1,10 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:devicelocale/devicelocale.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:get/get.dart';
+import 'package:v1/services/definitions.dart';
+import 'package:v1/services/route-names.dart';
 import 'package:v1/services/translations.dart';
 import 'package:v1/settings.dart' as App;
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 
 class Service {
   /// [locale] has the current locale.
@@ -32,13 +37,21 @@ class Service {
         Settings(cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED);
   }
 
-  static error(dynamic e) {
-    print('e.runtimeType: ${e.runtimeType}');
-    print("${e.message} (${e.code})");
+  static void error(dynamic e) {
     String msg = '';
 
+    print('error(e): ' + 'home'.tr);
+    print(e);
+    print('e.runtimeType: ${e.runtimeType}');
+
+    if (e is String) {
+      msg = e.tr;
+    }
+
     /// For firebase error object
-    if (e.code != null && e.message != null) {
+    else if (e.code != null && e.message != null) {
+      print("${e.message} (${e.code})");
+
       if (e.code == 'weak-password') {
         msg = 'The password provided is too weak.';
       } else if (e.code == 'email-already-in-use') {
@@ -48,10 +61,17 @@ class Service {
       } else {
         msg = "${e.message} (${e.code})";
       }
+
+      /// If there is translated text, then use it. Or use the error message above.
+      ///
+      /// firebase_auth_account-exists-with-different-credential
+
+      final translated = (e.code as String).replaceAll('/', '_').tr;
+      if (translated != e.code) msg = translated;
     } else {
       msg = 'Unknown error';
     }
-    Get.snackbar('Error', msg);
+    Get.snackbar('error'.tr, msg);
   }
 
   /// Change language to user device and download texts from firestore.
@@ -82,5 +102,53 @@ class Service {
         download();
       }
     });
+  }
+
+  /// Google sign-in
+  ///
+  ///
+  static Future<void> signInWithGoogle() async {
+    // Trigger the authentication flow
+
+    final GoogleSignInAccount googleUser = await GoogleSignIn().signIn();
+    if (googleUser == null) return error(ERROR_SIGNIN_ABORTED);
+
+    try {
+      // Obtain the auth details from the request
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+
+      // Create a new credential
+      final GoogleAuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      // Once signed in, return the UserCredential
+      await FirebaseAuth.instance.signInWithCredential(credential);
+      Get.toNamed(RouteNames.home);
+    } catch (e) {
+      error(e);
+    }
+  }
+
+  static Future<void> signInWithFacebook() async {
+    // Trigger the sign-in flow
+    final LoginResult result = await FacebookAuth.instance.login();
+    if (result == null || result.accessToken == null) {
+      return error(ERROR_SIGNIN_ABORTED);
+    }
+
+    // Create a credential from the access token
+    final FacebookAuthCredential facebookAuthCredential =
+        FacebookAuthProvider.credential(result.accessToken.token);
+
+    try {
+      // Once signed in, return the UserCredential
+      await FirebaseAuth.instance.signInWithCredential(facebookAuthCredential);
+      Get.toNamed(RouteNames.home);
+    } catch (e) {
+      error(e);
+    }
   }
 }
