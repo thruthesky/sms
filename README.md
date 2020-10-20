@@ -32,24 +32,26 @@
 
 ## 설치
 
-- 본 프로젝트에서 사용된 툴들의 버전은 아래와 같습니다. 버전이 달라서 충돌이 있을 수 있으니 참고하시기 발바니다.
+- 설치는 Firebase, Flutter, Vue 등 여러 단계로 나뉘어 설명이 됩니다. 참고로 Facebook 로그인과 같이 파이어베이스에 설정을 하고, 페이스북 개발자 계정에서도 설정을 해야하는 등 처음 하시는 분들은 힘들어 할 수 있습니다. FAQ 게시판을 참고 해 주시기 바랍니다.
 
-  - Flutter 1.22.x
-  - firebase_core:
-  - firebase_auth:
-  - clould_firestore:
+### 파이어베이스 설치
 
 - Firebase 콘솔에서 프로젝트 생성
 
-  - Authentictaion => Sign-in Method 에서
-    - Email/Password Enable
-    - Anonymous Enable
+  - Authentictaion => Sign-in Method 에서 아래의 로그인을 Enable 하세요.
+    - Email/Password
+    - Anonymous
+    - Google
+    - Facebook
+    - Phone
 
 - Cloud Firestore 생성
+
   - `protection mode` 선택
   - Region 은 적당히 선택. (한국인 대상 서비스는 홍콩이나 일본 추천)
   - `What file should be used for Firestore Rules? (firestore.rules)` 에서 기본 파일 firebase.rules 선택
   - `What file should be used for Firestore indexes? (firestore.indexes.json)` 에서 기본 파일 firebase.indexes.json 선택
+
 - 작업 컴퓨터에 Firebase 설치
 
   - `# npm install -g firebase-tools`
@@ -62,6 +64,28 @@
   - `$ firebase deploy --only firestore`
 
 - 깃 프로젝트 [SMS Git project](https://github.com/thruthesky/sms) 클론 또는 포크
+
+### 플러터 앱 설정
+
+- 본 프로젝트에서 사용된 툴들의 버전은 아래와 같습니다. 버전이 달라서 충돌이 있을 수 있으니 참고하시기 바랍니다.
+
+  - Flutter 1.22.x
+  - firebase_core: "0.5.0+1"
+  - firebase_auth: "^0.18.1+2"
+  - google_sign_in: "^4.5.1"
+  - cloud_firestore: "^0.14.1+3"
+
+### 구글 소셜 로그인 설정
+
+- [FlutterFire 공식문서 - Google](https://firebase.flutter.dev/docs/auth/social#google)에 나오는데로 하면 됩니다.
+
+### 페이스북 소셜 로그인 설정 및 코딩
+
+- [FlutterFire 공식문서 - Facebook](https://firebase.flutter.dev/docs/auth/social#facebook)에 나오는 대로 하면 됩니다.
+
+### 푸시 알림 설정
+
+- [firestore_messating 패키지](https://pub.dev/packages/firebase_messaging)를 참고하시 설정하면 됩니다.
 
 ## 주요기능
 
@@ -197,3 +221,16 @@ $ firebase deploy --only firestore
 - 단순히 메뉴에 표시될 문자열 뿐만아니라 각종 페이지/화면에 나타낼 컨텐츠로도 사용 가능하다.
 
 - `supportedLanguages` 는 사용자가 선택 할 수 있는 언어인데, Flutter iOS 앱인 경우, Info.plist 에 언어셋을 추가해 주어야 하며, 그 언어셋 내에서만 선택 할 수 있다.
+
+## 개발자 가이드라인
+
+- 회원 가입을 하면, `users/{uid}` 에 사용자 도큐먼트가 생성된다.
+
+- 단, 소셜 로그인을 하는 경우, 로그인 직후 홈 화면으로 이동한다. 즉, 성별, 생년월일 등을 입력하지 않으므로, 사용자 도큐먼트가 생성되지 않는다. 즉, 로그인 사용자에 사용자 도큐먼트가 없을 수 있다.
+
+## 언어 번역
+
+- 에러 메지를 번역 할 때 에러 코드를 키로 저장하면 된다.
+  - 주의 할 점은 에러코드에 슬래시(/)가 들어가 있으면 언더바(\_)로 변경해야 한다.
+  - 예를 들어, 파이어베이스 로그인 에러 코드가 `auth/account-exists` 와 같다면,
+    `auth_account-exists` 로 키를 저정해야 한다.

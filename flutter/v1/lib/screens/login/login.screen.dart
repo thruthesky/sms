@@ -29,6 +29,15 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              RaisedButton(
+                child: Text('Google Sign-in'),
+                onPressed: Service.signInWithGoogle,
+              ),
+              RaisedButton(
+                child: Text('Facebook Sign-in'),
+                onPressed: Service.signInWithFacebook,
+              ),
+              SizedBox(height: Space.xl),
               TextFormField(
                 key: ValueKey('email'),
                 controller: emailController,
@@ -55,11 +64,12 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   try {
                     /// Sign in with registered Firebase credentials.
-                    await FirebaseAuth.instance.signInWithEmailAndPassword(
+                    UserCredential user =
+                        await FirebaseAuth.instance.signInWithEmailAndPassword(
                       email: emailController.text,
                       password: passwordController.text,
                     );
-                    PushNotificationService().initUpdateUserToken();
+                    Service.onLogin(user);
                     Get.toNamed(RouteNames.home);
                   } catch (e) {
                     setState(() => loading = false);

@@ -3,4 +3,6 @@ class Settings {
   static List<String> supportedLanguages = ['en', 'ko', 'ch', 'ja'];
   static bool changeUserLanguageOnBoot = false;
   static bool letUserChangeLanguage = true;
+
+  static String allTopic = 'allTopic';
 }
