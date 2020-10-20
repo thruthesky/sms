@@ -45,7 +45,7 @@
 		<key>CFBundleVersion</key>
 		<string>$(FLUTTER_BUILD_NUMBER)</string>
 		<key>LSRequiresIPhoneOS</key>
-		<true />
+		<true/>
 		<key>UILaunchStoryboardName</key>
 		<string>LaunchScreen</string>
 		<key>UIMainStoryboardFile</key>
@@ -64,7 +64,7 @@
 			<string>UIInterfaceOrientationLandscapeRight</string>
 		</array>
 		<key>UIViewControllerBasedStatusBarAppearance</key>
-		<false />
+		<false/>
 
 		<key>CFBundleURLTypes</key>
 		<array>
@@ -86,6 +86,7 @@
 			<string>fbauth2</string>
 			<string>fbshareextension</string>
 		</array>
+
 		<key>NSCameraUsageDescription</key>
 		<string>$(EXECUTABLE_NAME) need access to Camera.</string>
 		<key>NSMicrophoneUsageDescription</key>
