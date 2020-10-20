@@ -6,7 +6,7 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:v1/services/spaces.dart';
-
+ 
 class PhotoPicker extends StatelessWidget {
   final Function onFilePicked;
   final double iconSize;
