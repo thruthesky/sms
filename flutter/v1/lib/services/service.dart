@@ -1,6 +1,8 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:devicelocale/devicelocale.dart';
+import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -208,7 +210,12 @@ class Service {
   }
 
   static Future subscribeTopic(String topicName) async {
-    await firebaseMessaging.subscribeToTopic(topicName);
+    print('subscribeTopic $topicName');
+    try {
+      await firebaseMessaging.subscribeToTopic(topicName);
+    } catch (e) {
+      print(e);
+    }
   }
 
   static Future unsubscribeTopic(String topicName) async {
@@ -291,17 +298,16 @@ class Service {
       Get.snackbar(
         notification['title'].toString(),
         notification['body'].toString(),
-        // TODO: Make it work.
-        // onTap: () {
-        //   print('data data: ');
-        //   print(data);
-        //   Get.toNamed(data['route']);
-        // },
+        onTap: (_) {
+          // print('onTap data: ');
+          // print(data);
+          Get.toNamed(data['route']);
+        },
         mainButton: FlatButton(
           child: Text('Open'),
           onPressed: () {
-            print('data data: ');
-            print(data);
+            // print('mainButton data: ');
+            // print(data);
             Get.toNamed(data['route']);
           },
         ),
@@ -313,6 +319,60 @@ class Service {
       if (data['postId'] != null) {
         // Get.toNamed(Settings.postViewRoute, arguments: {'postId': data['postId']});
       }
+    }
+  }
+
+  Future<void> sendNotification(title, body, route, {token, topic}) async {
+    // print('SendNotification');
+    final postUrl = 'https://fcm.googleapis.com/fcm/send';
+
+    String toParams = "/topics/" + App.Settings.allTopic;
+    print(token);
+    print(topic);
+    if (token != null) toParams = token;
+    if (topic != null) toParams = topic;
+
+    final data = jsonEncode({
+      "notification": {"body": body, "title": title},
+      "priority": "high",
+      "data": {
+        "click_action": "FLUTTER_NOTIFICATION_CLICK",
+        "id": "1",
+        "status": "done",
+        "sound": 'default',
+        "senderID": userController.user.uid,
+        'route': route,
+      },
+      "to": "$toParams"
+    });
+
+    final headers = {
+      HttpHeaders.contentTypeHeader: "application/json",
+      HttpHeaders.authorizationHeader: "key=" + App.Settings.firebaseServerToken
+    };
+
+    var dio = Dio();
+
+    print('try sending notification');
+    try {
+      var response = await dio.post(
+        postUrl,
+        data: data,
+        options: Options(
+          headers: headers,
+        ),
+      );
+      if (response.statusCode == 200) {
+        // on success do
+        print("notification success");
+      } else {
+        // on failure do
+        print("notification failure");
+      }
+      print(response.data);
+    } catch (e) {
+      print('Dio error in sendNotification');
+      print(e);
     }
   }
 }
