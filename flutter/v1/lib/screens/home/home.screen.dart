@@ -55,8 +55,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   RaisedButton(
                     onPressed: () => Service().sendNotification(
-                        'test message', 'test body', RouteNames.profile,
-                        token: Service.firebaseMessagingToken),
+                      'test message', 'test body',
+                      RouteNames.profile,
+                      // token: Service.firebaseMessagingToken
+                    ),
                     child: Text('Send Test Notification'),
                   ),
                 ],
