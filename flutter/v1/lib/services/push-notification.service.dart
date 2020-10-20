@@ -4,14 +4,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:v1/controllers/user.controller.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:get/get.dart';
+import 'package:v1/settings.dart' as App;
 
 /// This class handles `Firebase Notification`
 class PushNotificationService {
   final FirebaseMessaging _fcm = new FirebaseMessaging();
 
   final userController = Get.put(UserController());
-
-  final allTopic = 'allTopic';
 
   DocumentReference userInstance;
 
@@ -23,7 +22,7 @@ class PushNotificationService {
     await _initRequestPermission();
 
     /// subscribe to all topic
-    await subscribeTopic(allTopic);
+    await subscribeTopic(App.Settings.allTopic);
 
     _initConfigureCallbackHandlers();
 
@@ -57,8 +56,8 @@ class PushNotificationService {
         .collection('users')
         .doc(userController.user.uid)
         .collection('tokens')
-        .doc(tokenID);
-    // .set({'token': tokenID});
+        .doc(tokenID)
+        .set({'token': tokenID});
   }
 
   Future<void> _initRequestPermission() async {
