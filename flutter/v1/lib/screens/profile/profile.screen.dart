@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:v1/controllers/user.controller.dart';
 import 'package:v1/services/service.dart';
 import 'package:v1/services/spaces.dart';
+import 'package:v1/widgets/user/birthday-picker.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -72,30 +73,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               SizedBox(height: Space.lg),
               Text('Birthday'),
-              Row(
-                children: [
-                  Text(
-                    '${birthDate.year} - ${birthDate.month} - ${birthDate.day}',
-                  ),
-                  Spacer(),
-                  RaisedButton(
-                    child: Text('Change'),
-                    onPressed: () async {
-                      var now = DateTime.now();
-
-                      final date = await showDatePicker(
-                        context: context,
-                        initialDate: birthDate,
-                        firstDate: DateTime(now.year - 70),
-                        lastDate: DateTime(now.year, now.month, 30),
-                      );
-                      if (date == null) return;
-                      setState(() {
-                        birthDate = date;
-                      });
-                    },
-                  ),
-                ],
+              BirthdayPicker(
+                initialValue: birthDate,
+                onChange: (date) {
+                  setState(() {
+                    this.birthDate = date;
+                  });
+                },
               ),
               SizedBox(height: 20),
               Text('Gender'),
