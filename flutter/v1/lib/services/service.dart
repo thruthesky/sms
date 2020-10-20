@@ -138,6 +138,9 @@ class Service {
     }
   }
 
+  /// Facebook social login
+  ///
+  ///
   static Future<void> signInWithFacebook() async {
     // Trigger the sign-in flow
     LoginResult result;
@@ -159,6 +162,7 @@ class Service {
     try {
       // Once signed in, return the UserCredential
       await FirebaseAuth.instance.signInWithCredential(facebookAuthCredential);
+
       Get.toNamed(RouteNames.home);
     } catch (e) {
       error(e);
