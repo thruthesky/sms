@@ -451,4 +451,5 @@ class Service {
       print('Dio error in sendNotification');
       print(e);
     }
+  }
 }
