@@ -1,6 +1,8 @@
 import 'package:after_layout/after_layout.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:v1/controllers/user.controller.dart';
+import 'package:v1/services/flutterbase.notification.service.dart';
 import 'package:v1/services/translations.dart';
 import 'package:v1/screens/home/home.screen.dart';
 import 'package:v1/screens/login/login.screen.dart';
@@ -14,6 +16,7 @@ import 'package:v1/services/service.dart';
 
 void main() async {
   await Service.initFirebase();
+  await Firebase.initializeApp();
   runApp(MainApp());
 }
 
@@ -29,6 +32,7 @@ class _MainAppState extends State<MainApp> with AfterLayoutMixin<MainApp> {
   void afterFirstLayout(BuildContext context) {
     /// When locale translation text downloaded from Firestore, update the screen.
     Service.updateLocale(download: () => setState(() => null));
+    FlutterbaseNotificationService().init();
   }
 
   @override
