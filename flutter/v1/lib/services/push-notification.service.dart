@@ -1,18 +1,15 @@
 import 'dart:io';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:v1/controllers/user.controller.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:get/get.dart';
 
 /// This class handles `Firebase Notification`
-class FlutterbaseNotificationService {
-  final FirebaseMessaging _fcm = FirebaseMessaging();
+class PushNotificationService {
+  final FirebaseMessaging _fcm = new FirebaseMessaging();
 
-  final userController = Get.find<UserController>();
-
-  final FirebaseMessaging firebaseMessaging = new FirebaseMessaging();
+  final userController = Get.put(UserController());
 
   final allTopic = 'allTopic';
 
@@ -30,7 +27,7 @@ class FlutterbaseNotificationService {
 
     _initConfigureCallbackHandlers();
 
-    _initUpdateUserToken();
+    initUpdateUserToken();
   }
 
   Future subscribeTopic(String topicName) async {
@@ -42,18 +39,26 @@ class FlutterbaseNotificationService {
   }
 
   /// Updates user token when app starts.
-  _initUpdateUserToken() {
-    firebaseMessaging.getToken().then((token) {
-      print('token: $token');
-
-      FirebaseFirestore.instance
-          .collection('users')
-          .doc(userController.user.uid)
-          .collection('tokens');
-      // userInstance.updateData({'pushToken': token});
+  initUpdateUserToken() {
+    _fcm.getToken().then((tokenID) {
+      print('token: $tokenID');
+      saveToken(tokenID);
     }).catchError((err) {
+      print(err);
       print(err.message.toString());
     });
+  }
+
+  saveToken(tokenID) {
+    print('saveToken:: $tokenID');
+
+    if (userController.isNotLoggedIn) return;
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(userController.user.uid)
+        .collection('tokens')
+        .doc(tokenID);
+    // .set({'token': tokenID});
   }
 
   Future<void> _initRequestPermission() async {
@@ -66,7 +71,7 @@ class FlutterbaseNotificationService {
       await _fcm.requestNotificationPermissions(IosNotificationSettings());
     } else {
       /// For Android, no permission request is required. just get Push token.
-      await firebaseMessaging.requestNotificationPermissions();
+      await _fcm.requestNotificationPermissions();
     }
   }
 

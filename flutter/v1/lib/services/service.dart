@@ -3,6 +3,7 @@ import 'package:devicelocale/devicelocale.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:v1/services/push-notification.service.dart';
 import 'package:v1/services/translations.dart';
 import 'package:v1/settings.dart' as App;
 
@@ -30,6 +31,7 @@ class Service {
     await Firebase.initializeApp();
     FirebaseFirestore.instance.settings =
         Settings(cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED);
+    PushNotificationService().init();
   }
 
   static error(dynamic e) {

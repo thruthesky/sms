@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:v1/services/push-notification.service.dart';
 import 'package:v1/services/service.dart';
 import 'package:v1/services/route-names.dart';
 import 'package:v1/services/spaces.dart';
@@ -58,6 +59,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       email: emailController.text,
                       password: passwordController.text,
                     );
+                    PushNotificationService().initUpdateUserToken();
                     Get.toNamed(RouteNames.home);
                   } catch (e) {
                     setState(() => loading = false);
