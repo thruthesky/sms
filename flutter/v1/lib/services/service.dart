@@ -3,6 +3,7 @@ import 'package:devicelocale/devicelocale.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:get/get.dart';
 import 'package:v1/services/definitions.dart';
@@ -46,9 +47,14 @@ class Service {
 
     if (e is String) {
       msg = e.tr;
+    } else if (e is PlatformException) {
+      // Firebase errors
+
+      print("Platform Exception: code: ${e.code} message: ${e.message}");
     }
 
-    /// For firebase error object
+    /// Errors
+    /// It can be Firebase errors, or handmaid errors.
     else if (e.code != null && e.message != null) {
       print("${e.message} (${e.code})");
 
@@ -134,9 +140,15 @@ class Service {
 
   static Future<void> signInWithFacebook() async {
     // Trigger the sign-in flow
-    final LoginResult result = await FacebookAuth.instance.login();
-    if (result == null || result.accessToken == null) {
-      return error(ERROR_SIGNIN_ABORTED);
+    LoginResult result;
+    try {
+      await FacebookAuth.instance.logOut();
+      result = await FacebookAuth.instance.login();
+      if (result == null || result.accessToken == null) {
+        return error(ERROR_SIGNIN_ABORTED);
+      }
+    } catch (e) {
+      error(e);
     }
 
     // Create a credential from the access token
