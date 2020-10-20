@@ -20,6 +20,10 @@ class UserController extends GetxController {
     return user?.displayName;
   }
 
+  String get photoUrl {
+    return user?.photoURL;
+  }
+
   @override
   void onInit() {
     // print('==>>  UserController::onInit()');

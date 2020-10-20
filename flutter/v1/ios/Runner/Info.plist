@@ -65,5 +65,11 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>NSCameraUsageDescription</key>
+	<string>$(EXECUTABLE_NAME) need access to Camera.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>$(EXECUTABLE_NAME) need access to Microphone.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>$(EXECUTABLE_NAME) need access to Photo Library.</string>
 </dict>
 </plist>

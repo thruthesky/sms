@@ -5,6 +5,8 @@ import 'package:v1/controllers/user.controller.dart';
 import 'package:v1/services/service.dart';
 import 'package:v1/services/spaces.dart';
 import 'package:v1/widgets/user/birthday-picker.dart';
+import 'package:v1/widgets/photo-picker.dart';
+import 'package:v1/widgets/user/profile-image.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -64,6 +66,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              ProfileImage(),
+              PhotoPicker(
+                onFilePicked: (file) {
+                  /// do something to file ...
+                  print(file.path);
+                },
+              ),
+              SizedBox(height: Space.md),
               Text('Email: ${userController.user.email}'),
               TextFormField(
                 key: ValueKey('nickname'),
