@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:v1/controllers/user.controller.dart';
 import 'package:v1/services/route-names.dart';
+import 'package:v1/services/service.dart';
 import 'package:v1/services/translations.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -51,6 +52,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   RaisedButton(
                     onPressed: () => FirebaseAuth.instance.signOut(),
                     child: Text('Logout'),
+                  ),
+                  RaisedButton(
+                    onPressed: () => Service().sendNotification(
+                      'test message', 'test body',
+                      RouteNames.profile,
+                      // token: Service.firebaseMessagingToken
+                    ),
+                    child: Text('Send Test Notification'),
                   ),
                 ],
                 for (var item in translations.keys)
