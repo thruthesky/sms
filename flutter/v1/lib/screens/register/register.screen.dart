@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
+import 'package:v1/services/push-notification.service.dart';
 import 'package:v1/services/service.dart';
 import 'package:v1/services/route-names.dart';
 import 'package:v1/services/spaces.dart';
@@ -133,7 +134,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       "gender": gender,
                       "birthday": birthDate,
                     });
-
+                    Service.onLogin(userCredential);
                     Get.toNamed(RouteNames.home);
                   } catch (e) {
                     setState(() => loading = false);

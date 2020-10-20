@@ -75,13 +75,17 @@
   - google_sign_in: "^4.5.1"
   - cloud_firestore: "^0.14.1+3"
 
-### 구글 소셜 로그인
+### 구글 소셜 로그인 설정
 
 - [FlutterFire 공식문서 - Google](https://firebase.flutter.dev/docs/auth/social#google)에 나오는데로 하면 됩니다.
 
 ### 페이스북 소셜 로그인 설정 및 코딩
 
 - [FlutterFire 공식문서 - Facebook](https://firebase.flutter.dev/docs/auth/social#facebook)에 나오는 대로 하면 됩니다.
+
+### 푸시 알림 설정
+
+- [firestore_messating 패키지](https://pub.dev/packages/firebase_messaging)를 참고하시 설정하면 됩니다.
 
 ## 주요기능
 
