@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class BirthdayPicker extends StatefulWidget {
+class BirthdayPicker extends StatelessWidget {
   final DateTime initialValue;
   final Function onChange;
 
@@ -10,31 +10,26 @@ class BirthdayPicker extends StatefulWidget {
   });
 
   @override
-  _BirthdayPickerState createState() => _BirthdayPickerState();
-}
-
-class _BirthdayPickerState extends State<BirthdayPicker> {
-  @override
   Widget build(BuildContext context) {
     return Row(
       children: [
         Text(
-          '${widget.initialValue.year} - ${widget.initialValue.month} - ${widget.initialValue.day}',
+          '${initialValue.year} - ${initialValue.month} - ${initialValue.day}',
         ),
         Spacer(),
         RaisedButton(
-          child: Text('Change'),
+          child: Text('Select'),
           onPressed: () async {
             var now = DateTime.now();
 
             final date = await showDatePicker(
               context: context,
-              initialDate: widget.initialValue,
+              initialDate: initialValue,
               firstDate: DateTime(now.year - 70),
               lastDate: DateTime(now.year, now.month, 30),
             );
             if (date == null) return;
-            widget.onChange(date);
+            onChange(date);
           },
         ),
       ],
