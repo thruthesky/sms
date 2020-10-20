@@ -70,7 +70,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
               PhotoPicker(
                 onFilePicked: (file) {
                   /// do something to file ...
-                  print(file.path);
+                  print('file picked::');
+                  print(file);
                 },
               ),
               SizedBox(height: Space.md),

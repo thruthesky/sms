@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -56,7 +57,7 @@ class PhotoPicker extends StatelessWidget {
 
     /// check if the app have the permission to access camera or photos
     if (!permissionStatus.isUndetermined || !permissionStatus.isGranted) {
-      /// request permission
+      /// request permission if not granted, or user haven't chosen permission yet.
       await option.permission.request();
     }
 
@@ -66,9 +67,17 @@ class PhotoPicker extends StatelessWidget {
       imageQuality: imageQuality,
     );
 
-    /// if user cancel, return null.
+    /// do nothing when user cancel photo selection.
     if (pickedFile == null) return null;
-    final file = File(pickedFile.path);
+    File file = File(pickedFile.path);
+
+    /// compress file and also fix orientation issue when taking images with camera.
+    var fileAsBytes = await file.readAsBytes();
+    await file.delete();
+    final compressedImageBytes =
+        await FlutterImageCompress.compressWithList(fileAsBytes);
+    await file.writeAsBytes(compressedImageBytes);
+
     onFilePicked(file);
   }
 
