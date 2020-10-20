@@ -18,15 +18,15 @@ class UserController extends GetxController {
 
   @override
   void onInit() {
-    print('==>>  UserController::onInit()');
+    // print('==>>  UserController::onInit()');
 
     /// authStateChanges() firebase twcie on boot. This seems to be normal.
     FirebaseAuth.instance.authStateChanges().listen((User user) {
       if (user == null) {
-        print('User is currently signed out!');
+        // print('User is currently signed out!');
       } else {
-        print('==>> print user: ');
-        print(user);
+        // print('==>> print user: ');
+        // print(user);
       }
       this.user = user;
       update();

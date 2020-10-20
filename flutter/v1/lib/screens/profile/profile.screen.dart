@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:v1/controllers/user.controller.dart';
-import 'package:v1/services/app-service.dart';
+import 'package:v1/services/service.dart';
 import 'package:v1/services/spaces.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -36,8 +36,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     users.doc(userController.user.uid).get().then(
       (DocumentSnapshot doc) {
         if (!doc.exists) {
-          AppService.error(
-              {'code': '', 'message': 'User data deos not exits.'});
+          Service.error({'code': '', 'message': 'User data deos not exits.'});
         }
         final data = doc.data();
         print(data);
@@ -127,14 +126,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   setState(() => loading = true);
 
                   try {
-                    await users.doc(userController.user.uid).set({
-                      "nickname": nicknameController.text,
-                      "gender": gender,
-                      "birthday": birthDate,
-                    });
+                    await users.doc(userController.user.uid).set(
+                      {
+                        "nickname": nicknameController.text,
+                        "gender": gender,
+                        "birthday": birthDate,
+                      },
+                    );
                     Get.snackbar('Update', 'Profile updated!');
                   } catch (e) {
-                    AppService.error(e);
+                    Service.error(e);
                   } finally {
                     setState(() => loading = false);
                   }
