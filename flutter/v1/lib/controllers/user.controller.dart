@@ -16,6 +16,14 @@ class UserController extends GetxController {
     return user?.uid;
   }
 
+  String get displayName {
+    return user?.displayName;
+  }
+
+  String get photoUrl {
+    return user?.photoURL;
+  }
+
   @override
   void onInit() {
     // print('==>>  UserController::onInit()');
@@ -28,10 +36,17 @@ class UserController extends GetxController {
         // print('==>> print user: ');
         // print(user);
       }
+      print('this.user = user:');
       this.user = user;
       update();
     });
 
     super.onInit();
+  }
+
+  reload() async {
+    await user.reload();
+    user = FirebaseAuth.instance.currentUser;
+    update();
   }
 }

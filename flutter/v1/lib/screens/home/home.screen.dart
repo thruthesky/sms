@@ -29,11 +29,10 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           Text('submit'.tr),
           GetBuilder<UserController>(builder: (user) {
-            // print('user:');
-            // print(userController.user);
             return Column(
               children: [
-                Text("UserName: ${user.uid}"),
+                Text("User Uid: ${user.uid}"),
+                Text("User Nickname: ${user.displayName}"),
                 if (user.isNotLoggedIn) ...[
                   RaisedButton(
                     onPressed: () => Get.toNamed(RouteNames.login),
