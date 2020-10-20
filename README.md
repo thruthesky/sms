@@ -98,6 +98,7 @@
 - 본 프로젝트의 구성은 크게 `Firebase 백엔드 코드`, `Flutter 앱 코드`, `Vue 웹 코드`로 나뉘어져 있으며 원한다면 `Firebase 백엔드 코드` 만 분리하여 다른 Clientend 프레임으로 개발을 해도 됩낟.
 - 본 프로젝트에서 원한다면 웹이나 앱, 둘 중 하나만 사용해도 됩니다.
 - 본 프로젝트에서 웹은 `Vue` 로 만들었는데, SEO 를 원한다면 `Vue` 를 통해 `SSR` 을 하시면 됩니다.
+- 특정 언어로 고정하고 싶다면, main.dart 에서 `Service.updateLocale()` 을 호출 할 필요 없다.
 
 ## 프레임의 조합
 
@@ -149,6 +150,11 @@ $ firebase deploy --only firestore
 - 문제가 있으면 [깃이슈](https://github.com/thruthesky/sms/issues)를 남겨주세요.
 - [SMS 프로젝트 관리](https://github.com/thruthesky/sms/projects/2)
 
+## 디자인
+
+- 여백이나 각종 크기, 영역은 가능한 2, 4, 8, 16, 32 수치로 합니다.
+  For spaces and sizes, it uses 2, 4, 8, 16, 32.
+
 ## 파이어베이스 데이터베이스 구조
 
 ### Admin account
@@ -161,3 +167,33 @@ $ firebase deploy --only firestore
 ### 관리자 아이디 지정하기
 
 - 관리자로 지정을 하고자 한다면, `$ node set-admin.js abc@gmail.com` 와 같이 하면 된다.
+
+### 설정
+
+- 모든 설정은 `Firestore => settgins => global` 에서 overwrite 가능하다.
+
+  - 참고로 global 도큐먼트에 설정은 Flutter 와 Vue 등 모든 클라이언트 앱에 다 적용되는 것이다.
+  - 앱이 부팅되면, Firestore 에서 설정을 내려 받아, 앱에 적용한다.
+
+- 플러터에서는 lib/settings.dart 에 기본 설정을 저장한다.
+
+- Vue에서는 src/settings.dart 에 기본 설정을 저장한다.
+
+### 언어 설정
+
+- `defaultLanguage` 는 앱이 부팅되지 마자 사용할 언어이다.
+
+- `changeUserLanguageOnBoot` 는 앱이 부팅 된 후, 운영체제에 있는 기본 언어로 변경 할 지, 지정한다.
+
+  - 예를 들어, `defaultLanguage` 가 `ja` 인데, 운영체제의 기본 언어가 `ko` 라면,
+    `changeUserLanguageOnBoot` 이 true 이면, 언어는 `ko` 되고, false 이면, 언어는 `ja`가 된다.
+
+- 기본적으로 언어는 `service/translations.dart` 의 `translations` 변수에 있는 JSON 내용이 적용된다.
+
+  - 이 값은 `Firebase => settings ==> translations ==> texts` 에 기록하여 overwrite 가능하다.
+    - 참고로 번역 문자열 값은 실시간 업데이트 된다.
+    - 가능하면 전체 문자열을 다 `translations` 에 기록한다. 또는 최소한 첫 페이지에 나오는 문자열만이라도 기록해서, 첫번째 페이지에서 번역 문자열을 다운로드 한 뒤, 두번재 페이지 부터는 번역된 문자열을 사용 하게 하면 된다.
+
+- 단순히 메뉴에 표시될 문자열 뿐만아니라 각종 페이지/화면에 나타낼 컨텐츠로도 사용 가능하다.
+
+- `supportedLanguages` 는 사용자가 선택 할 수 있는 언어인데, Flutter iOS 앱인 경우, Info.plist 에 언어셋을 추가해 주어야 하며, 그 언어셋 내에서만 선택 할 수 있다.

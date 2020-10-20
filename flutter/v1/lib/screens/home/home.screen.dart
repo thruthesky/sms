@@ -1,7 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:v1/controllers/user.controller.dart';
 import 'package:v1/services/route-names.dart';
+import 'package:v1/services/translations.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -18,25 +20,44 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Home screen'),
+        title: Text('home'.tr),
       ),
       body: Column(
         children: [
           Container(
-            child: Text('Menus'),
+            child: Text('menu'.tr),
           ),
-          RaisedButton(
-            onPressed: () => Get.toNamed(RouteNames.login),
-            child: Text('Login'),
-          ),
-          RaisedButton(
-            onPressed: () => Get.toNamed(RouteNames.register),
-            child: Text('Register'),
-          ),
-          GetBuilder<UserController>(builder: (userController) {
-            print('user:');
-            print(userController.user);
-            return Text("UserName: ${userController.user?.uid}");
+          Text('submit'.tr),
+          GetBuilder<UserController>(builder: (user) {
+            // print('user:');
+            // print(userController.user);
+            return Column(
+              children: [
+                Text("UserName: ${user.uid}"),
+                if (user.isNotLoggedIn) ...[
+                  RaisedButton(
+                    onPressed: () => Get.toNamed(RouteNames.login),
+                    child: Text('Login'),
+                  ),
+                  RaisedButton(
+                    onPressed: () => Get.toNamed(RouteNames.register),
+                    child: Text('Register'),
+                  ),
+                ],
+                if (user.isLoggedIn) ...[
+                  RaisedButton(
+                    onPressed: () => Get.toNamed(RouteNames.profile),
+                    child: Text('Profile'),
+                  ),
+                  RaisedButton(
+                    onPressed: () => FirebaseAuth.instance.signOut(),
+                    child: Text('Logout'),
+                  ),
+                ],
+                for (var item in translations.keys)
+                  Text('$item: ' + translations[item]['ko']),
+              ],
+            );
           }),
         ],
       ),
