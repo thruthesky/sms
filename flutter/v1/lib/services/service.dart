@@ -9,8 +9,8 @@ import 'package:get/get.dart';
 import 'package:v1/services/definitions.dart';
 import 'package:v1/services/route-names.dart';
 import 'package:v1/services/translations.dart';
-import 'package:v1/settings.dart' as App;
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:v1/settings.dart' as App;
 
 class Service {
   /// [locale] has the current locale.
@@ -142,7 +142,8 @@ class Service {
     // Trigger the sign-in flow
     LoginResult result;
     try {
-      await FacebookAuth.instance.logOut();
+      await FacebookAuth.instance
+          .logOut(); // Need to logout to avoid 'User logged in as different Facebook user'
       result = await FacebookAuth.instance.login();
       if (result == null || result.accessToken == null) {
         return error(ERROR_SIGNIN_ABORTED);
