@@ -6,7 +6,7 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:v1/services/spaces.dart';
- 
+
 class PhotoPicker extends StatelessWidget {
   final Function onFilePicked;
   final double iconSize;
@@ -48,24 +48,32 @@ class PhotoPicker extends StatelessWidget {
 
     /// get permission status.
     PermissionStatus permissionStatus = await option.permission.status;
+    print('permission status:');
+    print(permissionStatus);
+    print(permissionStatus.isDenied);
 
     /// if permission is permanently denied,
     /// the only way to grant permission is changing in AppSettings.
     if (permissionStatus.isPermanentlyDenied) {
-      openAppSettings();
+      await openAppSettings();
     }
 
     /// check if the app have the permission to access camera or photos
-    if (!permissionStatus.isUndetermined || !permissionStatus.isGranted) {
+    if (!permissionStatus.isUndetermined || permissionStatus.isDenied) {
       /// request permission if not granted, or user haven't chosen permission yet.
       await option.permission.request();
     }
 
-    PickedFile pickedFile = await picker.getImage(
-      source: option.source,
-      maxWidth: maxWidth,
-      imageQuality: imageQuality,
-    );
+    PickedFile pickedFile;
+    try {
+      pickedFile = await picker.getImage(
+        source: option.source,
+        maxWidth: maxWidth,
+        imageQuality: imageQuality,
+      );
+    } catch (e) {
+      print(e);
+    }
 
     /// do nothing when user cancel photo selection.
     if (pickedFile == null) return null;
