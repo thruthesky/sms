@@ -6,7 +6,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:get/get.dart';
@@ -20,7 +19,6 @@ import 'package:v1/services/translations.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:v1/settings.dart' as App;
 import 'package:v1/widgets/commons/photo-picker-bottom-sheet.dart';
-// import 'package:v1/widgets/commons/photo-picker.dart';
 
 class Service {
   /// [locale] has the current locale.
@@ -61,11 +59,12 @@ class Service {
 
     if (e is String) {
       msg = e.tr;
-    } else if (e is PlatformException) {
-      // Firebase errors
-
-      print("Platform Exception: code: ${e.code} message: ${e.message}");
     }
+    // else if (e is PlatformException) {
+    //   // Firebase errors
+
+    //   print("Platform Exception: code: ${e.code} message: ${e.message}");
+    // }
 
     /// Errors
     /// It can be Firebase errors, or handmaid errors.
@@ -346,11 +345,14 @@ class Service {
         res == ImageSource.camera ? Permission.camera : Permission.photos;
 
     /// get permission status.
+    /// 
+    /// Android:
+    ///   - Camera permission is automatically granted, meaning it will not ask for permission.
+    ///     unless we specify the following on the AndroidManifest.xml:
+    ///       - <uses-permission android:name="android.permission.CAMERA" />
     PermissionStatus permissionStatus = await permission.status;
-
     print('permission status:');
     print(permissionStatus);
-    print(permissionStatus.isDenied);
 
     /// if permission is permanently denied,
     /// the only way to grant permission is changing in AppSettings.
@@ -358,10 +360,17 @@ class Service {
       await openAppSettings();
     }
 
+    /// alert the user if the permission is restricted.
+    if (permissionStatus.isRestricted) {
+      error(ERROR_PERMISSION_RESTRICTED);
+      return null;
+    }
+
     /// check if the app have the permission to access camera or photos
     if (permissionStatus.isUndetermined || permissionStatus.isDenied) {
       /// request permission if not granted, or user haven't chosen permission yet.
-      await permission.request();
+      print('requesting permisssion again');
+      // await permission.request(); // does not request permission again. (BUG: iOS)
     }
 
     PickedFile pickedFile = await picker.getImage(
@@ -370,11 +379,14 @@ class Service {
       imageQuality: quality,
     );
 
+    // return null if user picked nothing.
+    if (pickedFile == null) return null;
     print('pickedFile.path: ${pickedFile.path} ');
 
+    String localFile = await _localFileForCompression;
     File file = await FlutterImageCompress.compressAndGetFile(
       pickedFile.path, // source file
-      await _localFileForCompression, // target file. Overwrite the source with compressed.
+      localFile, // target file. Overwrite the source with compressed.
       quality: quality,
     );
 

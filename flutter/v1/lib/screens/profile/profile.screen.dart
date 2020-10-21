@@ -76,7 +76,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   onTap: () async {
                     try {
                       File file = await Service.pickImage();
-                      print('success: file picked: ${file.path}');
+                      if (file != null) {
+                        print('success: file picked: ${file.path}');
+                      }
                     } catch (e) {
                       print('error on file pick: ');
                       print(e);
