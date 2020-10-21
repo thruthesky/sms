@@ -85,7 +85,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                           /// upload picked file,
                           final url = await Service.uploadFile(
-                            'profilePhotos/',
+                            'user-profile-photos/',
                             file,
 
                             /// update progress

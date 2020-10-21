@@ -62,7 +62,7 @@ service cloud.firestore {
     // Admin cannot update `id`.
     match /categories/{category} {
       allow read: if true;
-      allow create: if admin() && category == req('id') && request.resource.data.keys().hasAll(['id', 'title', 'description']);
+      allow create: if admin() && category == req('id') && hasAll(['id', 'title', 'description']);
       allow delete: if admin();
       allow update: if admin() && notUpdating('id');
     }
@@ -79,16 +79,13 @@ service cloud.firestore {
       // input data
       // uid: my uid. the user must login.
       // category: category id. And the category must exist.
-      // like: 0
-      // dislike: 0
       // createdAt: This is FieldValue.serverTimestamp(). required.
       // updatedAt: This is FieldValue.serverTimestamp(). required.
       // All other fields are optional. You can input title, content, and more.
       allow create: if login()
         && toBeMyDocument()
         && categoryExist()
-        && mustBeZero('like')
-        && mustBeZero('dislike');
+        && hasAll(['uid', 'category', 'createdAt', 'updatedAt']);
 
 
 
@@ -109,28 +106,17 @@ service cloud.firestore {
       //
       // Condition 1. A user can update his post.
       // Input params of [Condition 1]
-      // category: the category must have value and exists.
-      // uid: the use uid. This value must be same with the value that is already saved in the document. Meaning it cannot be changed.
-      // updatedAt: This is FieldValue.serverTimestamp(). required.
+      // category: the category and is optional. If it has value, than it will change the category but the category must exising in category collection
+      // uid: the user uid and this is Optional. This value must be same with the value that is already saved in the document. Meaning it cannot be changed.
+      // updatedAt: This is FieldValue.serverTimestamp() and required, and must have different value from the value in the document.
       // All other fields are optinal.
-      //
-      // Condition 2. Others can update like or dislike.
-      // Input params of [Condition 2]
-      // like: number. This value can be a value that is increased or decreased by 1 from the value that is alrady saved in the document.
-      // dislike: number. This goes same to `like`.
       allow update: if
-      (
-        myDocument() 
+      
+        myDocument()
+        && (notUpdating('uid'))
+        && req('updatedAt') != res('updatedAt')
         && categoryExist()
-        && notUpdating('uid')
-      )
-      || 
-      ( 
-        // 본인 뿐만 아니라 타인도 이 rule 로 vote
-        onlyUpdating(['like', 'dislike']) 
-        && updatingByOne('like') 
-        && updatingByOne('dislike')
-        )
+      
       ;
 
 
@@ -170,7 +156,8 @@ service cloud.firestore {
           ||
           (
           // 본인 뿐만 아니라 타인도 이 rule 로 vote
-            onlyUpdating(['like', 'dislike'])
+            // onlyUpdating(['like', 'dislike'])
+            (!req('category') && (req('like') || req('dislike')))
             && updatingByOne('like')
             && updatingByOne('dislike')
           )
@@ -213,9 +200,13 @@ service cloud.firestore {
         && ( request.auth.token.firebase.sign_in_provider != 'anonymous' );
     }
 
-    // Returns the data of the `field` is in the request.
+    // Returns the data of the `field` is in the resource.request.data
     function req(field) {
       return request.resource.data[field];
+    }
+    // Returns the data of the `field` is in the resource.data
+    function res(field) {
+      return resource.data[field];
     }
 
     // 필드를 변경하지 못하게 검사
@@ -257,9 +248,9 @@ service cloud.firestore {
     // 특정 값만 업데이트하는지 확인
     //
     // 예) onlyUpdating(['like', 'dislike']);
-    function onlyUpdating(fields) {
-      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(fields);
-    }
+    // function onlyUpdating(fields) {
+    //   return request.resource.data.diff(resource.data).affectedKeys().hasOnly(fields);
+    // }
 
 
 
@@ -291,6 +282,9 @@ service cloud.firestore {
     //   return exists(/databases/$(database)/documents/posts/$(request.resource.data.postId));
     // }
 
+    // Check if all the fields are exist in request.
+    //
+    // If request does not contain any of the fields, it fails.
     function hasAll(fields) {
       return (request.resource.data.keys().hasAll(fields));
     }
