@@ -54,10 +54,16 @@ service cloud.firestore {
       }
     }
 
-    // 카테고리. 모든 회원이 읽을 수 있지만, 관리자만 쓰기 가능.
+    // Category rules
+    //
+    // Read: by anyone.
+    // Create, Update, Delete: admin only.
+    // Category document id must be same of the `id` field.
+    // Admin cannot update `id`.
     match /categories/{category} {
       allow read: if true;
-      allow create, delete: if admin();
+      allow create: if admin() && category == req('id') && request.resource.data.keys().hasAll(['id', 'title', 'description']);
+      allow delete: if admin();
       allow update: if admin() && notUpdating('id');
     }
 
@@ -185,6 +191,11 @@ service cloud.firestore {
         && ( request.auth.token.firebase.sign_in_provider != 'anonymous' );
     }
 
+    // Returns the data of the `field` is in the request.
+    function req(field) {
+      return request.resource.data[field];
+    }
+
     // 필드를 변경하지 못하게 검사
     //
     // request data 에 field 가 없거나, 있다면, 저장되어져 있는 값과 동일해야 한다.
@@ -228,6 +239,8 @@ service cloud.firestore {
       return request.resource.data.diff(resource.data).affectedKeys().hasOnly(fields);
     }
 
+
+
     // 특정 필드에 대한 증감 값 확인
     //
     // `field` 가 숫자인지 확인
@@ -256,6 +269,9 @@ service cloud.firestore {
     //   return exists(/databases/$(database)/documents/posts/$(request.resource.data.postId));
     // }
 
+    function hasAll(fields) {
+      return (request.resource.data.keys().hasAll(fields));
+    }
   }
 
 
