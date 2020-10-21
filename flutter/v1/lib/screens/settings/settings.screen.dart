@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:v1/controllers/user.controller.dart';
 import 'package:v1/services/route-names.dart';
-import 'package:v1/services/service.dart';
 
 class SettingsScreen extends StatefulWidget {
   @override
@@ -11,6 +10,11 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
+  Map<String, bool> option = {
+    'notifyComment': false,
+    'notifyPost': false,
+  };
+
   @override
   void initState() {
     super.initState();
@@ -42,6 +46,26 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   RaisedButton(
                     onPressed: () => FirebaseAuth.instance.signOut(),
                     child: Text('Logout'),
+                  ),
+                  Text('Comment Notification'),
+                  Switch(
+                    value: option['notifyComment'],
+                    onChanged: (value) {
+                      setState(() {
+                        option['notifyComment'] = value;
+                        print(option['notifyComment']);
+                      });
+                    },
+                  ),
+                  Text('Comment Notification'),
+                  Switch(
+                    value: option['notifyComment'],
+                    onChanged: (value) {
+                      setState(() {
+                        option['notifyComment'] = value;
+                        print(option['notifyComment']);
+                      });
+                    },
                   )
                 ],
               ],
