@@ -2,6 +2,7 @@ import 'package:after_layout/after_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:v1/controllers/user.controller.dart';
 import 'package:v1/screens/admin/admin.screen.dart';
+import 'package:v1/screens/settings/settings.screen.dart';
 import 'package:v1/services/translations.dart';
 import 'package:v1/screens/home/home.screen.dart';
 import 'package:v1/screens/login/login.screen.dart';
@@ -48,6 +49,7 @@ class _MainAppState extends State<MainApp> with AfterLayoutMixin<MainApp> {
         GetPage(name: RouteNames.login, page: () => LoginScreen()),
         GetPage(name: RouteNames.register, page: () => RegisterScreen()),
         GetPage(name: RouteNames.profile, page: () => ProfileScreen()),
+        GetPage(name: RouteNames.settings, page: () => SettingsScreen()),
         GetPage(name: RouteNames.admin, page: () => AdminScreen()),
       ],
     );
