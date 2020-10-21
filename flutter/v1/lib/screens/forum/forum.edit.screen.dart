@@ -60,25 +60,23 @@ class _ForumEditScreenState extends State<ForumEditScreen>
             RaisedButton(
                 onPressed: () async {
                   try {
-                    final data = {
+                    final Map<String, dynamic> data = {
                       'category': category,
                       'title': titleController.text,
                       'content': contentController.text,
-                      'uid': userController.uid,
-                      'like': 0,
-                      'dislike': 0,
+                      'uid': userController.uid
                     };
 
                     // print('data: ');
                     // print(data);
                     if (post != null) {
                       data['category'] = post['category'];
+                      data['updatedAt'] = FieldValue.serverTimestamp();
                       await colPosts
                           .doc(post['id'])
                           .set(data, SetOptions(merge: true));
-
-                      data['updatedAt'] = FieldValue.serverTimestamp();
                     } else {
+                      // TODO: Let user can change category by giving 'more popmenu option'.
                       data['createdAt'] = FieldValue.serverTimestamp();
                       data['updatedAt'] = FieldValue.serverTimestamp();
                       await colPosts.add(data);
