@@ -480,10 +480,23 @@ class Service {
     }
   }
 
-  static Future<String> uploadFile(String collection, File file) async {
+  static Future<String> uploadFile(
+    String collection,
+    File file, {
+    void progress(double progress),
+  }) async {
     final ref = FirebaseStorage.instance
         .ref(collection + filenameFromPath(file.path) + '.jpg');
-    await ref.putFile(file);
-    return ref.getDownloadURL();
+
+    UploadTask task = ref.putFile(file);
+    task.snapshotEvents.listen((TaskSnapshot snapshot) {
+      double p = (snapshot.totalBytes / snapshot.bytesTransferred) * 100;
+      progress(p);
+    });
+
+    await task;
+    final url = await ref.getDownloadURL();
+    print('DOWNLOAD URL : $url');
+    return url;
   }
 }
