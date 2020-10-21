@@ -61,6 +61,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     child: Text('Send Test Notification'),
                   ),
+                  RaisedButton(
+                    onPressed: () => Get.toNamed(RouteNames.admin),
+                    child: Text('Admin Screen'),
+                  ),
                 ],
                 for (var item in translations.keys)
                   Text('$item: ' + translations[item]['ko']),
