@@ -54,10 +54,24 @@ class Service {
     initFirebaseMessaging();
   }
 
+  static void alert(String msg) {
+    Get.defaultDialog(
+      title: "Alert".tr,
+      middleText: msg,
+      onConfirm: () {
+        print('Ok...');
+        Get.back();
+      },
+      barrierDismissible: false,
+      textConfirm: "Ok".tr,
+      confirmTextColor: Colors.white,
+    );
+  }
+
   static void error(dynamic e) {
     String msg = '';
 
-    print('error(e): ' + 'home'.tr);
+    print('error(e): ');
     print(e);
     print('e.runtimeType: ${e.runtimeType}');
 
@@ -67,10 +81,16 @@ class Service {
       // Firebase errors
 
       print("Platform Exception: code: ${e.code} message: ${e.message}");
+    } else if (e.runtimeType.toString() == '_AssertionError') {
+      /// Assertion Error happens only on development.
+      msg = e.toString();
     }
 
     /// Errors
+    ///
     /// It can be Firebase errors, or handmaid errors.
+    /// This may produce another error like 'something' has no instance getter 'code' and this is because
+    /// it does not understand what [e] is.
     else if (e.code != null && e.message != null) {
       print("${e.message} (${e.code})");
 
@@ -93,6 +113,7 @@ class Service {
     } else {
       msg = 'Unknown error';
     }
+    print('error msg: $msg');
     Get.snackbar('error'.tr, msg);
   }
 

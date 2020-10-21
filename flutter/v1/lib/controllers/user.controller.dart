@@ -52,7 +52,7 @@ class UserController extends GetxController {
     FirebaseAuth.instance.authStateChanges().listen((User user) {
       this.user = user;
       if (user == null) {
-        userData = null;
+        userData = {};
       } else {
         myDocument.snapshots().listen((DocumentSnapshot snapshot) {
           if (snapshot.exists) {
@@ -62,12 +62,6 @@ class UserController extends GetxController {
             update();
           }
         });
-        // getMyDocument().then((DocumentSnapshot snapshot) {
-        //   if (snapshot.exists) {
-        //     userData = snapshot.data();
-        //   }
-        // });
-
       }
       update();
     });
