@@ -9,4 +9,5 @@ class RouteNames {
   static final String phoneAuthCode = '/phoneAuthCode';
   static final String passwordReset = '/passwordReset';
   static final String admin = '/admin';
+  static final String adminCategory = '/adminCategory';
 }
