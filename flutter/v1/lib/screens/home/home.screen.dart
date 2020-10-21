@@ -34,6 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 Text("User Uid: ${user.uid}"),
                 Text("User Nickname: ${user.displayName}"),
+                Text("User PhotoUrl: ${user.photoUrl}"),
                 if (user.isNotLoggedIn) ...[
                   RaisedButton(
                     onPressed: () => Get.toNamed(RouteNames.login),

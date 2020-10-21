@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:path/path.dart' as p;
+import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:devicelocale/devicelocale.dart';
 import 'package:dio/dio.dart';
@@ -12,10 +12,11 @@ import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:v1/controllers/user.controller.dart';
 import 'package:v1/services/definitions.dart';
+import 'package:v1/services/functions.dart';
 import 'package:v1/services/route-names.dart';
 import 'package:v1/services/translations.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
@@ -52,15 +53,36 @@ class Service {
     initFirebaseMessaging();
   }
 
+  static void alert(String msg) {
+    Get.defaultDialog(
+      title: "Alert".tr,
+      middleText: msg,
+      onConfirm: () {
+        print('Ok...');
+        Get.back();
+      },
+      barrierDismissible: false,
+      textConfirm: "Ok".tr,
+      confirmTextColor: Colors.white,
+    );
+  }
+
   static void error(dynamic e) {
     String msg = '';
 
-    print('error(e): ' + 'home'.tr);
+    print('error(e): ');
     print(e);
     print('e.runtimeType: ${e.runtimeType}');
 
     if (e is String) {
       msg = e.tr;
+    } else if (e is PlatformException) {
+      // Firebase errors
+      msg = e.message;
+      print("Platform Exception: code: ${e.code} message: ${e.message}");
+    } else if (e.runtimeType.toString() == '_AssertionError') {
+      /// Assertion Error happens only on development.
+      msg = e.toString();
     }
     // else if (e is PlatformException) {
     //   // Firebase errors
@@ -69,7 +91,10 @@ class Service {
     // }
 
     /// Errors
+    ///
     /// It can be Firebase errors, or handmaid errors.
+    /// This may produce another error like 'something' has no instance getter 'code' and this is because
+    /// it does not understand what [e] is.
     else if (e.code != null && e.message != null) {
       print("${e.message} (${e.code})");
 
@@ -92,6 +117,7 @@ class Service {
     } else {
       msg = 'Unknown error';
     }
+    print('error msg: $msg');
     Get.snackbar('error'.tr, msg);
   }
 
@@ -351,7 +377,7 @@ class Service {
         res == ImageSource.camera ? Permission.camera : Permission.photos;
 
     /// request permission status.
-    /// 
+    ///
     /// Android:
     ///   - Camera permission is automatically granted, meaning it will not ask for permission.
     ///     unless we specify the following on the AndroidManifest.xml:
@@ -390,7 +416,7 @@ class Service {
     if (pickedFile == null) return null;
     print('pickedFile.path: ${pickedFile.path} ');
 
-    String localFile = await _localFileForCompression;
+    String localFile = await localFilePath(randomString() + '.jpeg');
     File file = await FlutterImageCompress.compressAndGetFile(
       pickedFile.path, // source file
       localFile, // target file. Overwrite the source with compressed.
@@ -398,18 +424,6 @@ class Service {
     );
 
     return file;
-  }
-
-  static Future<String> get _localPath async {
-    final directory = await getApplicationDocumentsDirectory();
-    return directory.path;
-  }
-
-  static Future<String> get _localFileForCompression async {
-    String dir = await _localPath;
-    String path = p.join(dir, 'compressed.jpeg');
-    print('path: $path');
-    return path;
   }
 
   Future<void> sendNotification(title, body, route, {token, topic}) async {
@@ -464,5 +478,12 @@ class Service {
       print('Dio error in sendNotification');
       print(e);
     }
+  }
+
+  static Future<String> uploadFile(String collection, File file) async {
+    final ref = FirebaseStorage.instance
+        .ref(collection + filenameFromPath(file.path) + '.jpg');
+    await ref.putFile(file);
+    return ref.getDownloadURL();
   }
 }

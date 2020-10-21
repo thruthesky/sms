@@ -6,7 +6,7 @@ const MY_PROJECT_ID = "social-management-system";
 // Fake User UID - My UID.
 const myUid = "my_uid";
 // Fake User UiD
-const otherUid = "othe_uid";
+const otherUid = "other_uid";
 
 // Fake User Auth Data
 const myAuth = { uid: myUid, email: "my-email@gmail.com" };
@@ -21,7 +21,6 @@ const adminAuth = {
     sign_in_provider: "password"
   }
 };
-
 
 // Firestore intance 를 가져오는 함수
 // Get Firestore instance for CRUD work.
@@ -40,12 +39,22 @@ function getAdminFirestore() {
 
 // Helper function to make the test code simple.
 module.exports.setup = async (auth, data) => {
-  // await firebase.clearFirestoreData({ projectId: MY_PROJECT_ID }); // Clear firestore on every setup.
+  // Clear firestore on every setup.
+  //
+  // It's important to clear on every test or it might not work as expected.
+  // When you call .set(), it may be a `create` action if the document is not exist, or it would be `update`.
+  await firebase.clearFirestoreData({ projectId: MY_PROJECT_ID });
   const db = getFirestore(auth); // Firestore instance 를 가져온다
+
+  // Get admin db instance
+  const adminDb = getAdminFirestore();
+
+  // Put admin data into Firestore
+  adminDb.doc("users/" + adminUid).set({ isAdmin: true });
+
+  // Push default data to Firestore
+  // If there is data to set, set it with admin instance.
   if (data) {
-    // 데이터가 있으면,
-    // If there is data to set, set it with admin instance.
-    const adminDb = getAdminFirestore(); // Admin DB 를 가져와서
     for (const key in data) {
       // key 마다, 데이터를 모두 기록한다.
       // Save data for each path.

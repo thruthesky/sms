@@ -74,9 +74,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   onTap: () async {
                     try {
-                      File file = await Service.pickImage();
+                      File file = await Service.pickImage(maxWidth: Space.xxxl);
                       if (file != null) {
                         print('success: file picked: ${file.path}');
+                        final url =
+                            await Service.uploadFile('profilePhotos', file);
+                        await userController.updatePhoto(url);
+                        print('url: $url');
                       }
                     } catch (e) {
                       print('error on file pick: ');
