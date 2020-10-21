@@ -344,7 +344,7 @@ class Service {
     Permission permission =
         res == ImageSource.camera ? Permission.camera : Permission.photos;
 
-    /// get permission status.
+    /// request permission status.
     /// 
     /// Android:
     ///   - Camera permission is automatically granted, meaning it will not ask for permission.
@@ -370,7 +370,8 @@ class Service {
     if (permissionStatus.isUndetermined || permissionStatus.isDenied) {
       /// request permission if not granted, or user haven't chosen permission yet.
       print('requesting permisssion again');
-      // await permission.request(); // does not request permission again. (BUG: iOS)
+      // does not request permission again. (BUG: iOS)
+      // await permission.request();
     }
 
     PickedFile pickedFile = await picker.getImage(
