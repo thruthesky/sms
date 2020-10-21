@@ -7,7 +7,6 @@ import 'package:v1/controllers/user.controller.dart';
 import 'package:v1/services/service.dart';
 import 'package:v1/services/spaces.dart';
 import 'package:v1/widgets/user/birthday-picker.dart';
-import 'package:v1/widgets/commons/photo-picker.dart';
 import 'package:v1/widgets/user/profile-image.dart';
 
 class ProfileScreen extends StatefulWidget {
