@@ -30,6 +30,9 @@ dependencies:
 
   path_provider: ^1.6.21
 
+  dio: ^3.0.10
+  jiffy: ^3.0.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
