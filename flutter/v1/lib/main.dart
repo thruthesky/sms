@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:v1/controllers/user.controller.dart';
 import 'package:v1/screens/admin/admin.category.screen.dart';
 import 'package:v1/screens/admin/admin.screen.dart';
+import 'package:v1/screens/forum/forum.edit.screen.dart';
+import 'package:v1/screens/forum/forum.screen.dart';
 import 'package:v1/services/translations.dart';
 import 'package:v1/screens/home/home.screen.dart';
 import 'package:v1/screens/login/login.screen.dart';
@@ -52,6 +54,8 @@ class _MainAppState extends State<MainApp> with AfterLayoutMixin<MainApp> {
         GetPage(name: RouteNames.admin, page: () => AdminScreen()),
         GetPage(
             name: RouteNames.adminCategory, page: () => AdminCategoryScreen()),
+        GetPage(name: RouteNames.forum, page: () => ForumScreen()),
+        GetPage(name: RouteNames.forumEdit, page: () => ForumEditScreen())
       ],
     );
   }

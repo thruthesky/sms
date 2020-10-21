@@ -66,6 +66,21 @@ class _HomeScreenState extends State<HomeScreen> {
                     onPressed: () => Get.toNamed(RouteNames.admin),
                     child: Text('Admin Screen'),
                   ),
+                  RaisedButton(
+                    onPressed: () => Get.toNamed(RouteNames.forum,
+                        arguments: {'category': 'qna'}),
+                    child: Text('QnA'),
+                  ),
+                  RaisedButton(
+                    onPressed: () => Get.toNamed(RouteNames.forum,
+                        arguments: {'category': 'discussion'}),
+                    child: Text('Discussion'),
+                  ),
+                  RaisedButton(
+                    onPressed: () => Get.toNamed(RouteNames.forum,
+                        arguments: {'category': 'reminder'}),
+                    child: Text('Reminder'),
+                  ),
                 ],
                 for (var item in translations.keys)
                   Text('$item: ' + translations[item]['ko']),

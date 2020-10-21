@@ -73,9 +73,17 @@ service cloud.firestore {
       allow read: if true;
 
 
-      // 생성
-      // - 로그인을 했으면, 도큐먼트 생성 가능
-      // - 글 쓰기/수정에서 카테고리가 있어야 하며 존재 해야 함.
+      // Create a post
+      //
+      //
+      // input data
+      // uid: my uid. the user must login.
+      // category: category id. And the category must exist.
+      // like: 0
+      // dislike: 0
+      // createdAt: This is FieldValue.serverTimestamp(). required.
+      // updatedAt: This is FieldValue.serverTimestamp(). required.
+      // All other fields are optional. You can input title, content, and more.
       allow create: if login()
         && toBeMyDocument()
         && categoryExist()
@@ -96,6 +104,20 @@ service cloud.firestore {
       //
       // - 다른 사람이 내 글을 수정하는 경우, 오직 'like' 와 'dislke' 만 수정 가능하다. 
       // - 자신 뿐만아니라 타인이 vote 할 수 있다.
+
+      // Update a post
+      //
+      // Condition 1. A user can update his post.
+      // Input params of [Condition 1]
+      // category: the category must have value and exists.
+      // uid: the use uid. This value must be same with the value that is already saved in the document. Meaning it cannot be changed.
+      // updatedAt: This is FieldValue.serverTimestamp(). required.
+      // All other fields are optinal.
+      //
+      // Condition 2. Others can update like or dislike.
+      // Input params of [Condition 2]
+      // like: number. This value can be a value that is increased or decreased by 1 from the value that is alrady saved in the document.
+      // dislike: number. This goes same to `like`.
       allow update: if
       (
         myDocument() 
