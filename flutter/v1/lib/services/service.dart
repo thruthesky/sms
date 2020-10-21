@@ -399,17 +399,16 @@ class Service {
     return path;
   }
 
-  Future<void> sendNotification(title, body, route, {token, topic}) async {
+  Future<void> sendNotification(title, body, route,
+      {token, topic, registration_ids}) async {
     // print('SendNotification');
     final postUrl = 'https://fcm.googleapis.com/fcm/send';
 
-    String toParams = "/topics/" + App.Settings.allTopic;
+    // String toParams = "/topics/" + App.Settings.allTopic;
     print(token);
     print(topic);
-    if (token != null) toParams = token;
-    if (topic != null) toParams = topic;
 
-    final data = jsonEncode({
+    final data = {
       "notification": {"body": body, "title": title},
       "priority": "high",
       "data": {
@@ -419,9 +418,21 @@ class Service {
         "sound": 'default',
         "senderID": userController.user.uid,
         'route': route,
-      },
-      "to": "$toParams"
-    });
+      }
+    };
+
+    if (token != null)
+      data['to'] = token;
+    else if (topic != null)
+      data['to'] = "/topics/" + topic;
+    else if (registration_ids != null)
+      data['registration_ids'] = registration_ids;
+    else
+      data['to'] = "/topics/" + App.Settings.allTopic;
+
+    final encodeData = jsonEncode(data);
+
+    print(encodeData);
 
     final headers = {
       HttpHeaders.contentTypeHeader: "application/json",
@@ -434,7 +445,7 @@ class Service {
     try {
       var response = await dio.post(
         postUrl,
-        data: data,
+        data: encodeData,
         options: Options(
           headers: headers,
         ),

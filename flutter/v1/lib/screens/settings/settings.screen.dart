@@ -18,8 +18,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   final userController = Get.find<UserController>();
 
-  bool notifyPost;
-  bool notifyComment;
+  bool notifyPost = false;
+  bool notifyComment = false;
 
   @override
   void initState() {
@@ -32,7 +32,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           return;
         }
         final data = doc.data();
-        this.notifyComment = data['notifyPost'] ?? false;
+        this.notifyPost = data['notifyPost'] ?? false;
         this.notifyComment = data['notifyComment'] ?? false;
         setState(() {});
       },
@@ -74,7 +74,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       try {
                         final userDoc = users.doc(userController.user.uid);
                         await userDoc.set({
-                          "notifyPost": notifyPost,
+                          "notifyPost": value,
                         }, SetOptions(merge: true));
                         Get.snackbar('Update', 'Settings updated!');
                       } catch (e) {
@@ -93,18 +93,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       try {
                         final userDoc = users.doc(userController.user.uid);
                         await userDoc.set({
-                          "notifyComment": notifyComment,
+                          "notifyComment": value,
                         }, SetOptions(merge: true));
                         Get.snackbar('Update', 'Settings updated!');
                       } catch (e) {
                         Service.error(e);
                       }
                       setState(() {
-                        notifyPost = value;
+                        notifyComment = value;
                         print(notifyComment);
                       });
                     },
-                  )
+                  ),
+                  Text(Service.firebaseMessagingToken.substring(0, 20)),
                 ],
               ],
             );
