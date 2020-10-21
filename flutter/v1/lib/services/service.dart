@@ -1,12 +1,13 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:path/path.dart' as p;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:devicelocale/devicelocale.dart';
+import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:get/get.dart';
@@ -20,7 +21,6 @@ import 'package:v1/services/translations.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:v1/settings.dart' as App;
 import 'package:v1/widgets/commons/photo-picker-bottom-sheet.dart';
-// import 'package:v1/widgets/commons/photo-picker.dart';
 
 class Service {
   /// [locale] has the current locale.
@@ -61,11 +61,12 @@ class Service {
 
     if (e is String) {
       msg = e.tr;
-    } else if (e is PlatformException) {
-      // Firebase errors
-
-      print("Platform Exception: code: ${e.code} message: ${e.message}");
     }
+    // else if (e is PlatformException) {
+    //   // Firebase errors
+
+    //   print("Platform Exception: code: ${e.code} message: ${e.message}");
+    // }
 
     /// Errors
     /// It can be Firebase errors, or handmaid errors.
@@ -214,7 +215,12 @@ class Service {
   }
 
   static Future subscribeTopic(String topicName) async {
-    await firebaseMessaging.subscribeToTopic(topicName);
+    print('subscribeTopic $topicName');
+    try {
+      await firebaseMessaging.subscribeToTopic(topicName);
+    } catch (e) {
+      print(e);
+    }
   }
 
   static Future unsubscribeTopic(String topicName) async {
@@ -297,17 +303,16 @@ class Service {
       Get.snackbar(
         notification['title'].toString(),
         notification['body'].toString(),
-        // TODO: Make it work.
-        // onTap: () {
-        //   print('data data: ');
-        //   print(data);
-        //   Get.toNamed(data['route']);
-        // },
+        onTap: (_) {
+          // print('onTap data: ');
+          // print(data);
+          Get.toNamed(data['route']);
+        },
         mainButton: FlatButton(
           child: Text('Open'),
           onPressed: () {
-            print('data data: ');
-            print(data);
+            // print('mainButton data: ');
+            // print(data);
             Get.toNamed(data['route']);
           },
         ),
@@ -345,12 +350,15 @@ class Service {
     Permission permission =
         res == ImageSource.camera ? Permission.camera : Permission.photos;
 
-    /// get permission status.
+    /// request permission status.
+    /// 
+    /// Android:
+    ///   - Camera permission is automatically granted, meaning it will not ask for permission.
+    ///     unless we specify the following on the AndroidManifest.xml:
+    ///       - <uses-permission android:name="android.permission.CAMERA" />
     PermissionStatus permissionStatus = await permission.status;
-
     print('permission status:');
     print(permissionStatus);
-    print(permissionStatus.isDenied);
 
     /// if permission is permanently denied,
     /// the only way to grant permission is changing in AppSettings.
@@ -358,10 +366,18 @@ class Service {
       await openAppSettings();
     }
 
+    /// alert the user if the permission is restricted.
+    if (permissionStatus.isRestricted) {
+      error(ERROR_PERMISSION_RESTRICTED);
+      return null;
+    }
+
     /// check if the app have the permission to access camera or photos
     if (permissionStatus.isUndetermined || permissionStatus.isDenied) {
       /// request permission if not granted, or user haven't chosen permission yet.
-      await permission.request();
+      print('requesting permisssion again');
+      // does not request permission again. (BUG: iOS)
+      // await permission.request();
     }
 
     PickedFile pickedFile = await picker.getImage(
@@ -370,11 +386,14 @@ class Service {
       imageQuality: quality,
     );
 
+    // return null if user picked nothing.
+    if (pickedFile == null) return null;
     print('pickedFile.path: ${pickedFile.path} ');
 
+    String localFile = await _localFileForCompression;
     File file = await FlutterImageCompress.compressAndGetFile(
       pickedFile.path, // source file
-      await _localFileForCompression, // target file. Overwrite the source with compressed.
+      localFile, // target file. Overwrite the source with compressed.
       quality: quality,
     );
 
@@ -391,5 +410,59 @@ class Service {
     String path = p.join(dir, 'compressed.jpeg');
     print('path: $path');
     return path;
+  }
+
+  Future<void> sendNotification(title, body, route, {token, topic}) async {
+    // print('SendNotification');
+    final postUrl = 'https://fcm.googleapis.com/fcm/send';
+
+    String toParams = "/topics/" + App.Settings.allTopic;
+    print(token);
+    print(topic);
+    if (token != null) toParams = token;
+    if (topic != null) toParams = topic;
+
+    final data = jsonEncode({
+      "notification": {"body": body, "title": title},
+      "priority": "high",
+      "data": {
+        "click_action": "FLUTTER_NOTIFICATION_CLICK",
+        "id": "1",
+        "status": "done",
+        "sound": 'default',
+        "senderID": userController.user.uid,
+        'route': route,
+      },
+      "to": "$toParams"
+    });
+
+    final headers = {
+      HttpHeaders.contentTypeHeader: "application/json",
+      HttpHeaders.authorizationHeader: "key=" + App.Settings.firebaseServerToken
+    };
+
+    var dio = Dio();
+
+    print('try sending notification');
+    try {
+      var response = await dio.post(
+        postUrl,
+        data: data,
+        options: Options(
+          headers: headers,
+        ),
+      );
+      if (response.statusCode == 200) {
+        // on success do
+        print("notification success");
+      } else {
+        // on failure do
+        print("notification failure");
+      }
+      print(response.data);
+    } catch (e) {
+      print('Dio error in sendNotification');
+      print(e);
+    }
   }
 }
