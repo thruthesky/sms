@@ -47,13 +47,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     onPressed: () => FirebaseAuth.instance.signOut(),
                     child: Text('Logout'),
                   ),
-                  Text('Comment Notification'),
+                  Text('Post Notification'),
                   Switch(
-                    value: option['notifyComment'],
+                    value: option['notifyPost'],
                     onChanged: (value) {
                       setState(() {
-                        option['notifyComment'] = value;
-                        print(option['notifyComment']);
+                        option['notifyPost'] = value;
+                        print(option['notifyPost']);
                       });
                     },
                   ),
