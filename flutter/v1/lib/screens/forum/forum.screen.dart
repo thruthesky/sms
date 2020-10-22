@@ -71,9 +71,14 @@ class _ForumScreenState extends State<ForumScreen> with AfterLayoutMixin {
           final data = documentChange.doc.data();
           data['id'] = documentChange.doc.id;
           final post = PostModel.fromBackendData(data);
+          print(post.toString());
+          print('Document change type');
+          print(documentChange.type);
 
           if (documentChange.type == DocumentChangeType.added) {
             /// if post is not empty and first post's createdAt value is less than the incoming post's createdAt, add on top.
+            print('added a new doc:');
+            print(post.toString());
             if (posts.isNotEmpty &&
                 posts.first.createdAt.seconds < post.createdAt.seconds) {
               posts.insert(0, post);
@@ -82,15 +87,13 @@ class _ForumScreenState extends State<ForumScreen> with AfterLayoutMixin {
               posts.add(post);
             }
             inLoading = false;
-            print('added a new doc:');
-            print(data.toString());
           } else if (documentChange.type == DocumentChangeType.modified) {
             print('A document is updated:');
-            print(data.toString());
             final int i = posts.indexWhere((p) => p.id == post.id);
-            posts[i] = post;
+            if (i != -1) posts[i] = post;
           } else if (documentChange.type == DocumentChangeType.removed) {
-            print('Remove a post');
+            print('Removing post');
+            posts.retainWhere((p) => p.id == post.id);
           }
         });
         setState(() {});
@@ -133,23 +136,35 @@ class _ForumScreenState extends State<ForumScreen> with AfterLayoutMixin {
                       child: Container(
                         padding: EdgeInsets.all(Space.md),
                         child: ListTile(
-                            title: Text(
-                              posts[i].title,
-                              style: TextStyle(fontSize: Space.xl),
-                            ),
-                            subtitle: Text(
-                              posts[i].content,
-                              style: TextStyle(fontSize: Space.lg),
-                            ),
-                            trailing: Service.isMyPost(posts[i])
-                                ? IconButton(
-                                    icon: Icon(Icons.edit),
-                                    onPressed: () => Get.toNamed(
-                                      RouteNames.forumEdit,
-                                      arguments: {'post': posts[i]},
+                          title: Text(
+                            posts[i].title,
+                            style: TextStyle(fontSize: Space.xl),
+                          ),
+                          subtitle: Text(
+                            posts[i].content,
+                            style: TextStyle(fontSize: Space.lg),
+                          ),
+                          trailing: Service.isMyPost(posts[i])
+                              ? Wrap(
+                                  children: [
+                                    IconButton(
+                                      icon: Icon(Icons.edit),
+                                      onPressed: () => Get.toNamed(
+                                        RouteNames.forumEdit,
+                                        arguments: {'post': posts[i]},
+                                      ),
                                     ),
-                                  )
-                                : null),
+                                    IconButton(
+                                      icon: Icon(Icons.delete),
+                                      onPressed: () {
+                                        /// TODO: confirm message
+                                        colPosts.doc(posts[i].id).delete();
+                                      },
+                                    ),
+                                  ],
+                                )
+                              : null,
+                        ),
                       ),
                     );
                   },

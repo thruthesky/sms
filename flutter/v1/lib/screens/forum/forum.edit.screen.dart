@@ -29,6 +29,9 @@ class _ForumEditScreenState extends State<ForumEditScreen>
     final args = routerArguments(context);
     category = args['category'];
     post = args['post'];
+    print('post');
+    print(post);
+
     if (post != null) {
       titleController.text = post.title;
       contentController.text = post.content;
@@ -59,23 +62,26 @@ class _ForumEditScreenState extends State<ForumEditScreen>
                 decoration: InputDecoration(hintText: 'content'.tr)),
             RaisedButton(
               onPressed: () async {
-                try {
-                  final Map<String, dynamic> data = {
-                    'category': category,
-                    'title': titleController.text,
-                    'content': contentController.text,
-                    'uid': userController.uid
-                  };
+                final Map<String, dynamic> data = {
+                  'category': category,
+                  'title': titleController.text,
+                  'content': contentController.text,
+                  'uid': userController.uid
+                };
+                // print('data: ');
+                // print(data);
 
-                  // print('data: ');
-                  // print(data);
+                try {
                   if (post != null) {
+                    print('updating post');
                     data['category'] = post.category;
                     data['updatedAt'] = FieldValue.serverTimestamp();
-                    await colPosts
-                        .doc(post.id)
-                        .set(data, SetOptions(merge: true));
+                    await colPosts.doc(post.id).set(
+                          data,
+                          SetOptions(merge: true),
+                        );
                   } else {
+                    print('creating post');
                     // TODO: Let user can change category by giving 'more popmenu option'.
                     data['createdAt'] = FieldValue.serverTimestamp();
                     data['updatedAt'] = FieldValue.serverTimestamp();
