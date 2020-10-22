@@ -72,14 +72,14 @@ class _ForumScreenState extends State<ForumScreen> with AfterLayoutMixin {
           final data = documentChange.doc.data();
           data['id'] = documentChange.doc.id;
           final post = PostModel.fromBackendData(data);
-          print('Post:');
-          print(post.toString());
-          print('Document change type:');
-          print(documentChange.type);
+          // print('Post:');
+          // print(post.toString());
+          // print('Document change type:');
+          // print(documentChange.type);
 
           if (documentChange.type == DocumentChangeType.added) {
             // NOTE: by this time, createdAt is null.
-            // then when the server finally added the servertimestamp on the post, it will emit a 'modified' event instead of 'added'.
+            // then when the server finally added the server timestamp on the post, it will emit a 'modified' event instead of 'added'.
             if (post.createdAt != null) {
               posts.add(post);
             }
