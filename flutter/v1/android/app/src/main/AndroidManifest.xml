@@ -37,4 +37,6 @@
                     "keyboard|keyboardHidden|screenLayout|screenSize|orientation" android:label="@string/app_name" />
   </application>
   <uses-permission android:name="android.permission.INTERNET"/>
+  <uses-permission android:name="android.permission.CAMERA" />
+  <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:protectionLevel="dangerous"/>
 </manifest>

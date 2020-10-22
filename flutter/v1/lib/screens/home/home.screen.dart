@@ -40,6 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 Text("User Uid: ${user.uid}"),
                 Text("User Nickname: ${user.displayName}"),
+                Text("User PhotoUrl: ${user.photoUrl}"),
                 if (user.isNotLoggedIn) ...[
                   RaisedButton(
                     onPressed: () => Get.toNamed(RouteNames.login),
@@ -90,6 +91,21 @@ class _HomeScreenState extends State<HomeScreen> {
                   RaisedButton(
                     onPressed: () => Get.toNamed(RouteNames.admin),
                     child: Text('Admin Screen'),
+                  ),
+                  RaisedButton(
+                    onPressed: () => Get.toNamed(RouteNames.forum,
+                        arguments: {'category': 'qna'}),
+                    child: Text('QnA'),
+                  ),
+                  RaisedButton(
+                    onPressed: () => Get.toNamed(RouteNames.forum,
+                        arguments: {'category': 'discussion'}),
+                    child: Text('Discussion'),
+                  ),
+                  RaisedButton(
+                    onPressed: () => Get.toNamed(RouteNames.forum,
+                        arguments: {'category': 'reminder'}),
+                    child: Text('Reminder'),
                   ),
                 ],
                 RaisedButton(

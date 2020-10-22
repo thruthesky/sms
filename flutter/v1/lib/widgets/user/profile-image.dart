@@ -15,17 +15,21 @@ class ProfileImage extends StatelessWidget {
     return Container(
       child: GetBuilder<UserController>(
         builder: (user) {
+          print('User photo URL: ${user.photoUrl}');
           return user.photoUrl != null
               ? CachedNetworkImage(
-                  width: size,
-                  height: size,
                   imageUrl: user.photoUrl,
                   placeholder: (context, url) => CommonSpinner(),
+                  errorWidget: (context, url, error) => Icon(
+                    Icons.error,
+                    size: Space.xxxl,
+                  ),
                   imageBuilder: (context, provider) {
                     return CircleAvatar(
-                        backgroundImage: provider, radius: size);
+                      backgroundImage: provider,
+                      radius: size,
+                    );
                   },
-                  errorWidget: (context, url, error) => Icon(Icons.error),
                 )
               : CircleAvatar(
                   backgroundColor: Colors.grey,
