@@ -132,7 +132,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     await users.doc(userCredential.user.uid).set({
                       "gender": gender,
                       "birthday": birthDate,
-                    });
+                      "notifyPost": true,
+                      "notifyComment": true,
+                    }, SetOptions(merge: true));
                     Service.onLogin(userCredential);
                     Get.toNamed(RouteNames.home);
                   } catch (e) {

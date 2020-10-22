@@ -80,9 +80,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         Service().sendNotification(
                           'test title message only',
                           'test body message, from test notification button.',
-                          RouteNames.profile,
-                          registration_ids: tokens,
-                          // topic: App.Settings.allTopic,
+                          route: RouteNames.profile,
+                          token: Service.firebaseMessagingToken,
+                          tokens: tokens,
+                          topic: App.Settings.allTopic,
                         );
                       });
                     },

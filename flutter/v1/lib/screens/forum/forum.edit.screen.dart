@@ -1,6 +1,5 @@
 import 'package:after_layout/after_layout.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:v1/controllers/user.controller.dart';
@@ -80,6 +79,13 @@ class _ForumEditScreenState extends State<ForumEditScreen>
                       data['createdAt'] = FieldValue.serverTimestamp();
                       data['updatedAt'] = FieldValue.serverTimestamp();
                       await colPosts.add(data);
+
+                      Service().sendNotification(
+                        titleController.text,
+                        contentController.text,
+                        route: category,
+                        topic: "notification_post_" + category,
+                      );
                     }
                     Get.back();
                   } catch (e) {
