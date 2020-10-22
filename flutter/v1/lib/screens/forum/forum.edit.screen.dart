@@ -1,10 +1,10 @@
 import 'package:after_layout/after_layout.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:v1/controllers/user.controller.dart';
 import 'package:v1/services/functions.dart';
+import 'package:v1/services/models.dart';
 import 'package:v1/services/service.dart';
 
 class ForumEditScreen extends StatefulWidget {
@@ -22,16 +22,19 @@ class _ForumEditScreenState extends State<ForumEditScreen>
       FirebaseFirestore.instance.collection('posts');
 
   String category;
-  Map<String, dynamic> post;
+  PostModel post;
 
   @override
   void afterFirstLayout(BuildContext context) {
     final args = routerArguments(context);
     category = args['category'];
     post = args['post'];
+    print('post');
+    print(post);
+
     if (post != null) {
-      titleController.text = post['title'];
-      contentController.text = post['content'];
+      titleController.text = post.title;
+      contentController.text = post.content;
     }
   }
 
@@ -58,35 +61,39 @@ class _ForumEditScreenState extends State<ForumEditScreen>
                 controller: contentController,
                 decoration: InputDecoration(hintText: 'content'.tr)),
             RaisedButton(
-                onPressed: () async {
-                  try {
-                    final Map<String, dynamic> data = {
-                      'category': category,
-                      'title': titleController.text,
-                      'content': contentController.text,
-                      'uid': userController.uid
-                    };
+              onPressed: () async {
+                final Map<String, dynamic> data = {
+                  'category': category,
+                  'title': titleController.text,
+                  'content': contentController.text,
+                  'uid': userController.uid
+                };
+                // print('data: ');
+                // print(data);
 
-                    // print('data: ');
-                    // print(data);
-                    if (post != null) {
-                      data['category'] = post['category'];
-                      data['updatedAt'] = FieldValue.serverTimestamp();
-                      await colPosts
-                          .doc(post['id'])
-                          .set(data, SetOptions(merge: true));
-                    } else {
-                      // TODO: Let user can change category by giving 'more popmenu option'.
-                      data['createdAt'] = FieldValue.serverTimestamp();
-                      data['updatedAt'] = FieldValue.serverTimestamp();
-                      await colPosts.add(data);
-                    }
-                    Get.back();
-                  } catch (e) {
-                    Service.error(e);
+                try {
+                  if (post != null) {
+                    print('updating post');
+                    data['category'] = post.category;
+                    data['updatedAt'] = FieldValue.serverTimestamp();
+                    await colPosts.doc(post.id).set(
+                          data,
+                          SetOptions(merge: true),
+                        );
+                  } else {
+                    print('creating post');
+                    // TODO: Let user can change category by giving 'more popmenu option'.
+                    data['createdAt'] = FieldValue.serverTimestamp();
+                    data['updatedAt'] = FieldValue.serverTimestamp();
+                    await colPosts.add(data);
                   }
-                },
-                child: Text('submit'.tr)),
+                  Get.back();
+                } catch (e) {
+                  Service.error(e);
+                }
+              },
+              child: Text('submit'.tr),
+            ),
           ],
         ),
       ),
