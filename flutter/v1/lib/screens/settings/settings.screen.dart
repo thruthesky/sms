@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:v1/controllers/user.controller.dart';
 import 'package:v1/services/route-names.dart';
 import 'package:v1/services/service.dart';
+import 'package:v1/services/spaces.dart';
 
 class SettingsScreen extends StatefulWidget {
   @override
@@ -59,15 +60,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 Text("User Nickname: ${user.displayName}"),
                 if (user.isNotLoggedIn) ...[],
                 if (user.isLoggedIn) ...[
-                  RaisedButton(
-                    onPressed: () => Get.toNamed(RouteNames.profile),
-                    child: Text('Profile'),
+                  Text(
+                    'Post Notification',
+                    style: TextStyle(fontSize: Space.lg),
                   ),
-                  RaisedButton(
-                    onPressed: () => FirebaseAuth.instance.signOut(),
-                    child: Text('Logout'),
-                  ),
-                  Text('Post Notification'),
+                  Text('Comment Notification under my post'),
                   Switch(
                     value: notifyPost,
                     onChanged: (value) async {
@@ -86,7 +83,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       });
                     },
                   ),
-                  Text('Comment Notification'),
+                  Text('Comment Notification under my comment'),
                   Switch(
                     value: notifyComment,
                     onChanged: (value) async {
