@@ -105,32 +105,33 @@ class _ForumScreenState extends State<ForumScreen> with AfterLayoutMixin {
                       arguments: {'category': category}),
                   child: Text('Create')),
               ListView.builder(
-                  physics: NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  itemCount: posts.length,
-                  itemBuilder: (c, i) {
-                    return Container(
-                      color: Colors.grey[300],
-                      margin: EdgeInsets.all(Space.pageWrap),
-                      child: Container(
-                        padding: EdgeInsets.all(Space.md),
-                        child: ListTile(
-                          title: Text(
-                            posts[i]['title'],
-                            style: TextStyle(fontSize: Space.xl),
-                          ),
-                          subtitle: Text(
-                            posts[i]['content'],
-                            style: TextStyle(fontSize: Space.lg),
-                          ),
-                          trailing: IconButton(
-                              icon: Icon(Icons.edit),
-                              onPressed: () => Get.toNamed(RouteNames.forumEdit,
-                                  arguments: {'post': posts[i]})),
+                physics: NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                itemCount: posts.length,
+                itemBuilder: (c, i) {
+                  return Container(
+                    color: Colors.grey[300],
+                    margin: EdgeInsets.all(Space.pageWrap),
+                    child: Container(
+                      padding: EdgeInsets.all(Space.md),
+                      child: ListTile(
+                        title: Text(
+                          posts[i]['title'],
+                          style: TextStyle(fontSize: Space.xl),
                         ),
+                        subtitle: Text(
+                          posts[i]['content'],
+                          style: TextStyle(fontSize: Space.lg),
+                        ),
+                        trailing: IconButton(
+                            icon: Icon(Icons.edit),
+                            onPressed: () => Get.toNamed(RouteNames.forumEdit,
+                                arguments: {'post': posts[i]})),
                       ),
-                    );
-                  })
+                    ),
+                  );
+                },
+              ),
             ],
           ),
         ),
