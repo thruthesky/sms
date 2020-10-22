@@ -21,20 +21,74 @@ class _PostState extends State<Post> {
   final UserController userController = Get.find();
   final firestoreInstance = FirebaseFirestore.instance;
 
-  CollectionReference colPosts;
-  CollectionReference colLikes;
-
   onVoteTap(String choice) async {
     print('onVoteTap::choice => $choice');
+    String docID = widget.post.id + '-' + userController.uid;
 
-    /// TODO: VOTE SET/UPDATE
-  }
+    /// vote document reference from the `likes` collection
+    DocumentReference voteRef = firestoreInstance.doc('likes/$docID');
+    DocumentSnapshot docSnapshot = await voteRef.get();
+    Map<String, dynamic> docData = docSnapshot.data();
 
-  @override
-  void initState() {
-    colPosts = firestoreInstance.collection('posts');
-    colLikes = firestoreInstance.collection('likes');
-    super.initState();
+    /// TODO: Vote document set/update
+    ///
+    /// Scenario:
+    /// 3. CREATE if the document DO NOT exists.
+    /// 2. UPDATE if the document exists but the choice is NOT the same.
+    /// 1. DELETE if the document exists and the choice is the same, .
+    if (!docData.isNull && docData['vote'] == choice) {
+      print('delete');
+      voteRef.delete();
+    } else {
+      print('create/update');
+      voteRef.set({
+        'uid': userController.uid,
+        'id': widget.post.id,
+        'vote': choice,
+      });
+    }
+
+    // print('docData');
+    // print(docData);
+
+    /// TODO: updating like and dislike property of post document.
+    voteRef.snapshots().listen((DocumentSnapshot snapshot) {
+      print('voteRef.data()');
+      print(snapshot.data());
+
+      var data = {
+        'like': widget.post.like,
+        'dislike': widget.post.dislike,
+      };
+
+      /// if not null, then the user may have just voted or changed their choice.
+      ///
+      /// TODO: determine if the user just voted or they changed their choice.
+      if (!snapshot.isNull) {
+        data[choice]++;
+
+        /// if docData is not null, it contains the previous choice of the user's vote.
+        /// meaning the user is changing their vote choice.
+        if (!docData.isNull) {
+          data[docData['vote']]--;
+        }
+      }
+
+      /// if null then the user have chosen a vote already and then remove their choice.
+      else {
+        data[choice]--;
+      }
+
+      print('data');
+      print(data);
+
+      /// TODO: make sure to update have permission to update the post's data.
+      /// Firestore security rules must be considered.
+      firestoreInstance.doc('posts/${widget.post.id}').set(
+            data,
+            SetOptions(merge: true),
+          );
+    });
   }
 
   @override
@@ -83,7 +137,7 @@ class _PostState extends State<Post> {
                     );
 
                     if (confirm != null && confirm) {
-                      colPosts.doc(widget.post.id).delete();
+                      firestoreInstance.doc('posts/${widget.post.id}').delete();
                     }
                   },
                 ),
