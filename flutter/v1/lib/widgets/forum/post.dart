@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -20,6 +22,14 @@ class Post extends StatefulWidget {
 class _PostState extends State<Post> {
   final UserController userController = Get.find();
   final firestoreInstance = FirebaseFirestore.instance;
+
+  StreamSubscription voteRefSubscription;
+
+  @override
+  dispose() {
+    voteRefSubscription.cancel();
+    super.dispose();
+  }
 
   onVoteTap(String choice) async {
     print('onVoteTap::choice => $choice');
@@ -49,7 +59,8 @@ class _PostState extends State<Post> {
     }
 
     /// TODO: updating like and dislike property of post document.
-    voteRef.snapshots().listen((DocumentSnapshot snapshot) {
+    voteRefSubscription =
+        voteRef.snapshots().listen((DocumentSnapshot snapshot) {
       Map<String, dynamic> data = {
         'uid': widget.post.uid,
         'like': widget.post.like,
