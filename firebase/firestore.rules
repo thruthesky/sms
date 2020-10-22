@@ -137,9 +137,9 @@ service cloud.firestore {
           && exists(/databases/$(database)/documents/posts/$(postId)) // 글이 존재해야 하고
           && request.resource.data.order is string // order 가 문자열로 들어와야 하고,
           && request.resource.data.order.size() == 71 // order 가 71 글자 길이어야 한다.
-          && request.resource.data.depth is number // order 가 number 로 들어와야 하고,
+          && request.resource.data.depth is number // depth 가 number 로 들어와야 하고,
           && request.resource.data.depth > 0 && request.resource.data.depth <= 12 // 1 부터 12 사이의 값이어야 한다.
-          && mustBeZero('like') && mustBeZero('dislike')
+          // && mustBeZero('like') && mustBeZero('dislike')
           ;
 
         // 코멘트 수정 권한

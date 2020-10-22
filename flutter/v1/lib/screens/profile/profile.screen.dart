@@ -71,41 +71,48 @@ class _ProfileScreenState extends State<ProfileScreen> {
               Center(
                 child: Column(
                   children: [
-                    GestureDetector(
-                      child: ProfileImage(
-                        size: Space.xxxl,
-                      ),
-                      onTap: () async {
-                        try {
-                          /// select file.
-                          File file =
-                              await Service.pickImage(maxWidth: Space.xxxl);
-                          if (file == null) return;
-                          print('success: file picked: ${file.path}');
+                    Stack(
+                      children: [
+                        ProfileImage(
+                          size: Space.xxl,
+                          onTap: () async {
+                            try {
+                              /// select file.
+                              File file =
+                                  await Service.pickImage(maxWidth: Space.xxxl);
+                              if (file == null) return;
+                              print('success: file picked: ${file.path}');
 
-                          /// upload picked file,
-                          final url = await Service.uploadFile(
-                            'user-profile-photos/',
-                            file,
+                              /// upload picked file,
+                              final url = await Service.uploadFile(
+                                'profilePhotos/',
+                                file,
 
-                            /// update progress
-                            progress: (p) => setState(
-                              () {
-                                this.uploadProgress = p;
-                              },
-                            ),
-                          );
+                                /// update progress
+                                progress: (p) => setState(
+                                  () {
+                                    this.uploadProgress = p;
+                                  },
+                                ),
+                              );
 
-                          // update image url of current user.
-                          await userController.updatePhoto(url);
-                          setState(() => uploadProgress = 0);
-                          print('url: $url');
-                        } catch (e) {
-                          print('error on file pick: ');
-                          print(e);
-                          Service.error(e);
-                        }
-                      },
+                              // update image url of current user.
+                              await userController.updatePhoto(url);
+                              setState(() => uploadProgress = 0);
+                              print('url: $url');
+                            } catch (e) {
+                              print('error on file pick: ');
+                              print(e);
+                              Service.error(e);
+                            }
+                          },
+                        ),
+                        Positioned(
+                          child: Icon(Icons.camera_alt, size: Space.xl),
+                          bottom: Space.xxs,
+                          left: Space.xxs,
+                        )
+                      ],
                     ),
                     if (uploadProgress != 0) Text('$uploadProgress%')
                   ],

@@ -7,41 +7,49 @@ import 'package:v1/widgets/commons/spinner.dart';
 
 class ProfileImage extends StatelessWidget {
   final double size;
+  final Function onTap;
 
-  ProfileImage({this.size = 128});
+  ProfileImage({this.size = 128, this.onTap()});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: GetBuilder<UserController>(
-        builder: (user) {
-          print('User photo URL: ${user.photoUrl}');
-          return user.photoUrl != null
-              ? CachedNetworkImage(
-                  imageUrl: user.photoUrl,
-                  placeholder: (context, url) => CommonSpinner(),
-                  errorWidget: (context, url, error) => Icon(
-                    Icons.error,
-                    size: Space.xxxl,
-                  ),
-                  imageBuilder: (context, provider) {
-                    return CircleAvatar(
-                      backgroundImage: provider,
+    return GestureDetector(
+      child: Container(
+        child: GetBuilder<UserController>(
+          builder: (user) {
+            return user.photoUrl != null
+                ? CachedNetworkImage(
+                    imageUrl: user.photoUrl,
+                    placeholder: (context, url) => CommonSpinner(),
+                    errorWidget: (context, url, error) => CircleAvatar(
+                      backgroundColor: Colors.grey,
                       radius: size,
-                    );
-                  },
-                )
-              : CircleAvatar(
-                  backgroundColor: Colors.grey,
-                  radius: size,
-                  child: Icon(
-                    Icons.person,
-                    size: Space.xxxl,
-                    color: Colors.grey[300],
-                  ),
-                );
-        },
+                      child: Icon(
+                        Icons.error,
+                        size: Space.xxxl,
+                        color: Colors.grey[300],
+                      ),
+                    ),
+                    imageBuilder: (context, provider) {
+                      return CircleAvatar(
+                        backgroundImage: provider,
+                        radius: size,
+                      );
+                    },
+                  )
+                : CircleAvatar(
+                    backgroundColor: Colors.grey,
+                    radius: size,
+                    child: Icon(
+                      Icons.person,
+                      size: Space.xxxl,
+                      color: Colors.grey[300],
+                    ),
+                  );
+          },
+        ),
       ),
+      onTap: onTap,
     );
   }
 }
