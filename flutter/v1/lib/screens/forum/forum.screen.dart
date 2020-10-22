@@ -109,25 +109,52 @@ class _ForumScreenState extends State<ForumScreen> with AfterLayoutMixin {
                 shrinkWrap: true,
                 itemCount: posts.length,
                 itemBuilder: (c, i) {
+                  final post = posts[i];
                   return Container(
-                    color: Colors.grey[300],
                     margin: EdgeInsets.all(Space.pageWrap),
-                    child: Container(
-                      padding: EdgeInsets.all(Space.md),
-                      child: ListTile(
-                        title: Text(
-                          posts[i]['title'],
-                          style: TextStyle(fontSize: Space.xl),
+                    child: Column(
+                      children: [
+                        Container(
+                          color: Colors.grey[300],
+                          padding: EdgeInsets.all(Space.md),
+                          child: ListTile(
+                            title: Text(
+                              post['title'],
+                              style: TextStyle(fontSize: Space.xl),
+                            ),
+                            subtitle: Text(
+                              post['content'],
+                              style: TextStyle(fontSize: Space.lg),
+                            ),
+                            trailing: IconButton(
+                                icon: Icon(Icons.edit),
+                                onPressed: () => Get.toNamed(
+                                    RouteNames.forumEdit,
+                                    arguments: {'post': post})),
+                          ),
                         ),
-                        subtitle: Text(
-                          posts[i]['content'],
-                          style: TextStyle(fontSize: Space.lg),
+                        Row(
+                          children: [
+                            RaisedButton(
+                              onPressed: () {},
+                              child: Text('edit'),
+                            ),
+                            RaisedButton(
+                              onPressed: () {},
+                              child: Text('delete'),
+                            ),
+                            RaisedButton(
+                              onPressed: () {},
+                              child: Text('like'),
+                            ),
+                            RaisedButton(
+                              onPressed: () {},
+                              child: Text('dislike'),
+                            ),
+                          ],
                         ),
-                        trailing: IconButton(
-                            icon: Icon(Icons.edit),
-                            onPressed: () => Get.toNamed(RouteNames.forumEdit,
-                                arguments: {'post': posts[i]})),
-                      ),
+                        CommentEditForm(post: post)
+                      ],
                     ),
                   );
                 },
@@ -136,6 +163,37 @@ class _ForumScreenState extends State<ForumScreen> with AfterLayoutMixin {
           ),
         ),
       ),
+    );
+  }
+}
+
+class CommentEditForm extends StatefulWidget {
+  const CommentEditForm({
+    this.post,
+    Key key,
+  }) : super(key: key);
+
+  final post;
+
+  @override
+  _CommentEditFormState createState() => _CommentEditFormState();
+}
+
+class _CommentEditFormState extends State<CommentEditForm> {
+  final contentController = TextEditingController();
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        TextFormField(
+          controller: contentController,
+          decoration: InputDecoration(hintText: 'input comment'.tr),
+        ),
+        RaisedButton(
+          onPressed: () {},
+          child: Text('submit'),
+        )
+      ],
     );
   }
 }
