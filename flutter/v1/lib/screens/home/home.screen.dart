@@ -82,6 +82,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Text('Reminder'),
                   ),
                 ],
+                RaisedButton(
+                  onPressed: () => Get.toNamed(RouteNames.settings),
+                  child: Text('Settings'),
+                ),
                 for (var item in translations.keys)
                   Text('$item: ' + translations[item]['ko']),
               ],
