@@ -17,6 +17,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:v1/controllers/user.controller.dart';
 import 'package:v1/services/definitions.dart';
 import 'package:v1/services/functions.dart';
+import 'package:v1/services/models.dart';
 import 'package:v1/services/route-names.dart';
 import 'package:v1/services/translations.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
@@ -522,5 +523,9 @@ class Service {
     final url = await ref.getDownloadURL();
     print('DOWNLOAD URL : $url');
     return url;
+  }
+
+  static bool isMyPost(PostModel post) {
+    return post.uid == userController.uid;
   }
 }

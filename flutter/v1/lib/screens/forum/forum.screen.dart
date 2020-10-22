@@ -1,11 +1,16 @@
+import 'dart:async';
+
 import 'package:after_layout/after_layout.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:v1/services/functions.dart';
+import 'package:v1/services/models.dart';
 import 'package:v1/services/route-names.dart';
 import 'package:v1/services/service.dart';
 import 'package:v1/services/spaces.dart';
+import 'package:v1/widgets/commons/spinner.dart';
+import 'package:v1/widgets/forum/post.dart';
 
 class ForumScreen extends StatefulWidget {
   @override
@@ -16,9 +21,14 @@ class _ForumScreenState extends State<ForumScreen> with AfterLayoutMixin {
   final CollectionReference colPosts =
       FirebaseFirestore.instance.collection('posts');
 
-  String category;
-  List<Map<String, dynamic>> posts = [];
+  StreamSubscription subscription;
 
+  String category;
+  List<PostModel> posts = [];
+
+  bool noPostsYet = false;
+  bool noMorePost = false;
+  bool inLoading = false;
   int pageNo = 0;
 
   bool notification = false;
@@ -32,20 +42,18 @@ class _ForumScreenState extends State<ForumScreen> with AfterLayoutMixin {
   void afterFirstLayout(BuildContext context) async {
     final args = routerArguments(context);
     category = args['category'];
-    print('category ??: $category');
+    // print('category ??: $category');
 
     /// Scroll event handler
     scrollController.addListener(() {
       // Check if the screen is scrolled to the bottom.
-      /// TODO: give 200 distance from the bottom.
-      var isEnd =
-          scrollController.offset == scrollController.position.maxScrollExtent;
-      print('isEnd: $isEnd');
+      var isEnd = scrollController.offset >
+          (scrollController.position.maxScrollExtent - 200);
       // If yes, then get more posts.
-      if (isEnd) {
-        fetchPosts();
-      }
+      if (isEnd) fetchPosts();
     });
+
+    /// fetch posts for the first time.
     fetchPosts();
 
     if (Service.userController.isLoggedIn) {
@@ -66,45 +74,71 @@ class _ForumScreenState extends State<ForumScreen> with AfterLayoutMixin {
     }
   }
 
+  @override
+  dispose() {
+    /// unsubscribe from the stream to avoid having memory leak..
+    subscription.cancel();
+    super.dispose();
+  }
+
   fetchPosts() {
-    // if ( inLoading ) return;
+    if (inLoading || noMorePost) return;
+    setState(() => inLoading = true);
     pageNo++;
 
-    Query q = colPosts.where('category', isEqualTo: category);
-    q = q.orderBy('createdAt', descending: true);
-    if (posts.length > 0) {
-      q = q.startAfter([posts.last['createdAt']]);
-    }
-    q = q.limit(10);
+    Query postsQuery = colPosts.where('category', isEqualTo: category);
+    postsQuery = postsQuery.orderBy('createdAt', descending: true);
+    postsQuery = postsQuery.limit(10);
 
-    q.snapshots().listen((QuerySnapshot snapshot) {
-      print('>> docChanges: ');
+    if (posts.isNotEmpty) {
+      postsQuery = postsQuery.startAfter([posts.last.createdAt]);
+    }
+
+    subscription = postsQuery.snapshots().listen((QuerySnapshot snapshot) {
+      // print('>> docChanges: ');
       if (snapshot.size > 0) {
         snapshot.docChanges.forEach((DocumentChange documentChange) {
-          if (documentChange.type == DocumentChangeType.added) {
-            final data = documentChange.doc.data();
-            data['id'] = documentChange.doc.id;
+          final data = documentChange.doc.data();
+          data['id'] = documentChange.doc.id;
+          final post = PostModel.fromBackendData(data);
+          // print('Post:');
+          // print(post.toString());
+          // print('Document change type:');
+          // print(documentChange.type);
 
-            /// TODO: Add a newly created post on top.
-            if (pageNo == 1) {
-              posts.add(data);
-            } else {
-              posts.insert(0, data);
+          if (documentChange.type == DocumentChangeType.added) {
+            // NOTE: by this time, createdAt is null.
+            // then when the server finally added the server timestamp on the post, it will emit a 'modified' event instead of 'added'.
+            if (post.createdAt != null) {
+              posts.add(post);
             }
-            print('added a new doc:');
-            print(data);
+            inLoading = false;
           } else if (documentChange.type == DocumentChangeType.modified) {
-            final data = documentChange.doc.data();
-            data['id'] = documentChange.doc.id;
-            print('A document is updated:');
-            print(data);
-            final int i = posts.indexWhere((p) => p['id'] == data['id']);
-            posts[i] = data;
+            final int i = posts.indexWhere((p) => p.id == post.id);
+            if (i != -1) {
+              print('A document is updated:');
+              posts[i] = post;
+            } else {
+              print('A new document is added on top:');
+              if (posts.first.createdAt.seconds < post.createdAt.seconds) {
+                posts.insert(0, post);
+              }
+            }
           } else if (documentChange.type == DocumentChangeType.removed) {
-            print('Remove a post');
+            print('Removing post');
+            posts.removeWhere((p) => p.id == post.id);
           }
-          setState(() {});
         });
+        setState(() {});
+      } else {
+        if (pageNo == 1) {
+          noPostsYet = true;
+        } else {
+          noMorePost = true;
+        }
+
+        inLoading = false;
+        setState(() {});
       }
     });
   }
@@ -113,8 +147,15 @@ class _ForumScreenState extends State<ForumScreen> with AfterLayoutMixin {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("$category"),
+        title: Text('Forum'),
         actions: [
+          IconButton(
+            icon: Icon(Icons.add),
+            onPressed: () => Get.toNamed(
+              RouteNames.forumEdit,
+              arguments: {'category': category},
+            ),
+          ),
           IconButton(
               icon: notification == true
                   ? Icon(Icons.notifications_active)
@@ -135,46 +176,40 @@ class _ForumScreenState extends State<ForumScreen> with AfterLayoutMixin {
                 Service.usersRef.doc(Service.userController.user.uid).set({
                   "$topic": notification,
                 }, SetOptions(merge: true));
-              }),
+              })
         ],
       ),
-      body: SingleChildScrollView(
-        controller: scrollController,
-        child: Container(
-          child: Column(
-            children: [
-              RaisedButton(
-                  onPressed: () => Get.toNamed(RouteNames.forumEdit,
-                      arguments: {'category': category}),
-                  child: Text('Create')),
-              ListView.builder(
+      body: SafeArea(
+        child: SingleChildScrollView(
+          controller: scrollController,
+          child: Container(
+            child: Column(
+              children: [
+                ListView.builder(
                   physics: NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
                   itemCount: posts.length,
                   itemBuilder: (c, i) {
-                    return Container(
-                      color: Colors.grey[300],
-                      margin: EdgeInsets.all(Space.pageWrap),
-                      child: Container(
-                        padding: EdgeInsets.all(Space.md),
-                        child: ListTile(
-                          title: Text(
-                            posts[i]['title'],
-                            style: TextStyle(fontSize: Space.xl),
-                          ),
-                          subtitle: Text(
-                            posts[i]['content'],
-                            style: TextStyle(fontSize: Space.lg),
-                          ),
-                          trailing: IconButton(
-                              icon: Icon(Icons.edit),
-                              onPressed: () => Get.toNamed(RouteNames.forumEdit,
-                                  arguments: {'post': posts[i]})),
-                        ),
-                      ),
-                    );
-                  })
-            ],
+                    return Post(post: posts[i]);
+                  },
+                ),
+                if (inLoading)
+                  Padding(
+                    padding: EdgeInsets.all(Space.md),
+                    child: CommonSpinner(),
+                  ),
+                if (noMorePost)
+                  Padding(
+                    padding: EdgeInsets.all(Space.md),
+                    child: Text('No more posts..'),
+                  ),
+                if (noPostsYet)
+                  Padding(
+                    padding: EdgeInsets.all(Space.md),
+                    child: Text('No posts yet..'),
+                  ),
+              ],
+            ),
           ),
         ),
       ),
