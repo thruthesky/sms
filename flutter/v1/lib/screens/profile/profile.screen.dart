@@ -7,7 +7,6 @@ import 'package:v1/controllers/user.controller.dart';
 import 'package:v1/services/service.dart';
 import 'package:v1/services/spaces.dart';
 import 'package:v1/widgets/user/birthday-picker.dart';
-import 'package:v1/widgets/commons/photo-picker.dart';
 import 'package:v1/widgets/user/profile-image.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -31,6 +30,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   DateTime birthDate;
 
   bool loading = false;
+  double uploadProgress = 0;
 
   @override
   void initState() {
@@ -69,20 +69,46 @@ class _ProfileScreenState extends State<ProfileScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Center(
-                child: GestureDetector(
-                  child: ProfileImage(
-                    size: Space.xxxl,
-                  ),
-                  onTap: () async {
-                    try {
-                      File file = await Service.pickImage();
-                      print('success: file picked: ${file.path}');
-                    } catch (e) {
-                      print('error on file pick: ');
-                      print(e);
-                      Service.error(e);
-                    }
-                  },
+                child: Column(
+                  children: [
+                    GestureDetector(
+                      child: ProfileImage(
+                        size: Space.xxxl,
+                      ),
+                      onTap: () async {
+                        try {
+                          /// select file.
+                          File file =
+                              await Service.pickImage(maxWidth: Space.xxxl);
+                          if (file == null) return;
+                          print('success: file picked: ${file.path}');
+
+                          /// upload picked file,
+                          final url = await Service.uploadFile(
+                            'user-profile-photos/',
+                            file,
+
+                            /// update progress
+                            progress: (p) => setState(
+                              () {
+                                this.uploadProgress = p;
+                              },
+                            ),
+                          );
+
+                          // update image url of current user.
+                          await userController.updatePhoto(url);
+                          setState(() => uploadProgress = 0);
+                          print('url: $url');
+                        } catch (e) {
+                          print('error on file pick: ');
+                          print(e);
+                          Service.error(e);
+                        }
+                      },
+                    ),
+                    if (uploadProgress != 0) Text('$uploadProgress%')
+                  ],
                 ),
               ),
               SizedBox(height: Space.md),

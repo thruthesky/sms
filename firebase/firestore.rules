@@ -54,10 +54,16 @@ service cloud.firestore {
       }
     }
 
-    // 카테고리. 모든 회원이 읽을 수 있지만, 관리자만 쓰기 가능.
+    // Category rules
+    //
+    // Read: by anyone.
+    // Create, Update, Delete: admin only.
+    // Category document id must be same of the `id` field.
+    // Admin cannot update `id`.
     match /categories/{category} {
       allow read: if true;
-      allow create, delete: if admin();
+      allow create: if admin() && category == req('id') && hasAll(['id', 'title', 'description']);
+      allow delete: if admin();
       allow update: if admin() && notUpdating('id');
     }
 
@@ -67,14 +73,19 @@ service cloud.firestore {
       allow read: if true;
 
 
-      // 생성
-      // - 로그인을 했으면, 도큐먼트 생성 가능
-      // - 글 쓰기/수정에서 카테고리가 있어야 하며 존재 해야 함.
+      // Create a post
+      //
+      //
+      // input data
+      // uid: my uid. the user must login.
+      // category: category id. And the category must exist.
+      // createdAt: This is FieldValue.serverTimestamp(). required.
+      // updatedAt: This is FieldValue.serverTimestamp(). required.
+      // All other fields are optional. You can input title, content, and more.
       allow create: if login()
         && toBeMyDocument()
         && categoryExist()
-        && mustBeZero('like')
-        && mustBeZero('dislike');
+        && hasAll(['uid', 'category', 'createdAt', 'updatedAt']);
 
 
 
@@ -90,19 +101,22 @@ service cloud.firestore {
       //
       // - 다른 사람이 내 글을 수정하는 경우, 오직 'like' 와 'dislke' 만 수정 가능하다. 
       // - 자신 뿐만아니라 타인이 vote 할 수 있다.
+
+      // Update a post
+      //
+      // Condition 1. A user can update his post.
+      // Input params of [Condition 1]
+      // category: the category and is optional. If it has value, than it will change the category but the category must exising in category collection
+      // uid: the user uid and this is Optional. This value must be same with the value that is already saved in the document. Meaning it cannot be changed.
+      // updatedAt: This is FieldValue.serverTimestamp() and required, and must have different value from the value in the document.
+      // All other fields are optinal.
       allow update: if
-      (
-        myDocument() 
+      
+        myDocument()
+        && (notUpdating('uid'))
+        && req('updatedAt') != res('updatedAt')
         && categoryExist()
-        && notUpdating('uid')
-      )
-      || 
-      ( 
-        // 본인 뿐만 아니라 타인도 이 rule 로 vote
-        onlyUpdating(['like', 'dislike']) 
-        && updatingByOne('like') 
-        && updatingByOne('dislike')
-        )
+      
       ;
 
 
@@ -142,7 +156,8 @@ service cloud.firestore {
           ||
           (
           // 본인 뿐만 아니라 타인도 이 rule 로 vote
-            onlyUpdating(['like', 'dislike'])
+            // onlyUpdating(['like', 'dislike'])
+            (!req('category') && (req('like') || req('dislike')))
             && updatingByOne('like')
             && updatingByOne('dislike')
           )
@@ -185,6 +200,15 @@ service cloud.firestore {
         && ( request.auth.token.firebase.sign_in_provider != 'anonymous' );
     }
 
+    // Returns the data of the `field` is in the resource.request.data
+    function req(field) {
+      return request.resource.data[field];
+    }
+    // Returns the data of the `field` is in the resource.data
+    function res(field) {
+      return resource.data[field];
+    }
+
     // 필드를 변경하지 못하게 검사
     //
     // request data 에 field 가 없거나, 있다면, 저장되어져 있는 값과 동일해야 한다.
@@ -224,9 +248,11 @@ service cloud.firestore {
     // 특정 값만 업데이트하는지 확인
     //
     // 예) onlyUpdating(['like', 'dislike']);
-    function onlyUpdating(fields) {
-      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(fields);
-    }
+    // function onlyUpdating(fields) {
+    //   return request.resource.data.diff(resource.data).affectedKeys().hasOnly(fields);
+    // }
+
+
 
     // 특정 필드에 대한 증감 값 확인
     //
@@ -256,6 +282,12 @@ service cloud.firestore {
     //   return exists(/databases/$(database)/documents/posts/$(request.resource.data.postId));
     // }
 
+    // Check if all the fields are exist in request.
+    //
+    // If request does not contain any of the fields, it fails.
+    function hasAll(fields) {
+      return (request.resource.data.keys().hasAll(fields));
+    }
   }
 
 

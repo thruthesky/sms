@@ -1,75 +1,78 @@
 const firebase = require("@firebase/rules-unit-testing");
-const { setup, myAuth,  adminAuth, myUid, otherUid, } = require("./helper");
+const { setup, myAuth, adminAuth, myUid, otherUid } = require("./helper");
 
-
-/// 저장된 도큐먼트 ID 가 `user-uid`
-const adminMockData = {
-  "users/admin_uid": {
-      displayName: "user-name",
-      isAdmin: true,
-  },
-};
-
-describe("Category test", () => {
-  it('success on reading without login', async () => {
+describe("Category", () => {
+  it("Reading categories without login", async () => {
     const db = await setup();
-    const col = db.collection('categories');
+    const col = db.collection("categories");
     await firebase.assertSucceeds(col.limit(10).get());
   });
 
-  it('fail on creating without login', async () => {
-    const db = await setup();
-    const col = db.collection('categories');
-    await firebase.assertFails(col.add({ id: 'abc' }));
-  });
-
-  it('fail on creating with non-admin account.', async () => {
-    const db = await setup({ uid: otherUid });
-    const col = db.collection('categories');
-    await firebase.assertFails(col.add({ id: 'abc' }));
-  });
-
-  it('success on creating a category with admin account.', async () => {
-    const db = await setup(adminAuth, adminMockData);
-    const doc = db.collection('categories').doc('abc');
-    await firebase.assertSucceeds(doc.set({ id: 'abc', title: 'alphabet' }));
-  });
-
-  it('failed on updating a category with non-admin account.', async () => {
+  it("Reading a category with non-admin account.", async () => {
     const db = await setup(myAuth);
-    const doc = db.collection('categories').doc('abc');
-    await firebase.assertFails(doc.update({ title: 'updated title' }));
-  });
-
-  it('success on reading a category with non-admin account.', async () => {
-    const db = await setup(myAuth);
-    const doc = db.collection('categories').doc('abc');
+    const doc = db.collection("categories").doc("abc");
     await firebase.assertSucceeds(doc.get());
   });
 
-  it('fail on changing a category id with admin account.', async () => {
-    const db = await setup(adminAuth, Object.assign(adminMockData, {
-        'categories/abc': {
-            id: 'abc',
-            title: 'alphabet',
-        }
-    })
-    );
-    const doc = db.collection('categories').doc('abc');
-    await firebase.assertFails(doc.update({ id: 'change-should-be-denied' }));
+  it("Creating without login", async () => {
+    const db = await setup();
+    const col = db.collection("categories");
+    await firebase.assertFails(col.add({ id: "abc" }));
   });
 
-  it('success on updating with same id but different title with admin account.', async () => {
-    const db = await setup(adminAuth, Object.assign(adminMockData, {
-        'categories/abc': {
-            id: 'abc',
-            title: 'alphabet',
-        }
-    })
-    );
-    const doc = db.collection('categories').doc('abc');
-    await firebase.assertSucceeds(doc.update({ id: 'abc', title: 'new title' }));
+  it("Creating with non-admin account should fail.", async () => {
+    const db = await setup({ uid: otherUid });
+    const col = db.collection("categories");
+    await firebase.assertFails(col.add({ id: "abc" }));
   });
 
+  it("Creating a category with admin account but missing some fields should fail", async () => {
+    const db = await setup(adminAuth);
+    const doc = db.collection("categories").doc("abc");
+    await firebase.assertFails(doc.set({ id: "abc", title: "alphabet" }));
+  });
 
+  it("Creating a category with admin account should success", async () => {
+    const db = await setup(adminAuth);
+    const doc = db.collection("categories").doc("abc");
+    await firebase.assertSucceeds(
+      doc.set({ id: "abc", title: "title", description: "desc" })
+    );
+  });
+
+  it("Different id field value from category document id should failed", async () => {
+    const db = await setup(adminAuth);
+    const doc = db.collection("categories").doc("abc");
+    await firebase.assertFails(
+      doc.set({ id: "wrong-id", title: "title", description: "desc" })
+    );
+  });
+
+  it("Updating a category with non-admin account should fail", async () => {
+    const db = await setup(myAuth);
+    const doc = db.collection("categories").doc("abc");
+    await firebase.assertFails(doc.update({ title: "updated title" }));
+  });
+
+  it("Changing id with admin account should fail.", async () => {
+    const db = await setup(adminAuth, {
+      "categories/abc": {
+        id: "abc",
+        title: "alphabet"
+      }
+    });
+    const doc = db.collection("categories").doc("abc");
+    await firebase.assertFails(doc.update({ id: "new-id" }));
+  });
+
+  it("Updating title with same id with admin account.", async () => {
+    const db = await setup(adminAuth, {
+      "categories/abc": {
+        id: "abc",
+        title: "title"
+      }
+    });
+    const doc = db.collection("categories").doc("abc");
+    await firebase.assertSucceeds(doc.update({ title: "new title" }));
+  });
 });

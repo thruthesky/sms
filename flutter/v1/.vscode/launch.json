@@ -27,8 +27,13 @@
             "request": "launch",
             "type": "dart",
             "deviceId": "00008030-000904C80290802E"
+        },
+        {
+            "name": "iPhone 11 Pro Max",
+            "request": "launch",
+            "type": "dart",
+            "deviceId": "B33AA4A3-1FBA-4FC1-AC49-26465C64EB78"
         }
- 
     ],
     "compounds": [
         {
