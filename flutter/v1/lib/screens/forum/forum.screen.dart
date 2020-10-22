@@ -7,6 +7,7 @@ import 'package:v1/services/models.dart';
 import 'package:v1/services/route-names.dart';
 import 'package:v1/services/service.dart';
 import 'package:v1/services/spaces.dart';
+import 'package:v1/widgets/commons/confirm-dialog.dart';
 import 'package:v1/widgets/commons/spinner.dart';
 
 class ForumScreen extends StatefulWidget {
@@ -71,30 +72,32 @@ class _ForumScreenState extends State<ForumScreen> with AfterLayoutMixin {
           final data = documentChange.doc.data();
           data['id'] = documentChange.doc.id;
           final post = PostModel.fromBackendData(data);
+          print('Post:');
           print(post.toString());
-          print('Document change type');
+          print('Document change type:');
           print(documentChange.type);
 
           if (documentChange.type == DocumentChangeType.added) {
-            /// if post is not empty and first post's createdAt value is less than the incoming post's createdAt, add on top.
-            print('added a new doc:');
-            print(post.toString());
- 
-            if (posts.isNotEmpty &&
-                posts.first.createdAt.seconds < post.createdAt.seconds) {
-              posts.insert(0, post);
-            } else {
-              /// else, simply add the post to bottom, it may be an older post.
+            // NOTE: by this time, createdAt is null.
+            // then when the server finally added the servertimestamp on the post, it will emit a 'modified' event instead of 'added'.
+            if (post.createdAt != null) {
               posts.add(post);
             }
             inLoading = false;
           } else if (documentChange.type == DocumentChangeType.modified) {
-            print('A document is updated:');
             final int i = posts.indexWhere((p) => p.id == post.id);
-            if (i != -1) posts[i] = post;
+            if (i != -1) {
+              print('A document is updated:');
+              posts[i] = post;
+            } else {
+              print('A new document is added on top:');
+              if (posts.first.createdAt.seconds < post.createdAt.seconds) {
+                posts.insert(0, post);
+              }
+            }
           } else if (documentChange.type == DocumentChangeType.removed) {
             print('Removing post');
-            posts.retainWhere((p) => p.id == post.id);
+            posts.removeWhere((p) => p.id == post.id);
           }
         });
         setState(() {});
@@ -134,38 +137,59 @@ class _ForumScreenState extends State<ForumScreen> with AfterLayoutMixin {
                     return Container(
                       color: Colors.grey[300],
                       margin: EdgeInsets.all(Space.pageWrap),
-                      child: Container(
-                        padding: EdgeInsets.all(Space.md),
-                        child: ListTile(
-                          title: Text(
-                            posts[i].title,
-                            style: TextStyle(fontSize: Space.xl),
+                      child: Column(
+                        children: [
+                          ListTile(
+                            contentPadding: EdgeInsets.all(Space.md),
+                            title: Text(
+                              posts[i].title,
+                              style: TextStyle(fontSize: Space.xl),
+                            ),
+                            subtitle: Text(
+                              posts[i].content,
+                              style: TextStyle(fontSize: Space.lg),
+                            ),
                           ),
-                          subtitle: Text(
-                            posts[i].content,
-                            style: TextStyle(fontSize: Space.lg),
-                          ),
-                          trailing: Service.isMyPost(posts[i])
-                              ? Wrap(
-                                  children: [
-                                    IconButton(
-                                      icon: Icon(Icons.edit),
-                                      onPressed: () => Get.toNamed(
-                                        RouteNames.forumEdit,
-                                        arguments: {'post': posts[i]},
-                                      ),
-                                    ),
-                                    IconButton(
-                                      icon: Icon(Icons.delete),
-                                      onPressed: () {
-                                        /// TODO: confirm message
-                                        colPosts.doc(posts[i].id).delete();
-                                      },
-                                    ),
-                                  ],
-                                )
-                              : null,
-                        ),
+                          Row(
+                            children: [
+                              IconButton(
+                                icon: Icon(Icons.thumb_up),
+                                onPressed: () {
+                                  print('like');
+                                },
+                              ),
+                              Text(posts[i].like.toString()),
+                              IconButton(
+                                icon: Icon(Icons.thumb_down),
+                                onPressed: () {
+                                  print('dislike');
+                                },
+                              ),
+                              Text(posts[i].dislike.toString()),
+                              if (Service.isMyPost(posts[i])) ...[
+                                IconButton(
+                                  icon: Icon(Icons.edit),
+                                  onPressed: () => Get.toNamed(
+                                    RouteNames.forumEdit,
+                                    arguments: {'post': posts[i]},
+                                  ),
+                                ),
+                                IconButton(
+                                  icon: Icon(Icons.delete),
+                                  onPressed: () async {
+                                    bool confirm = await Get.dialog(
+                                      ConfirmDialog(title: 'Delete Post?'.tr),
+                                    );
+
+                                    if (confirm != null && confirm) {
+                                      colPosts.doc(posts[i].id).delete();
+                                    }
+                                  },
+                                ),
+                              ]
+                            ],
+                          )
+                        ],
                       ),
                     );
                   },
