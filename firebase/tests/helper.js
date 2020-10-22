@@ -10,6 +10,7 @@ const otherUid = "other_uid";
 
 // Fake User Auth Data
 const myAuth = { uid: myUid, email: "my-email@gmail.com" };
+const otherAuth = { uid: otherUid, email: "other-email@gmail.com" };
 
 // admin User UID
 const adminUid = "admin_uid";
