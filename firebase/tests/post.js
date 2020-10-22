@@ -1,100 +1,206 @@
-const { assertFails, assertSucceeds } = require("@firebase/rules-unit-testing");
-const { setup, myAuth, myUid, otherUid } = require("./helper");
-const tokenId = "token-1";
+const {
+  assertFails,
+  assertSucceeds,
+  firestore
+} = require("@firebase/rules-unit-testing");
+const { setup, myAuth, myUid, otherAuth, otherUid } = require("./helper");
 
-const mockData = {
-  "posts/post-id-1": {
-      uid: myUid,
-      title: "this is the title."
+const postId = "post-id-1";
+const category = "apple";
+
+const mockMyPost = {
+  ["posts/" + postId]: {
+    uid: myUid,
+    category: category,
+    title: "this is the title.",
+    createdAt: 1,
+    updatedAt: 2
   },
-  'categories/apple': {
-      title: 'Apple',
+  ["categories/" + category]: {
+    title: "Apple"
   },
+  ["categories/banana"]: {
+    title: "Banana"
+  }
 };
 
+const postData = {
+  uid: myAuth.uid,
+  title: "title",
+  category: "apple",
+  createdAt: 1,
+  updatedAt: 1
+};
 
-describe("Post Creation", () => {
+function data(obj) {
+  return Object.assign({}, postData, obj);
+}
+
+describe("Post", () => {
   /// Write without logging in
   it("Post create without login", async () => {
     const db = await setup();
-    const postsDoc = db
-      .collection("posts")
-      .doc('post-id-1')
-    await assertFails(postsDoc.set({ uid: 'my-id', title: 'title' }));
+    const postsDoc = db.collection("posts").doc(postId);
+    await assertFails(postsDoc.set({ uid: "my-id", title: "title" }));
   });
-    ///  Test creating a post with someone else's UID.
-    it("fail on creating a post with other user's uid", async() => {
-      const db = await setup(myAuth);
-      const postsCol = db.collection('posts');      
-    await assertFails(postsCol.add({ uid: 'other-uid', title: 'title' }));
-  });
-
-  it('fail on creating a post with login but without categories', async () => {
+  ///  Test creating a post with someone else's UID.
+  it("Creating a post with other user's uid should fail", async () => {
     const db = await setup(myAuth);
-    const postsCol = db.collection('posts');
-    await assertFails(postsCol.add({ uid: myAuth.uid, title: 'title' }));
+    const postsCol = db.collection("posts");
+    await assertFails(postsCol.add({ uid: "other-uid", title: "title" }));
   });
 
-  it('create success', async () => {
-    const db = await setup(myAuth, mockData);
-    const postsCol = db.collection('posts');
-    await assertSucceeds(postsCol.add({ uid: myAuth.uid, title: 'title', category: 'apple', like: 0, dislike: 0 }));
-  });
-  
-  it('fail on wrong category', async () => {
-    const db = await setup(myAuth, mockData);
-    const postsCol = db.collection('posts');
-    await assertFails(postsCol.add({ uid: myAuth.uid, title: 'title', category: 'wrong-category' }));
-  });
-
-  it('fail with array category', async () => {
+  it("Creating a post with login but without a category should fail", async () => {
     const db = await setup(myAuth);
-    const postsCol = db.collection('posts');
-    await assertFails(postsCol.add({ uid: myAuth.uid, title: 'title', category: ['abc'] }));
+    const postsCol = db.collection("posts");
+    await assertFails(postsCol.add({ uid: myAuth.uid, title: "title" }));
   });
 
-  it('fail on updating a post with wrong user', async () => {
-    const db = await setup({ uid: otherUid }, mockData);
-    const postsDoc = db.collection('posts')
-      .doc('post-id-1');
-    await assertFails(postsDoc.update({ uid: 'my-id', title: 'title' }));
+  it("Creating a post without createdAt should fails", async () => {
+    const db = await setup(myAuth, mockMyPost);
+    const postsCol = db.collection("posts");
+    await assertFails(
+      postsCol.add({
+        uid: myAuth.uid,
+        category: category,
+        like: 0,
+        dislike: 0,
+        updatedAt: 0
+      })
+    );
   });
 
-  it('fail on updating a post create by another user', async () => {
+  it("Creating a post without updatedAt should fails", async () => {
+    const db = await setup(myAuth, mockMyPost);
+    const postsCol = db.collection("posts");
+    await assertFails(
+      postsCol.add({
+        uid: myAuth.uid,
+        category: category,
+        like: 0,
+        dislike: 0,
+        createdAt: 0
+      })
+    );
+  });
+
+  it("Creating success", async () => {
+    const db = await setup(myAuth, mockMyPost);
+    const postsCol = db.collection("posts");
+    console.log(data());
+    await assertSucceeds(postsCol.add(data()));
+  });
+
+  it("Creating a post with a wrong category should fail", async () => {
+    const db = await setup(myAuth, mockMyPost);
+    const postsCol = db.collection("posts");
+    await assertFails(postsCol.add(data({ category: "wrong-category" })));
+  });
+
+  it("Creating a post with array category should fail", async () => {
+    const db = await setup(myAuth, mockMyPost);
+    const postsCol = db.collection("posts");
+
+    await assertFails(postsCol.add(data({ category: ["abc"] })));
+  });
+
+  it("Updating with updatedAt should success", async () => {
+    const db = await setup(myAuth, mockMyPost);
+    const postsDoc = db.collection("posts").doc(postId);
+    const d = { updatedAt: 3 };
+    await assertSucceeds(postsDoc.update(d));
+  });
+
+  it("Updating without updatedAt should fail", async () => {
+    const db = await setup(myAuth, mockMyPost);
+    const postsDoc = db.collection("posts").doc(postId);
+    await assertFails(postsDoc.update({}));
+  });
+
+  it("Updating uid property with my uid should success", async () => {
+    const db = await setup(myAuth, mockMyPost);
+    const postsDoc = db.collection("posts").doc(postId);
+
+    const d = {
+      uid: myUid,
+      updatedAt: 4
+    };
+    await assertSucceeds(postsDoc.update(d));
+  });
+
+  it("Updating uid property with other user uid should faile", async () => {
+    const db = await setup(myAuth, mockMyPost);
+    const postsDoc = db.collection("posts").doc(postId);
+
+    const d = {
+      uid: otherUid,
+      updatedAt: 5
+    };
+    await assertFails(postsDoc.update(d));
+  });
+
+  it("Updating with wrong category should fail", async () => {
+    const db = await setup(myAuth, mockMyPost);
+    const postsDoc = db.collection("posts").doc(postId);
+    await assertFails(
+      postsDoc.update({
+        category: "abc",
+        updatedAt: 6
+      })
+    );
+  });
+  it("Updating category", async () => {
+    const db = await setup(myAuth, mockMyPost);
+    const postsDoc = db.collection("posts").doc(postId);
+    await assertSucceeds(
+      postsDoc.update({
+        category: "apple",
+        updatedAt: 7
+      })
+    );
+    await assertSucceeds(
+      postsDoc.update({
+        category: "banana",
+        updatedAt: 8
+      })
+    );
+  });
+
+  it("Updating a post on other user should fail", async () => {
+    const db = await setup(otherAuth, mockMyPost);
+    const postsDoc = db.collection("posts").doc(postId);
+    await assertFails(
+      postsDoc.update({
+        updatedAt: 9
+      })
+    );
+  });
+
+  it("Updating a post created by another user", async () => {
     const db = await setup(myAuth, {
-        "posts/post-id-1": {
-            uid: otherUid,
-            title: "this is the title."
-        }
+      ["posts/" + postId]: {
+        uid: otherUid,
+        title: "this is the title."
+      }
     });
-    const postsDoc = db.collection('posts')
-      .doc('post-id-1');
-    await assertFails(postsDoc.update({ uid: myAuth.uid, title: 'title' }));
+    const postsDoc = db.collection("posts").doc(postId);
+    await assertFails(postsDoc.update({ uid: myAuth.uid, updatedAt: 10 }));
   });
 
-  it('updating my post', async () => {
-    const db = await setup(myAuth, mockData);
-    const postsDoc = db.collection('posts').doc('post-id-1')
-    await assertSucceeds(postsDoc.update({ uid: myAuth.uid, title: 'title', category: 'apple' }));
-  });
-
-  
   it("fail on deleting another's post", async () => {
     const db = await setup(myAuth, {
-        "posts/post-id-3": {
-            uid: "written-by-another-user",
-            title: "this is the title."
-        }
+      "posts/post-id-3": {
+        uid: "written-by-another-user",
+        title: "this is the title."
+      }
     });
-    const postsDoc = db.collection('posts').doc('post-id-3');
+    const postsDoc = db.collection("posts").doc("post-id-3");
     await assertFails(postsDoc.delete());
   });
 
-  
   it("success on deleting my post", async () => {
-    const db = await setup(myAuth, mockData);
-    const postsDoc = db.collection('posts').doc('post-id-1');
+    const db = await setup(myAuth, mockMyPost);
+    const postsDoc = db.collection("posts").doc("post-id-1");
     await assertSucceeds(postsDoc.delete());
   });
-
 });
