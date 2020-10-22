@@ -30,7 +30,7 @@ class _PostState extends State<Post> {
     DocumentSnapshot docSnapshot = await voteRef.get();
     Map<String, dynamic> docData = docSnapshot.data();
 
-    /// TODO: Vote document set/update
+    /// TODO: Vote document set/update/delete
     ///
     /// Scenario:
     /// 3. CREATE if the document DO NOT exists.
@@ -48,14 +48,8 @@ class _PostState extends State<Post> {
       });
     }
 
-    // print('docData');
-    // print(docData);
-
     /// TODO: updating like and dislike property of post document.
     voteRef.snapshots().listen((DocumentSnapshot snapshot) {
-      print('voteRef.data()');
-      print(snapshot.data());
-
       var data = {
         'like': widget.post.like,
         'dislike': widget.post.dislike,
@@ -79,10 +73,8 @@ class _PostState extends State<Post> {
         data[choice]--;
       }
 
-      print('data');
-      print(data);
-
       /// TODO: make sure to update have permission to update the post's data.
+      ///
       /// Firestore security rules must be considered.
       firestoreInstance.doc('posts/${widget.post.id}').set(
             data,
