@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:v1/services/functions.dart';
 import 'package:v1/services/models.dart';
 import 'package:v1/services/route-names.dart';
+import 'package:v1/services/service.dart';
 import 'package:v1/services/spaces.dart';
 import 'package:v1/widgets/commons/spinner.dart';
 
@@ -132,22 +133,23 @@ class _ForumScreenState extends State<ForumScreen> with AfterLayoutMixin {
                       child: Container(
                         padding: EdgeInsets.all(Space.md),
                         child: ListTile(
-                          title: Text(
-                            posts[i].title,
-                            style: TextStyle(fontSize: Space.xl),
-                          ),
-                          subtitle: Text(
-                            posts[i].content,
-                            style: TextStyle(fontSize: Space.lg),
-                          ),
-                          trailing: IconButton(
-                            icon: Icon(Icons.edit),
-                            onPressed: () => Get.toNamed(
-                              RouteNames.forumEdit,
-                              arguments: {'post': posts[i]},
+                            title: Text(
+                              posts[i].title,
+                              style: TextStyle(fontSize: Space.xl),
                             ),
-                          ),
-                        ),
+                            subtitle: Text(
+                              posts[i].content,
+                              style: TextStyle(fontSize: Space.lg),
+                            ),
+                            trailing: Service.isMyPost(posts[i])
+                                ? IconButton(
+                                    icon: Icon(Icons.edit),
+                                    onPressed: () => Get.toNamed(
+                                      RouteNames.forumEdit,
+                                      arguments: {'post': posts[i]},
+                                    ),
+                                  )
+                                : null),
                       ),
                     );
                   },
