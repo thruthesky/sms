@@ -3,8 +3,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:v1/services/functions.dart';
+import 'package:v1/services/models.dart';
 import 'package:v1/services/route-names.dart';
 import 'package:v1/services/spaces.dart';
+import 'package:v1/widgets/commons/spinner.dart';
 
 class ForumScreen extends StatefulWidget {
   @override
@@ -16,8 +18,10 @@ class _ForumScreenState extends State<ForumScreen> with AfterLayoutMixin {
       FirebaseFirestore.instance.collection('posts');
 
   String category;
-  List<Map<String, dynamic>> posts = [];
+  List<PostModel> posts = [];
 
+  bool noMorePost = false;
+  bool inLoading = false;
   int pageNo = 0;
 
   // 무제한 스크롤은 ScrollController 로 감지하고
@@ -34,56 +38,65 @@ class _ForumScreenState extends State<ForumScreen> with AfterLayoutMixin {
     /// Scroll event handler
     scrollController.addListener(() {
       // Check if the screen is scrolled to the bottom.
-      /// TODO: give 200 distance from the bottom.
-      var isEnd =
-          scrollController.offset == scrollController.position.maxScrollExtent;
-      print('isEnd: $isEnd');
+      var isEnd = scrollController.offset >
+          (scrollController.position.maxScrollExtent - 200);
       // If yes, then get more posts.
       if (isEnd) {
         fetchPosts();
       }
     });
+
+    /// fetch posts for the first time.
     fetchPosts();
   }
 
   fetchPosts() {
-    // if ( inLoading ) return;
+    if (inLoading || noMorePost) return;
+    setState(() => inLoading = true);
     pageNo++;
 
-    Query q = colPosts.where('category', isEqualTo: category);
-    q = q.orderBy('createdAt', descending: true);
-    if (posts.length > 0) {
-      q = q.startAfter([posts.last['createdAt']]);
-    }
-    q = q.limit(10);
+    Query postsQuery = colPosts.where('category', isEqualTo: category);
+    postsQuery = postsQuery.orderBy('createdAt', descending: true);
+    postsQuery = postsQuery.limit(10);
 
-    q.snapshots().listen((QuerySnapshot snapshot) {
-      print('>> docChanges: ');
+    if (posts.isNotEmpty) {
+      postsQuery = postsQuery.startAfter([posts.last.createdAt]);
+    }
+
+    postsQuery.snapshots().listen((QuerySnapshot snapshot) {
+      // print('>> docChanges: ');
       if (snapshot.size > 0) {
         snapshot.docChanges.forEach((DocumentChange documentChange) {
-          if (documentChange.type == DocumentChangeType.added) {
-            final data = documentChange.doc.data();
-            data['id'] = documentChange.doc.id;
+          final data = documentChange.doc.data();
+          data['id'] = documentChange.doc.id;
+          final post = PostModel.fromBackendData(data);
 
-            /// TODO: Add a newly created post on top.
-            if (pageNo == 1) {
-              posts.add(data);
+          if (documentChange.type == DocumentChangeType.added) {
+            /// if post is not empty and first post's createdAt value is less than the incoming post's createdAt, add on top.
+            if (posts.isNotEmpty &&
+                posts.first.createdAt.seconds < post.createdAt.seconds) {
+              posts.insert(0, post);
             } else {
-              posts.insert(0, data);
+              /// else, simply add the post to bottom, it may be an older post.
+              posts.add(post);
             }
+            inLoading = false;
             print('added a new doc:');
-            print(data);
+            print(data.toString());
           } else if (documentChange.type == DocumentChangeType.modified) {
-            final data = documentChange.doc.data();
-            data['id'] = documentChange.doc.id;
             print('A document is updated:');
-            print(data);
-            final int i = posts.indexWhere((p) => p['id'] == data['id']);
-            posts[i] = data;
+            print(data.toString());
+            final int i = posts.indexWhere((p) => p.id == post.id);
+            posts[i] = post;
           } else if (documentChange.type == DocumentChangeType.removed) {
             print('Remove a post');
           }
-          setState(() {});
+        });
+        setState(() {});
+      } else {
+        setState(() {
+          noMorePost = true;
+          inLoading = false;
         });
       }
     });
@@ -95,16 +108,20 @@ class _ForumScreenState extends State<ForumScreen> with AfterLayoutMixin {
       appBar: AppBar(
         title: Text('Forum'),
       ),
-      body: SingleChildScrollView(
-        controller: scrollController,
-        child: Container(
-          child: Column(
-            children: [
-              RaisedButton(
-                  onPressed: () => Get.toNamed(RouteNames.forumEdit,
-                      arguments: {'category': category}),
-                  child: Text('Create')),
-              ListView.builder(
+      body: SafeArea(
+        child: SingleChildScrollView(
+          controller: scrollController,
+          child: Container(
+            child: Column(
+              children: [
+                RaisedButton(
+                  onPressed: () => Get.toNamed(
+                    RouteNames.forumEdit,
+                    arguments: {'category': category},
+                  ),
+                  child: Text('Create'),
+                ),
+                ListView.builder(
                   physics: NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
                   itemCount: posts.length,
@@ -116,22 +133,37 @@ class _ForumScreenState extends State<ForumScreen> with AfterLayoutMixin {
                         padding: EdgeInsets.all(Space.md),
                         child: ListTile(
                           title: Text(
-                            posts[i]['title'],
+                            posts[i].title,
                             style: TextStyle(fontSize: Space.xl),
                           ),
                           subtitle: Text(
-                            posts[i]['content'],
+                            posts[i].content,
                             style: TextStyle(fontSize: Space.lg),
                           ),
                           trailing: IconButton(
-                              icon: Icon(Icons.edit),
-                              onPressed: () => Get.toNamed(RouteNames.forumEdit,
-                                  arguments: {'post': posts[i]})),
+                            icon: Icon(Icons.edit),
+                            onPressed: () => Get.toNamed(
+                              RouteNames.forumEdit,
+                              arguments: {'post': posts[i]},
+                            ),
+                          ),
                         ),
                       ),
                     );
-                  })
-            ],
+                  },
+                ),
+                if (inLoading)
+                  Padding(
+                    padding: EdgeInsets.all(Space.md),
+                    child: CommonSpinner(),
+                  ),
+                if (noMorePost)
+                  Padding(
+                    padding: EdgeInsets.all(Space.md),
+                    child: Text('No more posts..'),
+                  ),
+              ],
+            ),
           ),
         ),
       ),

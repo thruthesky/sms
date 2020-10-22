@@ -1,10 +1,10 @@
 import 'package:after_layout/after_layout.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:v1/controllers/user.controller.dart';
 import 'package:v1/services/functions.dart';
+import 'package:v1/services/models.dart';
 import 'package:v1/services/service.dart';
 
 class ForumEditScreen extends StatefulWidget {
@@ -22,7 +22,7 @@ class _ForumEditScreenState extends State<ForumEditScreen>
       FirebaseFirestore.instance.collection('posts');
 
   String category;
-  Map<String, dynamic> post;
+  PostModel post;
 
   @override
   void afterFirstLayout(BuildContext context) {
@@ -30,8 +30,8 @@ class _ForumEditScreenState extends State<ForumEditScreen>
     category = args['category'];
     post = args['post'];
     if (post != null) {
-      titleController.text = post['title'];
-      contentController.text = post['content'];
+      titleController.text = post.title;
+      contentController.text = post.content;
     }
   }
 
@@ -58,37 +58,38 @@ class _ForumEditScreenState extends State<ForumEditScreen>
                 controller: contentController,
                 decoration: InputDecoration(hintText: 'content'.tr)),
             RaisedButton(
-                onPressed: () async {
-                  try {
-                    final data = {
-                      'category': category,
-                      'title': titleController.text,
-                      'content': contentController.text,
-                      'uid': userController.uid,
-                      'like': 0,
-                      'dislike': 0,
-                    };
+              onPressed: () async {
+                try {
+                  final data = {
+                    'category': category,
+                    'title': titleController.text,
+                    'content': contentController.text,
+                    'uid': userController.uid,
+                    'like': 0,
+                    'dislike': 0,
+                  };
 
-                    // print('data: ');
-                    // print(data);
-                    if (post != null) {
-                      data['category'] = post['category'];
-                      await colPosts
-                          .doc(post['id'])
-                          .set(data, SetOptions(merge: true));
-
-                      data['updatedAt'] = FieldValue.serverTimestamp();
-                    } else {
-                      data['createdAt'] = FieldValue.serverTimestamp();
-                      data['updatedAt'] = FieldValue.serverTimestamp();
-                      await colPosts.add(data);
-                    }
-                    Get.back();
-                  } catch (e) {
-                    Service.error(e);
+                  // print('data: ');
+                  // print(data);
+                  if (post != null) {
+                    data['category'] = post.category;
+                    await colPosts.doc(post.id).set(
+                          data,
+                          SetOptions(merge: true),
+                        );
+                    data['updatedAt'] = FieldValue.serverTimestamp();
+                  } else {
+                    data['createdAt'] = FieldValue.serverTimestamp();
+                    data['updatedAt'] = FieldValue.serverTimestamp();
+                    await colPosts.add(data);
                   }
-                },
-                child: Text('submit'.tr)),
+                  Get.back();
+                } catch (e) {
+                  Service.error(e);
+                }
+              },
+              child: Text('submit'.tr),
+            ),
           ],
         ),
       ),
