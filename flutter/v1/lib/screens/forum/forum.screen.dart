@@ -79,6 +79,7 @@ class _ForumScreenState extends State<ForumScreen> with AfterLayoutMixin {
             /// if post is not empty and first post's createdAt value is less than the incoming post's createdAt, add on top.
             print('added a new doc:');
             print(post.toString());
+ 
             if (posts.isNotEmpty &&
                 posts.first.createdAt.seconds < post.createdAt.seconds) {
               posts.insert(0, post);
