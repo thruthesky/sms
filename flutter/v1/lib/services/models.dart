@@ -30,9 +30,6 @@ class PostModel {
   });
 
   factory PostModel.fromBackendData(dynamic data) {
-    print('PostModel.fromBackendData');
-    print(data.toString());
-
     return PostModel(
       id: data['id'],
       uid: data['uid'],

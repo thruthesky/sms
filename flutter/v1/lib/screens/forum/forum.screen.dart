@@ -5,10 +5,9 @@ import 'package:get/get.dart';
 import 'package:v1/services/functions.dart';
 import 'package:v1/services/models.dart';
 import 'package:v1/services/route-names.dart';
-import 'package:v1/services/service.dart';
 import 'package:v1/services/spaces.dart';
-import 'package:v1/widgets/commons/confirm-dialog.dart';
 import 'package:v1/widgets/commons/spinner.dart';
+import 'package:v1/widgets/forum/post.dart';
 
 class ForumScreen extends StatefulWidget {
   @override
@@ -35,7 +34,7 @@ class _ForumScreenState extends State<ForumScreen> with AfterLayoutMixin {
   void afterFirstLayout(BuildContext context) {
     final args = routerArguments(context);
     category = args['category'];
-    print('category ??: $category');
+    // print('category ??: $category');
 
     /// Scroll event handler
     scrollController.addListener(() {
@@ -43,9 +42,7 @@ class _ForumScreenState extends State<ForumScreen> with AfterLayoutMixin {
       var isEnd = scrollController.offset >
           (scrollController.position.maxScrollExtent - 200);
       // If yes, then get more posts.
-      if (isEnd) {
-        fetchPosts();
-      }
+      if (isEnd) fetchPosts();
     });
 
     /// fetch posts for the first time.
@@ -115,6 +112,15 @@ class _ForumScreenState extends State<ForumScreen> with AfterLayoutMixin {
     return Scaffold(
       appBar: AppBar(
         title: Text('Forum'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.add),
+            onPressed: () => Get.toNamed(
+              RouteNames.forumEdit,
+              arguments: {'category': category},
+            ),
+          )
+        ],
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -122,76 +128,12 @@ class _ForumScreenState extends State<ForumScreen> with AfterLayoutMixin {
           child: Container(
             child: Column(
               children: [
-                RaisedButton(
-                  onPressed: () => Get.toNamed(
-                    RouteNames.forumEdit,
-                    arguments: {'category': category},
-                  ),
-                  child: Text('Create'),
-                ),
                 ListView.builder(
                   physics: NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
                   itemCount: posts.length,
                   itemBuilder: (c, i) {
-                    return Container(
-                      color: Colors.grey[300],
-                      margin: EdgeInsets.all(Space.pageWrap),
-                      child: Column(
-                        children: [
-                          ListTile(
-                            contentPadding: EdgeInsets.all(Space.md),
-                            title: Text(
-                              posts[i].title,
-                              style: TextStyle(fontSize: Space.xl),
-                            ),
-                            subtitle: Text(
-                              posts[i].content,
-                              style: TextStyle(fontSize: Space.lg),
-                            ),
-                          ),
-                          Row(
-                            children: [
-                              IconButton(
-                                icon: Icon(Icons.thumb_up),
-                                onPressed: () {
-                                  print('like');
-                                },
-                              ),
-                              Text(posts[i].like.toString()),
-                              IconButton(
-                                icon: Icon(Icons.thumb_down),
-                                onPressed: () {
-                                  print('dislike');
-                                },
-                              ),
-                              Text(posts[i].dislike.toString()),
-                              if (Service.isMyPost(posts[i])) ...[
-                                IconButton(
-                                  icon: Icon(Icons.edit),
-                                  onPressed: () => Get.toNamed(
-                                    RouteNames.forumEdit,
-                                    arguments: {'post': posts[i]},
-                                  ),
-                                ),
-                                IconButton(
-                                  icon: Icon(Icons.delete),
-                                  onPressed: () async {
-                                    bool confirm = await Get.dialog(
-                                      ConfirmDialog(title: 'Delete Post?'.tr),
-                                    );
-
-                                    if (confirm != null && confirm) {
-                                      colPosts.doc(posts[i].id).delete();
-                                    }
-                                  },
-                                ),
-                              ]
-                            ],
-                          )
-                        ],
-                      ),
-                    );
+                    return Post(post: posts[i]);
                   },
                 ),
                 if (inLoading)
