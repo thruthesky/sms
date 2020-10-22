@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:after_layout/after_layout.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -18,9 +20,12 @@ class _ForumScreenState extends State<ForumScreen> with AfterLayoutMixin {
   final CollectionReference colPosts =
       FirebaseFirestore.instance.collection('posts');
 
+  StreamSubscription subscription;
+
   String category;
   List<PostModel> posts = [];
 
+  bool noPostsYet = false;
   bool noMorePost = false;
   bool inLoading = false;
   int pageNo = 0;
@@ -49,6 +54,13 @@ class _ForumScreenState extends State<ForumScreen> with AfterLayoutMixin {
     fetchPosts();
   }
 
+  @override
+  dispose() {
+    /// unsubscribe from the stream to avoid having memory leak..
+    subscription.cancel();
+    super.dispose();
+  }
+
   fetchPosts() {
     if (inLoading || noMorePost) return;
     setState(() => inLoading = true);
@@ -62,7 +74,7 @@ class _ForumScreenState extends State<ForumScreen> with AfterLayoutMixin {
       postsQuery = postsQuery.startAfter([posts.last.createdAt]);
     }
 
-    postsQuery.snapshots().listen((QuerySnapshot snapshot) {
+    subscription = postsQuery.snapshots().listen((QuerySnapshot snapshot) {
       // print('>> docChanges: ');
       if (snapshot.size > 0) {
         snapshot.docChanges.forEach((DocumentChange documentChange) {
@@ -99,10 +111,14 @@ class _ForumScreenState extends State<ForumScreen> with AfterLayoutMixin {
         });
         setState(() {});
       } else {
-        setState(() {
+        if (pageNo == 1) {
+          noPostsYet = true;
+        } else {
           noMorePost = true;
-          inLoading = false;
-        });
+        }
+
+        inLoading = false;
+        setState(() {});
       }
     });
   }
@@ -145,6 +161,11 @@ class _ForumScreenState extends State<ForumScreen> with AfterLayoutMixin {
                   Padding(
                     padding: EdgeInsets.all(Space.md),
                     child: Text('No more posts..'),
+                  ),
+                if (noPostsYet)
+                  Padding(
+                    padding: EdgeInsets.all(Space.md),
+                    child: Text('No posts yet..'),
                   ),
               ],
             ),

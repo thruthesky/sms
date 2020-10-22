@@ -50,7 +50,8 @@ class _PostState extends State<Post> {
 
     /// TODO: updating like and dislike property of post document.
     voteRef.snapshots().listen((DocumentSnapshot snapshot) {
-      var data = {
+      Map<String, dynamic> data = {
+        'uid': widget.post.uid,
         'like': widget.post.like,
         'dislike': widget.post.dislike,
       };
