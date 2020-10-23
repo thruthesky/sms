@@ -77,72 +77,67 @@ class _ForumScreenState extends State<ForumScreen> with AfterLayoutMixin {
 
     subscription = postsQuery.snapshots().listen((QuerySnapshot snapshot) {
       // print('>> docChanges: ');
-      if (snapshot.size > 0) {
-        /// TODO: this produce `Unhandled Exception: Unimplemented handling of missing static target` exception seldomly.
-        snapshot.docChanges.forEach((DocumentChange documentChange) {
-          final data = documentChange.doc.data();
-          data['id'] = documentChange.doc.id;
-          final post = PostModel.fromDocument(data);
 
-          // print('Post:');
-          // print(post.toString());
-          // print('Document change type:');
-          // print(documentChange.type);
+      // TODO: do we really need to handle for snapshot.size == 0?
+      // if (snapshot.size == 0) { // return;
 
-          if (documentChange.type == DocumentChangeType.added) {
-            /// [createdAt] is null only on author's app since it is cached locally.
-            /// `modified` event will be fired right after with proper timestamp.
-            /// This will not be null on other's app and there will be no `modified` event on other's app.
+      /// TODO: this produce `Unhandled Exception: Unimplemented handling of missing static target` exception seldomly.
+      snapshot.docChanges.forEach((DocumentChange documentChange) {
+        final data = documentChange.doc.data();
+        data['id'] = documentChange.doc.id;
+        final post = PostModel.fromDocument(data);
 
-            // posts.add(post);
-            if (post.createdAt == null) {
-              posts.insert(0, post);
-            } else if (posts.isNotEmpty &&
-                post.createdAt.microsecondsSinceEpoch >
-                    posts[0].createdAt.microsecondsSinceEpoch) {
-              posts.insert(0, post);
-            } else {
-              posts.add(post);
-            }
+        // print('Post:');
+        // print(post.toString());
+        // print('Document change type:');
+        // print(documentChange.type);
 
-            // if (post.createdAt != null) {
-            //   print('Crated AT: ${post.createdAt}');
-            //   posts.add(post);
-            // }
-
-            inLoading = false;
-          } else if (documentChange.type == DocumentChangeType.modified) {
-            final int i = posts.indexWhere((p) => p.id == post.id);
-            if (i > 0) {
-              posts[i] = post;
-            }
-
-            // if (i != -1) {
-            //   print('A document is updated:');
-            //   posts[i] = post;
-            // } else {
-            //   print('A new document is added on top:');
-            //   if (posts.first.createdAt.seconds < post.createdAt.seconds) {
-            //     posts.insert(0, post);
-            //   }
-            // }
-
-          } else if (documentChange.type == DocumentChangeType.removed) {
-            print('Removing post');
-            posts.removeWhere((p) => p.id == post.id);
+        if (documentChange.type == DocumentChangeType.added) {
+          /// [createdAt] is null only on author's app since it is cached locally.
+          /// [createdAt] will not be null on other's app and will have the biggest value among other posts.
+          /// `modified` event will be fired right after with proper timestamp.
+          /// This will not be null on other's app and there will be no `modified` event on other's app.
+          ///
+          if (post.createdAt == null) {
+            posts.insert(0, post);
+          } else if (posts.isNotEmpty &&
+              post.createdAt.microsecondsSinceEpoch >
+                  posts[0].createdAt.microsecondsSinceEpoch) {
+            posts.insert(0, post);
+          } else {
+            posts.add(post);
           }
-        });
-        setState(() {});
-      } else {
-        if (pageNo == 1) {
-          noPostsYet = true;
-        } else {
-          noMorePost = true;
-        }
 
-        inLoading = false;
-        setState(() {});
-      }
+          /// Realtime update for the comments of the post
+          /// @TODO: Make sure this will run only one time.
+          /// Or ... unsubscribe listener when it will listen again
+          commentsCollection(post.id)
+              .orderBy('order', descending: true)
+              .snapshots()
+              .listen((QuerySnapshot snapshot) {
+            snapshot.docChanges.forEach((DocumentChange commentsChange) {
+              // TODO: Do `CommentModel.fromDocument()`.
+              final commentData = commentsChange.doc.data();
+              print('commentData: $commentData');
+              post.comments.add(commentData);
+              setState(() {});
+            });
+          });
+
+          inLoading =
+              false; // will be set to false many times. but does't matter.
+
+        } else if (documentChange.type == DocumentChangeType.modified) {
+          final int i = posts.indexWhere((p) => p.id == post.id);
+          if (i > 0) {
+            posts[i] = post;
+          }
+        } else if (documentChange.type == DocumentChangeType.removed) {
+          print('Removing post');
+          posts.removeWhere((p) => p.id == post.id);
+        }
+      });
+      setState(() {});
     });
   }
 
@@ -221,6 +216,7 @@ class _ForumScreenState extends State<ForumScreen> with AfterLayoutMixin {
                           ],
                         ),
                         CommentEditForm(post: post),
+                        Comments(post: post),
                       ],
                     ),
                   );
@@ -281,7 +277,16 @@ class _CommentEditFormState extends State<CommentEditForm> {
               final data = {
                 'uid': user.uid,
                 'content': contentController.text,
-                'order': getCommentOrder(),
+
+                /// depth comes from parent.
+                /// order comes from
+                ///   - parent if there is no child of the parent.
+                /// 	- last comment of siblings.
+
+                'order': getCommentOrder(
+                    order: widget.post.comments.length > 0
+                        ? widget.post.comments.last['order']
+                        : null),
                 'depth': 0,
                 'createdAt': FieldValue.serverTimestamp(),
                 'updatedAt': FieldValue.serverTimestamp(),
@@ -295,6 +300,94 @@ class _CommentEditFormState extends State<CommentEditForm> {
           child: Text('submit'),
         )
       ],
+    );
+  }
+}
+
+class Comments extends StatefulWidget {
+  Comments({
+    this.post,
+  });
+  final PostModel post;
+  @override
+  _CommentsState createState() => _CommentsState();
+}
+
+class _CommentsState extends State<Comments> {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        for (int i = 0; i < widget.post.comments.length; i++)
+          Comment(post: widget.post, index: i),
+      ],
+    );
+  }
+}
+
+class Comment extends StatefulWidget {
+  final PostModel post;
+  final int index;
+  Comment({this.post, this.index, Key key}) : super(key: key);
+
+  @override
+  _CommentState createState() => _CommentState();
+}
+
+class _CommentState extends State<Comment> {
+  final contentController = TextEditingController();
+  final user = Get.find<UserController>();
+  var parent;
+
+  @override
+  void initState() {
+    parent = widget.post.comments[widget.index];
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Column(
+        children: [
+          Text("${widget.post.comments[widget.index]['content']}"),
+          TextFormField(
+            controller: contentController,
+            decoration: InputDecoration(hintText: 'input comment'.tr),
+          ),
+          RaisedButton(
+            onPressed: () async {
+              try {
+                // final postDoc = postDocument(widget.post.id);
+                final commentCol = commentsCollection(widget.post.id);
+                print('ref.path: ' + commentCol.path.toString());
+                final data = {
+                  'uid': user.uid,
+                  'content': contentController.text,
+
+                  /// depth comes from parent.
+                  /// order comes from
+                  ///   - parent if there is no child of the parent.
+                  /// 	- last comment of siblings.
+
+                  'order': getCommentOrder(
+                    order: parent['order'],
+                    depth: parent['depth'] + 1,
+                  ),
+                  'depth': parent['depth'] + 1,
+                  'createdAt': FieldValue.serverTimestamp(),
+                  'updatedAt': FieldValue.serverTimestamp(),
+                };
+                print(data);
+                await commentCol.add(data);
+              } catch (e) {
+                Service.error(e);
+              }
+            },
+            child: Text('submit'.tr),
+          ),
+        ],
+      ),
     );
   }
 }

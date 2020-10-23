@@ -16,7 +16,7 @@ class PostModel {
   Timestamp createdAt;
   Timestamp updatedAt;
 
-  List<dynamic> comment = [];
+  List<dynamic> comments = [];
 
   PostModel({
     this.id,
