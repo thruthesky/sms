@@ -164,7 +164,7 @@ class _ForumScreenState extends State<ForumScreen> with AfterLayoutMixin {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Forum'),
+        title: Text("$category".tr),
         actions: [
           IconButton(
             icon: Icon(Icons.add),

@@ -26,10 +26,24 @@ class _AdminPushNotificationScreenState
   final titleController = TextEditingController();
   final bodyController = TextEditingController();
 
-  Mode mode = Mode.create;
+  List<Map<String, dynamic>> categoryName = [
+    {'name': 'All Topic', 'code': 'allTopic'}
+  ];
+  String selectedItem = 'allTopic';
 
   @override
   void initState() {
+    categories = db.collection('categories');
+    categories.snapshots().listen((QuerySnapshot snapshot) {
+      if (snapshot.size == 0) return;
+      snapshot.docs.forEach((DocumentSnapshot document) {
+        final data = document.data();
+        categoryName.add(
+            {'name': data['id'], 'code': 'notification_post_' + data['id']});
+      });
+
+      print(categoryName);
+    });
     super.initState();
   }
 
@@ -42,36 +56,63 @@ class _AdminPushNotificationScreenState
       body: Container(
         padding: EdgeInsets.all(Space.pageWrap),
         child: user.isAdmin
-            ? Container(
-                child: Column(children: [
-                  Text('Send notification via Topic!'),
-                  TextFormField(
-                    key: ValueKey('topic'),
-                    controller: topicController,
-                    decoration: InputDecoration(labelText: "Topic"),
-                  ),
-                  TextFormField(
-                    key: ValueKey('title'),
-                    controller: titleController,
-                    decoration: InputDecoration(labelText: "Title"),
-                  ),
-                  TextFormField(
-                    key: ValueKey('body'),
-                    controller: bodyController,
-                    decoration: InputDecoration(labelText: "Body"),
-                  ),
-                  RaisedButton(
-                    child: Text("Submit"),
-                    onPressed: () async {
-                      /// send notification here
-                      Service().sendNotification(
-                        titleController.text,
-                        bodyController.text,
-                        topic: topicController.text,
-                      );
-                    },
-                  )
-                ]),
+            ? SingleChildScrollView(
+                child: Container(
+                  child: Column(children: [
+                    Text('Send notification via Topic!'),
+                    Text('Send notification via Topic!'),
+                    Text('Send notification via Topic!'),
+                    Text('Send notification via Topic!'),
+                    Text('Send notification via Topic!'),
+                    Text('Send notification via Topic!'),
+                    Text('Send notification via Topic!'),
+                    Text('Send notification via Topic!'),
+                    Row(
+                      children: [
+                        Text('Topic'),
+                        SizedBox(
+                          width: Space.lg,
+                        ),
+                        Expanded(
+                          child: DropdownButton<String>(
+                            isExpanded: true,
+                            value: selectedItem,
+                            onChanged: (String string) =>
+                                setState(() => selectedItem = string),
+                            items:
+                                categoryName.map((Map<String, dynamic> item) {
+                              return DropdownMenuItem<String>(
+                                child: Text(item['name']),
+                                value: item['code'],
+                              );
+                            }).toList(),
+                          ),
+                        )
+                      ],
+                    ),
+                    TextFormField(
+                      key: ValueKey('title'),
+                      controller: titleController,
+                      decoration: InputDecoration(labelText: "Title"),
+                    ),
+                    TextFormField(
+                      key: ValueKey('body'),
+                      controller: bodyController,
+                      decoration: InputDecoration(labelText: "Body"),
+                    ),
+                    RaisedButton(
+                      child: Text("Submit"),
+                      onPressed: () async {
+                        /// send notification here
+                        Service().sendNotification(
+                          titleController.text,
+                          bodyController.text,
+                          topic: selectedItem,
+                        );
+                      },
+                    )
+                  ]),
+                ),
               )
             : Text('You are not admin!'),
       ),
