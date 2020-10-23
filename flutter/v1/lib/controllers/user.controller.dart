@@ -57,8 +57,8 @@ class UserController extends GetxController {
         myDocument.snapshots().listen((DocumentSnapshot snapshot) {
           if (snapshot.exists) {
             userData = snapshot.data();
-            print('userData: ');
-            print(userData);
+            // print('userData: ');
+            // print(userData);
             update();
           }
         });
