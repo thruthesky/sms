@@ -4,13 +4,13 @@ import 'package:after_layout/after_layout.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:v1/controllers/user.controller.dart';
 import 'package:v1/services/functions.dart';
 import 'package:v1/services/models.dart';
 import 'package:v1/services/route-names.dart';
-import 'package:v1/services/service.dart';
 import 'package:v1/services/spaces.dart';
 import 'package:v1/widgets/commons/spinner.dart';
+import 'package:v1/widgets/forum/comment.edit.form.dart';
+import 'package:v1/widgets/forum/post.dart';
 
 class ForumScreen extends StatefulWidget {
   @override
@@ -58,7 +58,7 @@ class _ForumScreenState extends State<ForumScreen> with AfterLayoutMixin {
   @override
   dispose() {
     /// unsubscribe from the stream to avoid having memory leak..
-    subscription.cancel();
+    if (!subscription.isNull) subscription.cancel();
     super.dispose();
   }
 
@@ -154,53 +154,7 @@ class _ForumScreenState extends State<ForumScreen> with AfterLayoutMixin {
                 itemCount: posts.length,
                 itemBuilder: (c, i) {
                   final post = posts[i];
-                  return Container(
-                    margin: EdgeInsets.all(Space.pageWrap),
-                    child: Column(
-                      children: [
-                        Container(
-                          color: Colors.grey[300],
-                          padding: EdgeInsets.all(Space.md),
-                          child: ListTile(
-                            title: Text(
-                              post.title,
-                              style: TextStyle(fontSize: Space.xl),
-                            ),
-                            subtitle: Text(
-                              post.content,
-                              style: TextStyle(fontSize: Space.lg),
-                            ),
-                            trailing: IconButton(
-                                icon: Icon(Icons.edit),
-                                onPressed: () => Get.toNamed(
-                                    RouteNames.forumEdit,
-                                    arguments: {'post': post})),
-                          ),
-                        ),
-                        Row(
-                          children: [
-                            RaisedButton(
-                              onPressed: () {},
-                              child: Text('edit'),
-                            ),
-                            RaisedButton(
-                              onPressed: () {},
-                              child: Text('delete'),
-                            ),
-                            RaisedButton(
-                              onPressed: () {},
-                              child: Text('like'),
-                            ),
-                            RaisedButton(
-                              onPressed: () {},
-                              child: Text('dislike'),
-                            ),
-                          ],
-                        ),
-                        CommentEditForm(post: post)
-                      ],
-                    ),
-                  );
+                  return Post(post: post);
                 },
               ),
               if (inLoading)
@@ -222,54 +176,6 @@ class _ForumScreenState extends State<ForumScreen> with AfterLayoutMixin {
           ),
         ),
       ),
-    );
-  }
-}
-
-class CommentEditForm extends StatefulWidget {
-  const CommentEditForm({
-    this.post,
-    Key key,
-  }) : super(key: key);
-
-  final PostModel post;
-
-  @override
-  _CommentEditFormState createState() => _CommentEditFormState();
-}
-
-class _CommentEditFormState extends State<CommentEditForm> {
-  final contentController = TextEditingController();
-  final user = Get.find<UserController>();
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        TextFormField(
-          controller: contentController,
-          decoration: InputDecoration(hintText: 'input comment'.tr),
-        ),
-        RaisedButton(
-          onPressed: () async {
-            try {
-              // final postDoc = postDocument(widget.post.id);
-              final commentCol = commentsCollection(widget.post.id);
-              print('ref.path: ' + commentCol.path.toString());
-              final data = {
-                'uid': user.uid,
-                'content': contentController.text,
-                'order': '00001.001.000.000.000.000.000.000.000.000.000.000',
-                'depth': 0,
-              };
-              print(data);
-              await commentCol.add(data);
-            } catch (e) {
-              Service.error(e);
-            }
-          },
-          child: Text('submit'),
-        )
-      ],
     );
   }
 }

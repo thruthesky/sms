@@ -9,6 +9,8 @@ import 'package:v1/services/route-names.dart';
 import 'package:v1/services/service.dart';
 import 'package:v1/services/spaces.dart';
 import 'package:v1/widgets/commons/confirm-dialog.dart';
+import 'package:v1/widgets/forum/comment.edit.form.dart';
+import 'package:v1/widgets/forum/comment.list.dart';
 
 class Post extends StatefulWidget {
   final PostModel post;
@@ -25,9 +27,13 @@ class _PostState extends State<Post> {
 
   StreamSubscription voteRefSubscription;
 
+  bool showContent = false;
+
   @override
   dispose() {
-    voteRefSubscription.cancel();
+    if (!voteRefSubscription.isNull) {
+      voteRefSubscription.cancel();
+    }
     super.dispose();
   }
 
@@ -99,54 +105,62 @@ class _PostState extends State<Post> {
     return Container(
       color: Colors.grey[300],
       margin: EdgeInsets.all(Space.pageWrap),
+      padding: EdgeInsets.all(Space.md),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           ListTile(
-            contentPadding: EdgeInsets.all(Space.md),
-            title: Text(
-              widget.post.title,
-              style: TextStyle(fontSize: Space.xl),
-            ),
-            subtitle: Text(
-              widget.post.content,
-              style: TextStyle(fontSize: Space.lg),
-            ),
-          ),
-          Row(
-            children: [
-              IconButton(
-                icon: Icon(Icons.thumb_up),
-                onPressed: () => onVoteTap('like'),
-              ),
-              Text(widget.post.like.toString()),
-              IconButton(
-                icon: Icon(Icons.thumb_down),
-                onPressed: () => onVoteTap('dislike'),
-              ),
-              Text(widget.post.dislike.toString()),
-              if (Service.isMyPost(widget.post)) ...[
-                IconButton(
-                  icon: Icon(Icons.edit),
-                  onPressed: () => Get.toNamed(
-                    RouteNames.forumEdit,
-                    arguments: {'post': widget.post},
+            title:
+                Text(widget.post.title, style: TextStyle(fontSize: Space.xl)),
+            subtitle: widget.post.content.isEmpty
+                ? null
+                : Text(
+                    widget.post.content,
+                    style: TextStyle(fontSize: Space.lg),
                   ),
-                ),
+            onTap: () => setState(() => showContent = true),
+          ),
+          if (showContent) ...[
+            Row(
+              children: [
                 IconButton(
-                  icon: Icon(Icons.delete),
-                  onPressed: () async {
-                    bool confirm = await Get.dialog(
-                      ConfirmDialog(title: 'Delete Post?'.tr),
-                    );
-
-                    if (confirm != null && confirm) {
-                      firestoreInstance.doc('posts/${widget.post.id}').delete();
-                    }
-                  },
+                  icon: Icon(Icons.thumb_up),
+                  onPressed: () => onVoteTap('like'),
                 ),
-              ]
-            ],
-          )
+                Text(widget.post.like.toString()),
+                IconButton(
+                  icon: Icon(Icons.thumb_down),
+                  onPressed: () => onVoteTap('dislike'),
+                ),
+                Text(widget.post.dislike.toString()),
+                if (Service.isMyPost(widget.post)) ...[
+                  IconButton(
+                    icon: Icon(Icons.edit),
+                    onPressed: () => Get.toNamed(
+                      RouteNames.forumEdit,
+                      arguments: {'post': widget.post},
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.delete),
+                    onPressed: () async {
+                      bool confirm = await Get.dialog(
+                        ConfirmDialog(title: 'Delete Post?'.tr),
+                      );
+
+                      if (confirm != null && confirm) {
+                        firestoreInstance
+                            .doc('posts/${widget.post.id}')
+                            .delete();
+                      }
+                    },
+                  ),
+                ]
+              ],
+            ),
+            CommentEditForm(post: widget.post),
+            CommentList(post: widget.post),
+          ],
         ],
       ),
     );
