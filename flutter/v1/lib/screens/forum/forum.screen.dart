@@ -4,13 +4,13 @@ import 'package:after_layout/after_layout.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:v1/controllers/user.controller.dart';
 import 'package:v1/services/functions.dart';
 import 'package:v1/services/models.dart';
 import 'package:v1/services/route-names.dart';
+import 'package:v1/services/service.dart';
 import 'package:v1/services/spaces.dart';
 import 'package:v1/widgets/commons/spinner.dart';
-import 'package:v1/widgets/forum/comment.edit.form.dart';
-import 'package:v1/widgets/forum/post.dart';
 
 class ForumScreen extends StatefulWidget {
   @override
