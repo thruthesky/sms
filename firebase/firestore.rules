@@ -133,12 +133,17 @@ service cloud.firestore {
 
         // 코멘트 생성 권한
         // - 입력값: uid, content, depth, order. `post id` 는 필요 없음.
+        // Required: input params.
+        // uid
+        // depth
+        // order
+        // All others are options. Even comment content is optional.
         allow create: if login() && toBeMyDocument() // 내 코멘트이어야 하고
           && exists(/databases/$(database)/documents/posts/$(postId)) // 글이 존재해야 하고
           && request.resource.data.order is string // order 가 문자열로 들어와야 하고,
-          && request.resource.data.order.size() == 71 // order 가 71 글자 길이어야 한다.
+          && request.resource.data.order.size() == 49 // order 가 49 글자 길이어야 한다.
           && request.resource.data.depth is number // depth 가 number 로 들어와야 하고,
-          && request.resource.data.depth > 0 && request.resource.data.depth <= 12 // 1 부터 12 사이의 값이어야 한다.
+          && request.resource.data.depth >= 0 && request.resource.data.depth < 12 // from 0 to 11.
           // && mustBeZero('like') && mustBeZero('dislike')
           ;
 

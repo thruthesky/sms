@@ -6,6 +6,7 @@ import 'package:v1/controllers/user.controller.dart';
 import 'package:v1/services/route-names.dart';
 import 'package:v1/services/service.dart';
 import 'package:v1/services/translations.dart';
+import 'package:v1/tests/forum.test.dart';
 
 import 'package:v1/settings.dart' as App;
 
@@ -20,6 +21,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
+    ForumTest();
     super.initState();
   }
 

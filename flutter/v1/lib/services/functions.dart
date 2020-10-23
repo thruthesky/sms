@@ -5,6 +5,7 @@
 import 'dart:convert';
 import 'dart:io' as io;
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 
@@ -15,6 +16,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:flutter/services.dart' show rootBundle;
+
+CollectionReference postsCollection() {
+  return FirebaseFirestore.instance.collection('posts');
+}
+
+DocumentReference postDocument(String id) {
+  return postsCollection().doc(id);
+}
+
+CollectionReference commentsCollection(String postId) {
+  return postDocument(postId).collection('comments');
+}
+
+DocumentReference commentDocument(String postId, String commentId) {
+  return commentsCollection(postId).doc(commentId);
+}
 
 /// Returns a random string
 ///
