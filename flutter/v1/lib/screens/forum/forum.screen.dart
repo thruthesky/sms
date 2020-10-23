@@ -94,10 +94,12 @@ class _ForumScreenState extends State<ForumScreen> with AfterLayoutMixin {
             /// `modified` event will be fired right after with proper timestamp.
             /// This will not be null on other's app and there will be no `modified` event on other's app.
 
+            // posts.add(post);
             if (post.createdAt == null) {
               posts.insert(0, post);
             } else if (posts.isNotEmpty &&
-                post.createdAt.nanoseconds > posts[0].createdAt.nanoseconds) {
+                post.createdAt.microsecondsSinceEpoch >
+                    posts[0].createdAt.microsecondsSinceEpoch) {
               posts.insert(0, post);
             } else {
               posts.add(post);
