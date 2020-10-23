@@ -59,8 +59,7 @@ class _PostState extends State<Post> {
     }
 
     /// TODO: updating like and dislike property of post document.
-    voteRefSubscription =
-        voteRef.snapshots().listen((DocumentSnapshot snapshot) {
+    voteRefSubscription = voteRef.snapshots().listen((snapshot) async {
       Map<String, dynamic> data = {
         'uid': widget.post.uid,
         'like': widget.post.like,
@@ -86,12 +85,12 @@ class _PostState extends State<Post> {
       }
 
       /// TODO: make sure to update have permission to update the post's data.
-      ///
+      /// NOTE: This is not working with error: `cloud_firestore/permission-denied`
       /// Firestore security rules must be considered.
-      firestoreInstance.doc('posts/${widget.post.id}').set(
-            data,
-            SetOptions(merge: true),
-          );
+      // firestoreInstance.doc('posts/${widget.post.id}').set(
+      //       data,
+      //       SetOptions(merge: true),
+      //     );
     });
   }
 
