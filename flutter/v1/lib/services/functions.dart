@@ -17,20 +17,20 @@ import 'package:flutter/services.dart';
 
 import 'package:flutter/services.dart' show rootBundle;
 
-CollectionReference postCollection() {
+CollectionReference postsCollection() {
   return FirebaseFirestore.instance.collection('posts');
 }
 
 DocumentReference postDocument(String id) {
-  return postCollection().doc(id);
+  return postsCollection().doc(id);
 }
 
-CollectionReference commentCollection(String postId) {
+CollectionReference commentsCollection(String postId) {
   return postDocument(postId).collection('comments');
 }
 
 DocumentReference commentDocument(String postId, String commentId) {
-  return commentCollection(postId).doc(commentId);
+  return commentsCollection(postId).doc(commentId);
 }
 
 /// Returns a random string

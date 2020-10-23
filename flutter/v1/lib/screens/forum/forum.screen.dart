@@ -253,7 +253,7 @@ class _CommentEditFormState extends State<CommentEditForm> {
           onPressed: () async {
             try {
               // final postDoc = postDocument(widget.post.id);
-              final commentCol = commentCollection(widget.post.id);
+              final commentCol = commentsCollection(widget.post.id);
               print('ref.path: ' + commentCol.path.toString());
               final data = {
                 'uid': user.uid,
