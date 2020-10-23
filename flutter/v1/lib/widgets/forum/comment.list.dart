@@ -22,6 +22,7 @@ class _CommentListState extends State<CommentList> {
 
   @override
   void initState() {
+    print('commentList:initState');
     loadComments();
     super.initState();
   }
