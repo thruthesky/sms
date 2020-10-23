@@ -1,6 +1,8 @@
 /// @file library.dart
 ///
-/// This file has helper(utility) functions that are independant from the project.
+/// This file has helper(utility) functions that are independant from
+/// - `service.dart`
+/// - and the project.
 ///
 import 'dart:convert';
 import 'dart:io' as io;
@@ -16,6 +18,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:flutter/services.dart' show rootBundle;
+
+getCommentOrder({
+  String order,
+  int depth: 0,
+}) {
+  if (order == null) {
+    return '999999.999.999.999.999.999.999.999.999.999.999.999';
+  }
+  List<String> parts = order.split('.');
+  int n = int.parse(parts[depth]);
+  parts[depth] = (n - 1).toString();
+  for (int i = (depth + 1); i < parts.length; i++) {
+    parts[i] = '999';
+  }
+  return parts.join('.');
+}
 
 CollectionReference postsCollection() {
   return FirebaseFirestore.instance.collection('posts');
