@@ -251,7 +251,6 @@ $ firebase deploy --only firestore
 
 - 단, 소셜 로그인을 하는 경우, 로그인 직후 홈 화면으로 이동한다. 즉, 성별, 생년월일 등을 입력하지 않으므로, 사용자 도큐먼트가 생성되지 않는다. 즉, 로그인 사용자에 사용자 도큐먼트가 없을 수 있다.
 
-
 ### 언어 번역
 
 - 에러 메지를 번역 할 때 에러 코드를 키로 저장하면 된다.
@@ -278,3 +277,10 @@ $ firebase deploy --only firestore
 - Jiffy https://pub.dev/packages/jiffy
   날짜 변환 함수
 
+## 테스트
+
+- 코멘트 계층형 구조 테스트
+
+```
+ForumTest();
+```

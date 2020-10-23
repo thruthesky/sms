@@ -114,7 +114,7 @@ service cloud.firestore {
       
         myDocument()
         && (notUpdating('uid'))
-        && req('updatedAt') != res('updatedAt')
+        && req('updatedAt') > res('updatedAt')
         && categoryExist()
       
       ;
@@ -137,14 +137,16 @@ service cloud.firestore {
         // uid
         // depth
         // order
+        // createdAt
+        // updatedAt
         // All others are options. Even comment content is optional.
         allow create: if login() && toBeMyDocument() // 내 코멘트이어야 하고
           && exists(/databases/$(database)/documents/posts/$(postId)) // 글이 존재해야 하고
           && request.resource.data.order is string // order 가 문자열로 들어와야 하고,
-          && request.resource.data.order.size() == 49 // order 가 49 글자 길이어야 한다.
+          && request.resource.data.order.size() == 50 // order 가 49 글자 길이어야 한다.
           && request.resource.data.depth is number // depth 가 number 로 들어와야 하고,
           && request.resource.data.depth >= 0 && request.resource.data.depth < 12 // from 0 to 11.
-          // && mustBeZero('like') && mustBeZero('dislike')
+          && hasAll(['uid', 'createdAt', 'updatedAt', 'order', 'depth'])
           ;
 
         // 코멘트 수정 권한
@@ -277,9 +279,9 @@ service cloud.firestore {
         );
     }
 
-    function mustBeZero(field) {
-      return request.resource.data[field] is int && request.resource.data[field] == 0;
-    }
+    // function mustBeZero(field) {
+    //   return request.resource.data[field] is int && request.resource.data[field] == 0;
+    // }
 
     // 게시글이 존재하는지 검사한다.
     // 현재 액세스하려는 post document 가 실제로 존재하는 것인지 검사
