@@ -16,7 +16,7 @@ class PostModel {
   Timestamp createdAt;
   Timestamp updatedAt;
 
-  List<dynamic> comments = [];
+  List<CommentModel> comments = [];
 
   PostModel({
     this.id,
@@ -49,5 +49,36 @@ class PostModel {
   @override
   String toString() {
     return this.data.toString();
+  }
+}
+
+class CommentModel {
+  String id;
+  String uid;
+  String content;
+  String order;
+  int depth;
+  Timestamp createdAt;
+  Timestamp updatedAt;
+
+  CommentModel({
+    this.id,
+    this.uid,
+    this.content,
+    this.depth,
+    this.order,
+    this.createdAt,
+    this.updatedAt,
+  });
+  factory CommentModel.fromDocument(Map<String, dynamic> json) {
+    return CommentModel(
+      id: json['id'],
+      uid: json['uid'],
+      content: json['content'],
+      depth: json['depth'],
+      order: json['order'],
+      createdAt: json['createdAt'],
+      updatedAt: json['updatedAt'],
+    );
   }
 }

@@ -109,8 +109,7 @@ class _ForumScreenState extends State<ForumScreen> with AfterLayoutMixin {
           }
 
           /// Realtime update for the comments of the post
-          /// @TODO: Make sure this will run only one time.
-          /// Or ... unsubscribe listener when it will listen again
+          /// This will do only one time subscription since it is listening inside `added` event.
           commentsCollection(post.id)
               .orderBy('order', descending: true)
               .snapshots()
@@ -118,8 +117,18 @@ class _ForumScreenState extends State<ForumScreen> with AfterLayoutMixin {
             snapshot.docChanges.forEach((DocumentChange commentsChange) {
               // TODO: Do `CommentModel.fromDocument()`.
               final commentData = commentsChange.doc.data();
-              print('commentData: $commentData');
-              post.comments.add(commentData);
+              final newComment = CommentModel.fromDocument(commentData);
+              if (commentsChange.type == DocumentChangeType.added) {
+                /// TODO For comments loading on post view, it does not need to loop.
+                /// TODO Only for newly created comment needs to have loop and find a position to insert.
+                int found = post.comments
+                    .indexWhere((c) => c.order.compareTo(newComment.order) < 0);
+                if (found == -1) {
+                  post.comments.add(newComment);
+                } else {
+                  post.comments.insert(found, newComment);
+                }
+              }
               setState(() {});
             });
           });
@@ -248,10 +257,12 @@ class _ForumScreenState extends State<ForumScreen> with AfterLayoutMixin {
 class CommentEditForm extends StatefulWidget {
   const CommentEditForm({
     this.post,
+    this.commentIndex,
     Key key,
   }) : super(key: key);
 
   final PostModel post;
+  final int commentIndex;
 
   @override
   _CommentEditFormState createState() => _CommentEditFormState();
@@ -260,8 +271,48 @@ class CommentEditForm extends StatefulWidget {
 class _CommentEditFormState extends State<CommentEditForm> {
   final contentController = TextEditingController();
   final user = Get.find<UserController>();
+
+  CommentModel parent;
+
+  @override
+  initState() {
+    super.initState();
+  }
+
+  getCommentOrderOf() {
+    /// If it is the first depth of child.
+    if (parent == null) {
+      return getCommentOrder(
+          order: widget.post.comments.length > 0
+              ? widget.post.comments.last.order
+              : null);
+    }
+
+    int depth = parent.depth;
+    String depthOrder = parent.order.split('.')[depth];
+    print('depthOrder: $depthOrder');
+
+    int i = widget.commentIndex + 1;
+    for (i; i < widget.post.comments.length; i++) {
+      CommentModel c = widget.post.comments[i];
+      String findOrder = c.order.split('.')[depth];
+      if (depthOrder != findOrder) break;
+    }
+
+    final previousSiblingComment = widget.post.comments[i - 1];
+    print(
+        'previousSiblingComment: ${previousSiblingComment.content}, ${previousSiblingComment.order}');
+    return getCommentOrder(
+      order: previousSiblingComment.order,
+      depth: parent.depth + 1,
+      // previousSiblingComment.depth + 1,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (widget.commentIndex != null)
+      parent = widget.post.comments[widget.commentIndex];
     return Column(
       children: [
         TextFormField(
@@ -283,11 +334,8 @@ class _CommentEditFormState extends State<CommentEditForm> {
                 ///   - parent if there is no child of the parent.
                 /// 	- last comment of siblings.
 
-                'order': getCommentOrder(
-                    order: widget.post.comments.length > 0
-                        ? widget.post.comments.last['order']
-                        : null),
-                'depth': 0,
+                'depth': parent != null ? parent.depth + 1 : 0,
+                'order': getCommentOrderOf(),
                 'createdAt': FieldValue.serverTimestamp(),
                 'updatedAt': FieldValue.serverTimestamp(),
               };
@@ -319,7 +367,7 @@ class _CommentsState extends State<Comments> {
     return Column(
       children: [
         for (int i = 0; i < widget.post.comments.length; i++)
-          Comment(post: widget.post, index: i),
+          Comment(post: widget.post, commentIndex: i),
       ],
     );
   }
@@ -327,64 +375,29 @@ class _CommentsState extends State<Comments> {
 
 class Comment extends StatefulWidget {
   final PostModel post;
-  final int index;
-  Comment({this.post, this.index, Key key}) : super(key: key);
+  final int commentIndex;
+  Comment({this.post, this.commentIndex, Key key}) : super(key: key);
 
   @override
   _CommentState createState() => _CommentState();
 }
 
 class _CommentState extends State<Comment> {
-  final contentController = TextEditingController();
-  final user = Get.find<UserController>();
-  var parent;
-
-  @override
-  void initState() {
-    parent = widget.post.comments[widget.index];
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
+    CommentModel comment = widget.post.comments[widget.commentIndex];
     return Container(
       child: Column(
         children: [
-          Text("${widget.post.comments[widget.index]['content']}"),
-          TextFormField(
-            controller: contentController,
-            decoration: InputDecoration(hintText: 'input comment'.tr),
-          ),
-          RaisedButton(
-            onPressed: () async {
-              try {
-                // final postDoc = postDocument(widget.post.id);
-                final commentCol = commentsCollection(widget.post.id);
-                print('ref.path: ' + commentCol.path.toString());
-                final data = {
-                  'uid': user.uid,
-                  'content': contentController.text,
-
-                  /// depth comes from parent.
-                  /// order comes from
-                  ///   - parent if there is no child of the parent.
-                  /// 	- last comment of siblings.
-
-                  'order': getCommentOrder(
-                    order: parent['order'],
-                    depth: parent['depth'] + 1,
-                  ),
-                  'depth': parent['depth'] + 1,
-                  'createdAt': FieldValue.serverTimestamp(),
-                  'updatedAt': FieldValue.serverTimestamp(),
-                };
-                print(data);
-                await commentCol.add(data);
-              } catch (e) {
-                Service.error(e);
-              }
-            },
-            child: Text('submit'.tr),
+          Container(
+              margin: EdgeInsets.only(left: Space.md * comment.depth),
+              padding: EdgeInsets.all(Space.md),
+              width: double.infinity,
+              color: Colors.grey[300],
+              child: Text("${comment.content} ${comment.order}")),
+          CommentEditForm(
+            post: widget.post,
+            commentIndex: widget.commentIndex,
           ),
         ],
       ),
