@@ -117,8 +117,18 @@ class _ForumScreenState extends State<ForumScreen> with AfterLayoutMixin {
             snapshot.docChanges.forEach((DocumentChange commentsChange) {
               // TODO: Do `CommentModel.fromDocument()`.
               final commentData = commentsChange.doc.data();
-              print('commentData: $commentData');
-              post.comments.add(CommentModel.fromDocument(commentData));
+              final newComment = CommentModel.fromDocument(commentData);
+              if (commentsChange.type == DocumentChangeType.added) {
+                /// TODO For comments loading on post view, it does not need to loop.
+                /// TODO Only for newly created comment needs to have loop and find a position to insert.
+                int found = post.comments
+                    .indexWhere((c) => c.order.compareTo(newComment.order) < 0);
+                if (found == -1) {
+                  post.comments.add(newComment);
+                } else {
+                  post.comments.insert(found, newComment);
+                }
+              }
               setState(() {});
             });
           });
@@ -247,7 +257,7 @@ class _ForumScreenState extends State<ForumScreen> with AfterLayoutMixin {
 class CommentEditForm extends StatefulWidget {
   const CommentEditForm({
     this.post,
-    this.commentIndex = -1,
+    this.commentIndex,
     Key key,
   }) : super(key: key);
 
@@ -266,9 +276,6 @@ class _CommentEditFormState extends State<CommentEditForm> {
 
   @override
   initState() {
-    if (widget.commentIndex > -1) {
-      parent = widget.post.comments[widget.commentIndex];
-    }
     super.initState();
   }
 
@@ -296,11 +303,16 @@ class _CommentEditFormState extends State<CommentEditForm> {
     print(
         'previousSiblingComment: ${previousSiblingComment.content}, ${previousSiblingComment.order}');
     return getCommentOrder(
-        order: previousSiblingComment.order, depth: parent.depth + 1);
+      order: previousSiblingComment.order,
+      depth: parent.depth + 1,
+      // previousSiblingComment.depth + 1,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    if (widget.commentIndex != null)
+      parent = widget.post.comments[widget.commentIndex];
     return Column(
       children: [
         TextFormField(
@@ -355,7 +367,7 @@ class _CommentsState extends State<Comments> {
     return Column(
       children: [
         for (int i = 0; i < widget.post.comments.length; i++)
-          Comment(post: widget.post, index: i),
+          Comment(post: widget.post, commentIndex: i),
       ],
     );
   }
@@ -363,8 +375,8 @@ class _CommentsState extends State<Comments> {
 
 class Comment extends StatefulWidget {
   final PostModel post;
-  final int index;
-  Comment({this.post, this.index, Key key}) : super(key: key);
+  final int commentIndex;
+  Comment({this.post, this.commentIndex, Key key}) : super(key: key);
 
   @override
   _CommentState createState() => _CommentState();
@@ -373,7 +385,7 @@ class Comment extends StatefulWidget {
 class _CommentState extends State<Comment> {
   @override
   Widget build(BuildContext context) {
-    CommentModel comment = widget.post.comments[widget.index];
+    CommentModel comment = widget.post.comments[widget.commentIndex];
     return Container(
       child: Column(
         children: [
@@ -385,7 +397,7 @@ class _CommentState extends State<Comment> {
               child: Text("${comment.content} ${comment.order}")),
           CommentEditForm(
             post: widget.post,
-            commentIndex: widget.index,
+            commentIndex: widget.commentIndex,
           ),
         ],
       ),
