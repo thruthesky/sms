@@ -285,9 +285,18 @@ class _CommentEditFormState extends State<CommentEditForm> {
     String depthOrder = parent.order.split('.')[depth];
     print('depthOrder: $depthOrder');
 
-    for (int i = widget.commentIndex; i < widget.post.comments.length; i++) {
+    int i = widget.commentIndex + 1;
+    for (i; i < widget.post.comments.length; i++) {
       CommentModel c = widget.post.comments[i];
+      String findOrder = c.order.split('.')[depth];
+      if (depthOrder != findOrder) break;
     }
+
+    final previousSiblingComment = widget.post.comments[i - 1];
+    print(
+        'previousSiblingComment: ${previousSiblingComment.content}, ${previousSiblingComment.order}');
+    return getCommentOrder(
+        order: previousSiblingComment.order, depth: parent.depth + 1);
   }
 
   @override
@@ -313,8 +322,8 @@ class _CommentEditFormState extends State<CommentEditForm> {
                 ///   - parent if there is no child of the parent.
                 /// 	- last comment of siblings.
 
+                'depth': parent != null ? parent.depth + 1 : 0,
                 'order': getCommentOrderOf(),
-                'depth': 0,
                 'createdAt': FieldValue.serverTimestamp(),
                 'updatedAt': FieldValue.serverTimestamp(),
               };
@@ -364,51 +373,20 @@ class Comment extends StatefulWidget {
 class _CommentState extends State<Comment> {
   @override
   Widget build(BuildContext context) {
+    CommentModel comment = widget.post.comments[widget.index];
     return Container(
       child: Column(
         children: [
-          Text("${widget.post.comments[widget.index].content}"),
-
+          Container(
+              margin: EdgeInsets.only(left: Space.md * comment.depth),
+              padding: EdgeInsets.all(Space.md),
+              width: double.infinity,
+              color: Colors.grey[300],
+              child: Text("${comment.content} ${comment.order}")),
           CommentEditForm(
             post: widget.post,
             commentIndex: widget.index,
           ),
-
-          // TextFormField(
-          //   controller: contentController,
-          //   decoration: InputDecoration(hintText: 'input comment'.tr),
-          // ),
-          // RaisedButton(
-          //   onPressed: () async {
-          //     try {
-          //       // final postDoc = postDocument(widget.post.id);
-          //       final commentCol = commentsCollection(widget.post.id);
-          //       print('ref.path: ' + commentCol.path.toString());
-          //       final data = {
-          //         'uid': user.uid,
-          //         'content': contentController.text,
-
-          //         /// depth comes from parent.
-          //         /// order comes from
-          //         ///   - parent if there is no child of the parent.
-          //         /// 	- last comment of siblings.
-
-          //         'order': getCommentOrder(
-          //           order: getCommentOrderOf(),
-          //           depth: parent['depth'] + 1,
-          //         ),
-          //         'depth': parent['depth'] + 1,
-          //         'createdAt': FieldValue.serverTimestamp(),
-          //         'updatedAt': FieldValue.serverTimestamp(),
-          //       };
-          //       print(data);
-          //       await commentCol.add(data);
-          //     } catch (e) {
-          //       Service.error(e);
-          //     }
-          //   },
-          //   child: Text('submit'.tr),
-          // ),
         ],
       ),
     );
