@@ -78,33 +78,53 @@ class _ForumScreenState extends State<ForumScreen> with AfterLayoutMixin {
     subscription = postsQuery.snapshots().listen((QuerySnapshot snapshot) {
       // print('>> docChanges: ');
       if (snapshot.size > 0) {
+        /// TODO: this produce `Unhandled Exception: Unimplemented handling of missing static target` exception seldomly.
         snapshot.docChanges.forEach((DocumentChange documentChange) {
           final data = documentChange.doc.data();
           data['id'] = documentChange.doc.id;
-          final post = PostModel.fromBackendData(data);
+          final post = PostModel.fromDocument(data);
+
           // print('Post:');
           // print(post.toString());
           // print('Document change type:');
           // print(documentChange.type);
 
           if (documentChange.type == DocumentChangeType.added) {
-            // NOTE: by this time, createdAt is null.
-            // then when the server finally added the server timestamp on the post, it will emit a 'modified' event instead of 'added'.
-            if (post.createdAt != null) {
+            /// [createdAt] is null only on author's app since it is cached locally.
+            /// `modified` event will be fired right after with proper timestamp.
+            /// This will not be null on other's app and there will be no `modified` event on other's app.
+
+            if (post.createdAt == null) {
+              posts.insert(0, post);
+            } else if (posts.isNotEmpty &&
+                post.createdAt.nanoseconds > posts[0].createdAt.nanoseconds) {
+              posts.insert(0, post);
+            } else {
               posts.add(post);
             }
+
+            // if (post.createdAt != null) {
+            //   print('Crated AT: ${post.createdAt}');
+            //   posts.add(post);
+            // }
+
             inLoading = false;
           } else if (documentChange.type == DocumentChangeType.modified) {
             final int i = posts.indexWhere((p) => p.id == post.id);
-            if (i != -1) {
-              print('A document is updated:');
+            if (i > 0) {
               posts[i] = post;
-            } else {
-              print('A new document is added on top:');
-              if (posts.first.createdAt.seconds < post.createdAt.seconds) {
-                posts.insert(0, post);
-              }
             }
+
+            // if (i != -1) {
+            //   print('A document is updated:');
+            //   posts[i] = post;
+            // } else {
+            //   print('A new document is added on top:');
+            //   if (posts.first.createdAt.seconds < post.createdAt.seconds) {
+            //     posts.insert(0, post);
+            //   }
+            // }
+
           } else if (documentChange.type == DocumentChangeType.removed) {
             print('Removing post');
             posts.removeWhere((p) => p.id == post.id);
@@ -154,6 +174,7 @@ class _ForumScreenState extends State<ForumScreen> with AfterLayoutMixin {
                 itemCount: posts.length,
                 itemBuilder: (c, i) {
                   final post = posts[i];
+
                   return Container(
                     margin: EdgeInsets.all(Space.pageWrap),
                     child: Column(
@@ -197,7 +218,7 @@ class _ForumScreenState extends State<ForumScreen> with AfterLayoutMixin {
                             ),
                           ],
                         ),
-                        CommentEditForm(post: post)
+                        CommentEditForm(post: post),
                       ],
                     ),
                   );
