@@ -246,8 +246,6 @@ class _ForumScreenState extends State<ForumScreen> with AfterLayoutMixin {
     );
   }
 }
-<<<<<<< HEAD
-=======
 
 class CommentEditForm extends StatefulWidget {
   const CommentEditForm({
@@ -298,4 +296,3 @@ class _CommentEditFormState extends State<CommentEditForm> {
     );
   }
 }
->>>>>>> 6f7a1f00a5f8887810b0882cb743d838272c25fc
