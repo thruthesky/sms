@@ -31,13 +31,15 @@ class _ForumScreenState extends State<ForumScreen> with AfterLayoutMixin {
   bool inLoading = false;
   int pageNo = 0;
 
+  bool notification = false;
+
   // 무제한 스크롤은 ScrollController 로 감지하고
   // 스크롤이 맨 밑으로 될 때, Listener 핸들러를 실행한다.
   ScrollController scrollController =
       ScrollController(initialScrollOffset: 0.0, keepScrollOffset: true);
 
   @override
-  void afterFirstLayout(BuildContext context) {
+  void afterFirstLayout(BuildContext context) async {
     final args = routerArguments(context);
     category = args['category'];
     // print('category ??: $category');
@@ -53,6 +55,23 @@ class _ForumScreenState extends State<ForumScreen> with AfterLayoutMixin {
 
     /// fetch posts for the first time.
     fetchPosts();
+
+    if (Service.userController.isLoggedIn) {
+      Service.usersRef.doc(Service.userController.user.uid).get().then(
+        (DocumentSnapshot doc) {
+          if (!doc.exists) {
+            // It's not an error. User may not have documentation. see README
+            print('User has no document. fine.');
+            return;
+          }
+          final data = doc.data();
+
+          print(data);
+          this.notification = data['notification_post_' + category] ?? false;
+          setState(() {});
+        },
+      );
+    }
   }
 
   @override
@@ -154,7 +173,7 @@ class _ForumScreenState extends State<ForumScreen> with AfterLayoutMixin {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Forum'),
+        title: Text("$category".tr),
         actions: [
           IconButton(
             icon: Icon(Icons.add),
@@ -162,7 +181,28 @@ class _ForumScreenState extends State<ForumScreen> with AfterLayoutMixin {
               RouteNames.forumEdit,
               arguments: {'category': category},
             ),
-          )
+          ),
+          IconButton(
+              icon: notification == true
+                  ? Icon(Icons.notifications_active)
+                  : Icon(Icons.notifications_off),
+              onPressed: () {
+                if (Service.userController.isNotLoggedIn) {
+                  Service.alert('Must Login to subscribe to ' + category);
+                }
+                setState(() {
+                  notification = !notification;
+                });
+                final topic = "notification_post_" + category;
+                if (notification) {
+                  Service.subscribeTopic(topic);
+                } else {
+                  Service.unsubscribeTopic(topic);
+                }
+                Service.usersRef.doc(Service.userController.user.uid).set({
+                  "$topic": notification,
+                }, SetOptions(merge: true));
+              })
         ],
       ),
       body: SingleChildScrollView(

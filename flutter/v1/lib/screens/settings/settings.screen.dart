@@ -1,8 +1,9 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:v1/controllers/user.controller.dart';
-import 'package:v1/services/route-names.dart';
+import 'package:v1/services/service.dart';
+import 'package:v1/services/spaces.dart';
 
 class SettingsScreen extends StatefulWidget {
   @override
@@ -10,13 +11,31 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  Map<String, bool> option = {
-    'notifyComment': false,
-    'notifyPost': false,
-  };
+  /// users collection referrence
+  final CollectionReference users =
+      FirebaseFirestore.instance.collection('users');
+
+  final userController = Get.find<UserController>();
+
+  bool notifyPost = false;
+  bool notifyComment = false;
 
   @override
   void initState() {
+    /// get document with current logged in user's uid.
+    users.doc(userController.user.uid).get().then(
+      (DocumentSnapshot doc) {
+        if (!doc.exists) {
+          // It's not an error. User may not have documentation. see README
+          print('User has no document. fine.');
+          return;
+        }
+        final data = doc.data();
+        this.notifyPost = data['notifyPost'] ?? false;
+        this.notifyComment = data['notifyComment'] ?? false;
+        setState(() {});
+      },
+    );
     super.initState();
   }
 
@@ -39,34 +58,49 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 Text("User Nickname: ${user.displayName}"),
                 if (user.isNotLoggedIn) ...[],
                 if (user.isLoggedIn) ...[
-                  RaisedButton(
-                    onPressed: () => Get.toNamed(RouteNames.profile),
-                    child: Text('Profile'),
+                  Text(
+                    'Post Notification',
+                    style: TextStyle(fontSize: Space.lg),
                   ),
-                  RaisedButton(
-                    onPressed: () => FirebaseAuth.instance.signOut(),
-                    child: Text('Logout'),
-                  ),
-                  Text('Post Notification'),
+                  Text('Comment Notification under my post'),
                   Switch(
-                    value: option['notifyPost'],
-                    onChanged: (value) {
+                    value: notifyPost,
+                    onChanged: (value) async {
+                      try {
+                        final userDoc = users.doc(userController.user.uid);
+                        await userDoc.set({
+                          "notifyPost": value,
+                        }, SetOptions(merge: true));
+                        Get.snackbar('Update', 'Settings updated!');
+                      } catch (e) {
+                        Service.error(e);
+                      }
                       setState(() {
-                        option['notifyPost'] = value;
-                        print(option['notifyPost']);
+                        notifyPost = value;
+                        print(notifyPost);
                       });
                     },
                   ),
-                  Text('Comment Notification'),
+                  Text('Comment Notification under my comment'),
                   Switch(
-                    value: option['notifyComment'],
-                    onChanged: (value) {
+                    value: notifyComment,
+                    onChanged: (value) async {
+                      try {
+                        final userDoc = users.doc(userController.user.uid);
+                        await userDoc.set({
+                          "notifyComment": value,
+                        }, SetOptions(merge: true));
+                        Get.snackbar('Update', 'Settings updated!');
+                      } catch (e) {
+                        Service.error(e);
+                      }
                       setState(() {
-                        option['notifyComment'] = value;
-                        print(option['notifyComment']);
+                        notifyComment = value;
+                        print(notifyComment);
                       });
                     },
-                  )
+                  ),
+                  Text(Service.firebaseMessagingToken.substring(0, 20)),
                 ],
               ],
             );

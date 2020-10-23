@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -6,12 +7,17 @@ import 'package:v1/services/route-names.dart';
 import 'package:v1/services/service.dart';
 import 'package:v1/services/translations.dart';
 
+import 'package:v1/settings.dart' as App;
+
 class HomeScreen extends StatefulWidget {
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final CollectionReference users =
+      FirebaseFirestore.instance.collection('users');
+
   @override
   void initState() {
     super.initState();
@@ -55,11 +61,32 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Text('Logout'),
                   ),
                   RaisedButton(
-                    onPressed: () => Service().sendNotification(
-                      'test message', 'test body',
-                      RouteNames.profile,
-                      // token: Service.firebaseMessagingToken
-                    ),
+                    onPressed: () async {
+                      users
+                          .doc(Service.userController.user.uid)
+                          .collection('tokens')
+                          .snapshots()
+                          .listen((QuerySnapshot snapshot) {
+                        if (snapshot.size == 0) return;
+
+                        List<String> tokens = [];
+                        snapshot.docs.forEach((DocumentSnapshot document) {
+                          print(document.id);
+                          tokens.add(document.id);
+                        });
+
+                        print(tokens);
+
+                        Service().sendNotification(
+                          'test title message only',
+                          'test body message, from test notification button.',
+                          route: RouteNames.profile,
+                          token: Service.firebaseMessagingToken,
+                          tokens: tokens,
+                          topic: App.Settings.allTopic,
+                        );
+                      });
+                    },
                     child: Text('Send Test Notification'),
                   ),
                   RaisedButton(
