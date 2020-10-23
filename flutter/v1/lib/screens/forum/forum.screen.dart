@@ -258,8 +258,10 @@ class _CommentEditFormState extends State<CommentEditForm> {
               final data = {
                 'uid': user.uid,
                 'content': contentController.text,
-                'order': '00001.001.000.000.000.000.000.000.000.000.000.000',
+                'order': getCommentOrder(),
                 'depth': 0,
+                'createdAt': FieldValue.serverTimestamp(),
+                'updatedAt': FieldValue.serverTimestamp(),
               };
               print(data);
               await commentCol.add(data);
