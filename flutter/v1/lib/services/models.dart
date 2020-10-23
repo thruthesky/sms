@@ -16,6 +16,8 @@ class PostModel {
   Timestamp createdAt;
   Timestamp updatedAt;
 
+  List<dynamic> comment = [];
+
   PostModel({
     this.id,
     this.uid,
@@ -29,7 +31,7 @@ class PostModel {
     this.data,
   });
 
-  factory PostModel.fromBackendData(dynamic data) {
+  factory PostModel.fromDocument(dynamic data) {
     return PostModel(
       id: data['id'],
       uid: data['uid'],
