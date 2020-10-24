@@ -2,6 +2,7 @@ import 'package:after_layout/after_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:v1/controllers/user.controller.dart';
 import 'package:v1/screens/admin/admin.category.screen.dart';
+import 'package:v1/screens/admin/admin.push-notification.dart';
 import 'package:v1/screens/admin/admin.screen.dart';
 
 import 'package:v1/screens/settings/settings.screen.dart';
@@ -58,6 +59,9 @@ class _MainAppState extends State<MainApp> with AfterLayoutMixin<MainApp> {
         GetPage(name: RouteNames.admin, page: () => AdminScreen()),
         GetPage(
             name: RouteNames.adminCategory, page: () => AdminCategoryScreen()),
+        GetPage(
+            name: RouteNames.adminPushNotification,
+            page: () => AdminPushNotificationScreen()),
         GetPage(name: RouteNames.forum, page: () => ForumScreen()),
         GetPage(name: RouteNames.forumEdit, page: () => ForumEditScreen())
       ],

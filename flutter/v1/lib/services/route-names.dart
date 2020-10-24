@@ -11,6 +11,7 @@ class RouteNames {
   static final String passwordReset = '/passwordReset';
   static final String admin = '/admin';
   static final String adminCategory = '/adminCategory';
+  static final String adminPushNotification = '/adminPushNotification';
   static final String forum = '/forum';
   static final String forumEdit = '/forumEdit';
 }

@@ -21,6 +21,10 @@ class _AdminScreenState extends State<AdminScreen> {
               onPressed: () => Get.toNamed(RouteNames.adminCategory),
               child: Text('Category'),
             ),
+            RaisedButton(
+              onPressed: () => Get.toNamed(RouteNames.adminPushNotification),
+              child: Text('Push Notification'),
+            ),
           ],
         ),
       ),

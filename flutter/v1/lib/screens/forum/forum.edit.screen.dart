@@ -86,6 +86,12 @@ class _ForumEditScreenState extends State<ForumEditScreen>
                     data['createdAt'] = FieldValue.serverTimestamp();
                     data['updatedAt'] = FieldValue.serverTimestamp();
                     await colPosts.add(data);
+                    Service().sendNotification(
+                      titleController.text,
+                      contentController.text,
+                      route: category,
+                      topic: "notification_post_" + category,
+                    );
                   }
                   Get.back();
                 } catch (e) {

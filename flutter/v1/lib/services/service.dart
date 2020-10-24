@@ -33,6 +33,8 @@ class Service {
   static String locale;
   static UserController userController = Get.find<UserController>();
   static final FirebaseMessaging firebaseMessaging = new FirebaseMessaging();
+  static final CollectionReference usersRef =
+      FirebaseFirestore.instance.collection('users');
   static String firebaseMessagingToken;
 
   /// Display translation text in the device language.
@@ -218,6 +220,13 @@ class Service {
 
   static onLogin(UserCredential userCredential) {
     User user = userCredential.user;
+
+    /// Update extra information information
+    usersRef.doc(userCredential.user.uid).set({
+      "notifyPost": true,
+      "notifyComment": true,
+    }, SetOptions(merge: true));
+
     updateToken(user);
   }
 
@@ -348,7 +357,7 @@ class Service {
       // TODO: Make it work.
       /// App will come here when the user open the app by tapping a push notification on the system tray.
       /// Do something based on the `data`.
-      if (data['postId'] != null) {
+      if (data != null && data['postId'] != null) {
         // Get.toNamed(Settings.postViewRoute, arguments: {'postId': data['postId']});
       }
     }
@@ -427,58 +436,73 @@ class Service {
     return file;
   }
 
-  Future<void> sendNotification(title, body, route, {token, topic}) async {
-    // print('SendNotification');
+  Future<void> sendNotification(
+    title,
+    body, {
+    route,
+    token,
+    tokens,
+    topic,
+  }) async {
+    print('SendNotification');
+    if (token == null && tokens == null && topic == null)
+      return alert('Token/Topic is not provided.');
+
     final postUrl = 'https://fcm.googleapis.com/fcm/send';
 
-    String toParams = "/topics/" + App.Settings.allTopic;
-    print(token);
-    print(topic);
-    if (token != null) toParams = token;
-    if (topic != null) toParams = topic;
+    // String toParams = "/topics/" + App.Settings.allTopic;
+    // print(token);
+    // print(topic);
 
-    final data = jsonEncode({
-      "notification": {"body": body, "title": title},
-      "priority": "high",
-      "data": {
-        "click_action": "FLUTTER_NOTIFICATION_CLICK",
-        "id": "1",
-        "status": "done",
-        "sound": 'default',
-        "senderID": userController.user.uid,
-        'route': route,
-      },
-      "to": "$toParams"
-    });
+    final req = [];
+    if (token != null) req.add({'key': 'to', 'value': token});
+    if (topic != null) req.add({'key': 'to', 'value': "/topics/" + topic});
+    if (tokens != null) req.add({'key': 'registration_ids', 'value': tokens});
 
     final headers = {
       HttpHeaders.contentTypeHeader: "application/json",
       HttpHeaders.authorizationHeader: "key=" + App.Settings.firebaseServerToken
     };
 
-    var dio = Dio();
+    req.forEach((el) async {
+      final data = {
+        "notification": {"body": body, "title": title},
+        "priority": "high",
+        "data": {
+          "click_action": "FLUTTER_NOTIFICATION_CLICK",
+          "id": "1",
+          "status": "done",
+          "sound": 'default',
+          "senderID": userController.user.uid,
+          'route': route,
+        }
+      };
+      data[el['key']] = el['value'];
+      final encodeData = jsonEncode(data);
+      var dio = Dio();
 
-    print('try sending notification');
-    try {
-      var response = await dio.post(
-        postUrl,
-        data: data,
-        options: Options(
-          headers: headers,
-        ),
-      );
-      if (response.statusCode == 200) {
-        // on success do
-        print("notification success");
-      } else {
-        // on failure do
-        print("notification failure");
+      print('try sending notification');
+      try {
+        var response = await dio.post(
+          postUrl,
+          data: encodeData,
+          options: Options(
+            headers: headers,
+          ),
+        );
+        if (response.statusCode == 200) {
+          // on success do
+          print("notification success");
+        } else {
+          // on failure do
+          print("notification failure");
+        }
+        print(response.data);
+      } catch (e) {
+        print('Dio error in sendNotification');
+        print(e);
       }
-      print(response.data);
-    } catch (e) {
-      print('Dio error in sendNotification');
-      print(e);
-    }
+    });
   }
 
   static Future<String> uploadFile(
