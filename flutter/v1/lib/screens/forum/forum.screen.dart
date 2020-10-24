@@ -279,6 +279,10 @@ class _CommentEditFormState extends State<CommentEditForm> {
     super.initState();
   }
 
+  /// Returns the order string of the new comment
+  ///
+  /// @TODO: Move this method to `functions.dart`.
+  ///
   getCommentOrderOf() {
     /// If it is the first depth of child.
     if (parent == null) {
@@ -292,8 +296,8 @@ class _CommentEditFormState extends State<CommentEditForm> {
     String depthOrder = parent.order.split('.')[depth];
     print('depthOrder: $depthOrder');
 
-    int i = widget.commentIndex + 1;
-    for (i; i < widget.post.comments.length; i++) {
+    int i;
+    for (i = widget.commentIndex + 1; i < widget.post.comments.length; i++) {
       CommentModel c = widget.post.comments[i];
       String findOrder = c.order.split('.')[depth];
       if (depthOrder != findOrder) break;
@@ -325,6 +329,7 @@ class _CommentEditFormState extends State<CommentEditForm> {
               // final postDoc = postDocument(widget.post.id);
               final commentCol = commentsCollection(widget.post.id);
               print('ref.path: ' + commentCol.path.toString());
+              String order = getCommentOrderOf();
               final data = {
                 'uid': user.uid,
                 'content': contentController.text,
@@ -335,12 +340,20 @@ class _CommentEditFormState extends State<CommentEditForm> {
                 /// 	- last comment of siblings.
 
                 'depth': parent != null ? parent.depth + 1 : 0,
-                'order': getCommentOrderOf(),
+                'order': order,
                 'createdAt': FieldValue.serverTimestamp(),
                 'updatedAt': FieldValue.serverTimestamp(),
               };
               print(data);
               await commentCol.add(data);
+
+              /// Comment is created by this time.
+              ///
+
+              List<CommentModel> ancestors =
+                  getAncestors(widget.post.comments, order);
+              print('ancestors:');
+              for (var c in ancestors) print(c);
             } catch (e) {
               Service.error(e);
             }
@@ -364,6 +377,7 @@ class Comments extends StatefulWidget {
 class _CommentsState extends State<Comments> {
   @override
   Widget build(BuildContext context) {
+    // print('-------------------- comments');
     return Column(
       children: [
         for (int i = 0; i < widget.post.comments.length; i++)
@@ -386,15 +400,17 @@ class _CommentState extends State<Comment> {
   @override
   Widget build(BuildContext context) {
     CommentModel comment = widget.post.comments[widget.commentIndex];
+    // print('${comment.order} ${comment.content}');
     return Container(
       child: Column(
         children: [
           Container(
-              margin: EdgeInsets.only(left: Space.md * comment.depth),
-              padding: EdgeInsets.all(Space.md),
-              width: double.infinity,
-              color: Colors.grey[300],
-              child: Text("${comment.content} ${comment.order}")),
+            margin: EdgeInsets.only(left: Space.md * comment.depth),
+            padding: EdgeInsets.all(Space.md),
+            width: double.infinity,
+            color: Colors.grey[300],
+            child: Text("${comment.content} ${comment.order}"),
+          ),
           CommentEditForm(
             post: widget.post,
             commentIndex: widget.commentIndex,
