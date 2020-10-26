@@ -85,7 +85,7 @@
 
 ### 푸시 알림 설정
 
-- [firestore_messating 패키지](https://pub.dev/packages/firebase_messaging)를 참고하시 설정하면 됩니다.
+- [firestore_messaging 패키지](https://pub.dev/packages/firebase_messaging)를 참고하시 설정하면 됩니다.
 
 ## 주요기능
 
