@@ -31,7 +31,8 @@ class _ForumScreenState extends State<ForumScreen> with AfterLayoutMixin {
   bool inLoading = false;
   int pageNo = 0;
 
-  bool notification = false;
+  bool notificationPost = false;
+  bool notificationComment = false;
 
   // 무제한 스크롤은 ScrollController 로 감지하고
   // 스크롤이 맨 밑으로 될 때, Listener 핸들러를 실행한다.
@@ -57,6 +58,10 @@ class _ForumScreenState extends State<ForumScreen> with AfterLayoutMixin {
     fetchPosts();
 
     if (Service.userController.isLoggedIn) {
+      // final dynamic data = Service.userController.user;
+
+      // this.notification = data['notificationPost_' + category] ?? false;
+
       Service.usersRef.doc(Service.userController.user.uid).get().then(
         (DocumentSnapshot doc) {
           if (!doc.exists) {
@@ -67,7 +72,10 @@ class _ForumScreenState extends State<ForumScreen> with AfterLayoutMixin {
           final data = doc.data();
 
           print(data);
-          this.notification = data['notification_post_' + category] ?? false;
+          this.notificationPost =
+              data['notification_post_' + category] ?? false;
+          this.notificationComment =
+              data['notification_comment_' + category] ?? false;
           setState(() {});
         },
       );
@@ -183,24 +191,47 @@ class _ForumScreenState extends State<ForumScreen> with AfterLayoutMixin {
             ),
           ),
           IconButton(
-              icon: notification == true
+              icon: notificationPost == true
                   ? Icon(Icons.notifications_active)
                   : Icon(Icons.notifications_off),
               onPressed: () {
                 if (Service.userController.isNotLoggedIn) {
-                  Service.alert('Must Login to subscribe to ' + category);
+                  return Service.alert(
+                      'Must Login to subscribe to ' + category);
                 }
                 setState(() {
-                  notification = !notification;
+                  notificationPost = !notificationPost;
                 });
                 final topic = "notification_post_" + category;
-                if (notification) {
+                if (notificationPost) {
                   Service.subscribeTopic(topic);
                 } else {
                   Service.unsubscribeTopic(topic);
                 }
                 Service.usersRef.doc(Service.userController.user.uid).set({
-                  "$topic": notification,
+                  "$topic": notificationPost,
+                }, SetOptions(merge: true));
+              }),
+          IconButton(
+              icon: notificationComment == true
+                  ? Icon(Icons.notifications_active_outlined)
+                  : Icon(Icons.notifications_off_outlined),
+              onPressed: () {
+                if (Service.userController.isNotLoggedIn) {
+                  return Service.alert(
+                      'Must Login to subscribe to ' + category);
+                }
+                setState(() {
+                  notificationComment = !notificationComment;
+                });
+                final topic = "notification_comment_" + category;
+                if (notificationComment) {
+                  Service.subscribeTopic(topic);
+                } else {
+                  Service.unsubscribeTopic(topic);
+                }
+                Service.usersRef.doc(Service.userController.user.uid).set({
+                  "$topic": notificationComment,
                 }, SetOptions(merge: true));
               })
         ],
@@ -410,13 +441,38 @@ class _CommentEditFormState extends State<CommentEditForm> {
 
               print(widget.post.category);
 
-              // final CollectionReference colUsers =
-              //     FirebaseFirestore.instance.collection('users');
+              final CollectionReference colUsers =
+                  FirebaseFirestore.instance.collection('users');
 
-              // Query postsQuery =
-              //     colUsers.where('notification_comment_' + widget.post.category, isEqualTo: true);
+              Query usersQuery = colUsers.where(
+                  'notification_comment_' + widget.post.category,
+                  isEqualTo: true);
 
-              // postsQuery.snapshots().listen((QuerySnapshot snapshot) {});
+              usersQuery.get().then((QuerySnapshot snapshot) {
+                print(snapshot);
+                // handle the results here
+              });
+
+              // final CollectionReference colNotification = FirebaseFirestore
+              //     .instance
+              //     .collection('notification')
+              //     .doc(widget.post.category)
+              //     .collection('comment');
+
+              // colNotification.get().then((QuerySnapshot snapshot) {
+              //   print(snapshot);
+              //   // handle the results here
+              // });
+
+              // send notification with tokens and topic.
+
+              // Service().sendNotification(
+              //   widget.post.title,
+              //   contentController.text,
+              //   route: widget.post.category,
+              //   topic: "notification_comment_" + widget.post.category,
+              //   tokens: uids,
+              // );
             } catch (e) {
               print(e);
               Service.error(e);
