@@ -463,6 +463,16 @@ class _CommentEditFormState extends State<CommentEditForm> {
               //   print(snapshot);
               //   // handle the results here
               // });
+
+              // send notification with tokens and topic.
+
+              // Service().sendNotification(
+              //   widget.post.title,
+              //   contentController.text,
+              //   route: widget.post.category,
+              //   topic: "notification_comment_" + widget.post.category,
+              //   tokens: uids,
+              // );
             } catch (e) {
               print(e);
               Service.error(e);
