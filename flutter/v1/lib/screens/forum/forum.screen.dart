@@ -389,12 +389,36 @@ class _CommentEditFormState extends State<CommentEditForm> {
 
               /// Comment is created by this time.
               ///
+              ///
+              List<String> uids = [];
 
+              // check post owner if he want to receive notification
+              // uid.add(widget.post.uid);
+
+              // get ancestors uid
               List<CommentModel> ancestors =
                   getAncestors(widget.post.comments, order);
               print('ancestors:');
-              for (var c in ancestors) print(c);
+              if (ancestors.isNotEmpty) {
+                print('ancestors:before loop');
+                for (var c in ancestors) {
+                  uids.add(c.uid);
+                }
+                uids = uids.toSet().toList();
+              }
+              print(uids);
+
+              print(widget.post.category);
+
+              // final CollectionReference colUsers =
+              //     FirebaseFirestore.instance.collection('users');
+
+              // Query postsQuery =
+              //     colUsers.where('notification_comment_' + widget.post.category, isEqualTo: true);
+
+              // postsQuery.snapshots().listen((QuerySnapshot snapshot) {});
             } catch (e) {
+              print(e);
               Service.error(e);
             }
           },

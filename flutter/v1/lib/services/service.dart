@@ -273,9 +273,9 @@ class Service {
     FirebaseFirestore.instance
         .collection('users')
         .doc(userController.user.uid)
-        .collection('tokens')
-        .doc(firebaseMessagingToken)
-        .set({'token': firebaseMessagingToken});
+        .collection('meta')
+        .doc('tokens')
+        .set({firebaseMessagingToken: true}, SetOptions(merge: true));
   }
 
   static Future<void> _firebaseMessagingRequestPermission() async {

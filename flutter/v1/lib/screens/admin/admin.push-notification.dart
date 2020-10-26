@@ -60,13 +60,6 @@ class _AdminPushNotificationScreenState
                 child: Container(
                   child: Column(children: [
                     Text('Send notification via Topic!'),
-                    Text('Send notification via Topic!'),
-                    Text('Send notification via Topic!'),
-                    Text('Send notification via Topic!'),
-                    Text('Send notification via Topic!'),
-                    Text('Send notification via Topic!'),
-                    Text('Send notification via Topic!'),
-                    Text('Send notification via Topic!'),
                     Row(
                       children: [
                         Text('Topic'),
