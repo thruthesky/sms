@@ -92,7 +92,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                 print(tokens);
 
-                Service().sendNotification(
+                ff.sendNotification(
                   'test title message only',
                   'test body message, from test notification button.',
                   route: RouteNames.profile,

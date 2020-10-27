@@ -63,7 +63,12 @@ class _ForumScreenState extends State<ForumScreen> with AfterLayoutMixin {
 
       // this.notification = data['notificationPost_' + category] ?? false;
 
-      Service.usersRef.doc(Service.userController.user.uid).get().then(
+      Service.usersRef
+          .doc(Service.userController.user.uid)
+          .collection('meta')
+          .doc('public')
+          .get()
+          .then(
         (DocumentSnapshot doc) {
           if (!doc.exists) {
             // It's not an error. User may not have documentation. see README
@@ -209,7 +214,11 @@ class _ForumScreenState extends State<ForumScreen> with AfterLayoutMixin {
                 } else {
                   ff.unsubscribeTopic(topic);
                 }
-                Service.usersRef.doc(Service.userController.user.uid).set({
+                Service.usersRef
+                    .doc(Service.userController.user.uid)
+                    .collection('meta')
+                    .doc('public')
+                    .set({
                   "$topic": notificationPost,
                 }, SetOptions(merge: true));
               }),
@@ -231,7 +240,11 @@ class _ForumScreenState extends State<ForumScreen> with AfterLayoutMixin {
                 } else {
                   ff.unsubscribeTopic(topic);
                 }
-                Service.usersRef.doc(Service.userController.user.uid).set({
+                Service.usersRef
+                    .doc(Service.userController.user.uid)
+                    .collection('meta')
+                    .doc('public')
+                    .set({
                   "$topic": notificationComment,
                 }, SetOptions(merge: true));
               })
@@ -428,54 +441,73 @@ class _CommentEditFormState extends State<CommentEditForm> {
                   FirebaseFirestore.instance.collection('users');
 
               // check post owner if he want to receive notification
-              // final re =
-              //     colUsers.doc(widget.post.uid).collection('meta').doc().get();
-              // uid.add(widget.post.uid);
+              final docSnapshot = await colUsers
+                  .doc(widget.post.uid)
+                  .collection('meta')
+                  .doc('public')
+                  .get();
+
+              Map<String, dynamic> postOwnerPublic = docSnapshot.data();
+              if (!postOwnerPublic.isNull &&
+                  postOwnerPublic['notifyPost'] == true) {
+                uids.add(widget.post.uid);
+              }
 
               // get ancestors uid
               List<CommentModel> ancestors =
                   getAncestors(widget.post.comments, order);
               print('ancestors:');
+              print(ancestors);
               if (ancestors.isNotEmpty) {
                 print('ancestors:before loop');
                 for (var c in ancestors) {
-                  uids.add(c.uid);
+                  final docSnapshot = await colUsers
+                      .doc(c.uid)
+                      .collection('meta')
+                      .doc('public')
+                      .get();
+                  Map<String, dynamic> ancestorDoc = docSnapshot.data();
+
+                  if (ancestorDoc.isNull) continue;
+                  if (ancestorDoc[
+                              'notification_comment_' + widget.post.category] !=
+                          true &&
+                      ancestorDoc['notifyComment'] == true) {
+                    uids.add(c.uid);
+                  }
                 }
                 uids = uids.toSet().toList();
               }
+
               print(uids);
+              List<String> tokens = [];
+              for (var uid in uids) {
+                final docSnapshot = await colUsers
+                    .doc(uid)
+                    .collection('meta')
+                    .doc('tokens')
+                    .get();
+                Map<String, dynamic> tokensDoc = docSnapshot.data();
+                if (tokensDoc.isNull) continue;
+                for (var token in tokensDoc.keys) {
+                  print(token);
+                  tokens.add(token);
+                }
+              }
 
-              print(widget.post.category);
+              print('tokens');
+              print(tokens);
 
-              Query usersQuery = colUsers.where(
-                  'notification_comment_' + widget.post.category,
-                  isEqualTo: true);
-
-              usersQuery.get().then((QuerySnapshot snapshot) {
-                print(snapshot);
-                // handle the results here
-              });
-
-              final CollectionReference colNotification = FirebaseFirestore
-                  .instance
-                  .collection('user')
-                  .doc(widget.post.category)
-                  .collection('comment');
-
-              colNotification.get().then((QuerySnapshot snapshot) {
-                print(snapshot);
-                // handle the results here
-              });
+              // print(uids);
 
               // send notification with tokens and topic.
-
-              // Service().sendNotification(
-              //   widget.post.title,
-              //   contentController.text,
-              //   route: widget.post.category,
-              //   topic: "notification_comment_" + widget.post.category,
-              //   tokens: uids,
-              // );
+              ff.sendNotification(
+                widget.post.title,
+                contentController.text,
+                route: widget.post.category,
+                topic: "notification_comment_" + widget.post.category,
+                tokens: uids,
+              );
             } catch (e) {
               print(e);
               Service.error(e);
