@@ -1,3 +1,3 @@
 import 'package:fireflutter/fireflutter.dart';
 
-FireFlutter ff;
+final FireFlutter ff = FireFlutter();

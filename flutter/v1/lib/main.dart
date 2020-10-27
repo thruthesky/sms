@@ -23,9 +23,7 @@ import 'package:get/get.dart';
 import 'package:v1/services/service.dart';
 
 void main() async {
-  // await Service.initFirebase();
-  WidgetsFlutterBinding.ensureInitialized();
-  await FireFlutter.initFirebase();
+  await ff.init(enableNotification: true);
 
   runApp(MainApp());
 }
@@ -40,7 +38,6 @@ class _MainAppState extends State<MainApp> with AfterLayoutMixin<MainApp> {
 
   @override
   void initState() {
-    ff = FireFlutter(enableNotification: true);
     super.initState();
   }
 
