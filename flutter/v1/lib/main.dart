@@ -23,7 +23,10 @@ import 'package:get/get.dart';
 import 'package:v1/services/service.dart';
 
 void main() async {
-  await Service.initFirebase();
+  // await Service.initFirebase();
+  WidgetsFlutterBinding.ensureInitialized();
+  await FireFlutter.initFirebase();
+
   runApp(MainApp());
 }
 

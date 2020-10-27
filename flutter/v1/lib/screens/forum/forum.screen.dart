@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:v1/controllers/user.controller.dart';
 import 'package:v1/services/functions.dart';
+import 'package:v1/services/global_variables.dart';
 import 'package:v1/services/models.dart';
 import 'package:v1/services/route-names.dart';
 import 'package:v1/services/service.dart';
@@ -204,9 +205,9 @@ class _ForumScreenState extends State<ForumScreen> with AfterLayoutMixin {
                 });
                 final topic = "notification_post_" + category;
                 if (notificationPost) {
-                  Service.subscribeTopic(topic);
+                  ff.subscribeTopic(topic);
                 } else {
-                  Service.unsubscribeTopic(topic);
+                  ff.unsubscribeTopic(topic);
                 }
                 Service.usersRef.doc(Service.userController.user.uid).set({
                   "$topic": notificationPost,
@@ -226,9 +227,9 @@ class _ForumScreenState extends State<ForumScreen> with AfterLayoutMixin {
                 });
                 final topic = "notification_comment_" + category;
                 if (notificationComment) {
-                  Service.subscribeTopic(topic);
+                  ff.subscribeTopic(topic);
                 } else {
-                  Service.unsubscribeTopic(topic);
+                  ff.unsubscribeTopic(topic);
                 }
                 Service.usersRef.doc(Service.userController.user.uid).set({
                   "$topic": notificationComment,
@@ -423,7 +424,12 @@ class _CommentEditFormState extends State<CommentEditForm> {
               ///
               List<String> uids = [];
 
+              final CollectionReference colUsers =
+                  FirebaseFirestore.instance.collection('users');
+
               // check post owner if he want to receive notification
+              // final re =
+              //     colUsers.doc(widget.post.uid).collection('meta').doc().get();
               // uid.add(widget.post.uid);
 
               // get ancestors uid
@@ -441,9 +447,6 @@ class _CommentEditFormState extends State<CommentEditForm> {
 
               print(widget.post.category);
 
-              final CollectionReference colUsers =
-                  FirebaseFirestore.instance.collection('users');
-
               Query usersQuery = colUsers.where(
                   'notification_comment_' + widget.post.category,
                   isEqualTo: true);
@@ -453,16 +456,16 @@ class _CommentEditFormState extends State<CommentEditForm> {
                 // handle the results here
               });
 
-              // final CollectionReference colNotification = FirebaseFirestore
-              //     .instance
-              //     .collection('notification')
-              //     .doc(widget.post.category)
-              //     .collection('comment');
+              final CollectionReference colNotification = FirebaseFirestore
+                  .instance
+                  .collection('user')
+                  .doc(widget.post.category)
+                  .collection('comment');
 
-              // colNotification.get().then((QuerySnapshot snapshot) {
-              //   print(snapshot);
-              //   // handle the results here
-              // });
+              colNotification.get().then((QuerySnapshot snapshot) {
+                print(snapshot);
+                // handle the results here
+              });
 
               // send notification with tokens and topic.
 

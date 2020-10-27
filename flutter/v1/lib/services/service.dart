@@ -5,7 +5,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:devicelocale/devicelocale.dart';
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
@@ -17,6 +16,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:v1/controllers/user.controller.dart';
 import 'package:v1/services/definitions.dart';
 import 'package:v1/services/functions.dart';
+import 'package:v1/services/global_variables.dart';
 import 'package:v1/services/models.dart';
 import 'package:v1/services/route-names.dart';
 import 'package:v1/services/translations.dart';
@@ -48,13 +48,12 @@ class Service {
     return locale;
   }
 
-  static Future<void> initFirebase() async {
-    WidgetsFlutterBinding.ensureInitialized();
-    await Firebase.initializeApp();
-    FirebaseFirestore.instance.settings =
-        Settings(cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED);
-    initFirebaseMessaging();
-  }
+  // static Future<void> initFirebase() async {
+  //   WidgetsFlutterBinding.ensureInitialized();
+  //   await Firebase.initializeApp();
+  //   FirebaseFirestore.instance.settings =
+  //       Settings(cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED);
+  // }
 
   static void alert(String msg) {
     Get.defaultDialog(
@@ -178,7 +177,7 @@ class Service {
       UserCredential user =
           await FirebaseAuth.instance.signInWithCredential(credential);
 
-      onLogin(user.user);
+      onSocialLogin(user.user);
       Get.toNamed(RouteNames.home);
     } catch (e) {
       error(e);
@@ -211,155 +210,157 @@ class Service {
       UserCredential user = await FirebaseAuth.instance
           .signInWithCredential(facebookAuthCredential);
 
-      onLogin(user.user);
+      onSocialLogin(user.user);
       Get.toNamed(RouteNames.home);
     } catch (e) {
       error(e);
     }
   }
 
-  static onLogin(User user) {
-    /// Update extra information information
+  static onSocialLogin(User user) {
     usersRef.doc(user.uid).set({
       "notifyPost": true,
       "notifyComment": true,
     }, SetOptions(merge: true));
-
-    updateToken(user);
+    onLogin(user);
   }
 
-  /// @attention the app must call this method on app boot.
-  /// This method is not called automatically.
-  static Future<void> initFirebaseMessaging() async {
-    await _firebaseMessagingRequestPermission();
-
-    try {
-      firebaseMessagingToken = await firebaseMessaging.getToken();
-      if (userController.isLoggedIn) {
-        updateToken(userController.user);
-      }
-    } catch (e) {
-      print('Caught error on getting firebase token: ${e.message}');
-    }
-
-    /// subscribe to all topic
-    await subscribeTopic(App.Settings.allTopic);
-
-    _firebaseMessagingCallbackHandlers();
+  static onLogin(User user) {
+    ff.updateToken(user);
   }
 
-  static Future subscribeTopic(String topicName) async {
-    print('subscribeTopic $topicName');
-    try {
-      await firebaseMessaging.subscribeToTopic(topicName);
-    } catch (e) {
-      print(e);
-    }
-  }
+  // /// @attention the app must call this method on app boot.
+  // /// This method is not called automatically.
+  // static Future<void> initFirebaseMessaging() async {
+  //   await _firebaseMessagingRequestPermission();
 
-  static Future unsubscribeTopic(String topicName) async {
-    await firebaseMessaging.unsubscribeFromTopic(topicName);
-  }
+  //   try {
+  //     firebaseMessagingToken = await firebaseMessaging.getToken();
+  //     if (userController.isLoggedIn) {
+  //       updateToken(userController.user);
+  //     }
+  //   } catch (e) {
+  //     print('Caught error on getting firebase token: ${e.message}');
+  //   }
+
+  //   /// subscribe to all topic
+  //   await subscribeTopic(App.Settings.allTopic);
+
+  //   _firebaseMessagingCallbackHandlers();
+  // }
+
+  // static Future subscribeTopic(String topicName) async {
+  //   print('subscribeTopic $topicName');
+  //   try {
+  //     await firebaseMessaging.subscribeToTopic(topicName);
+  //   } catch (e) {
+  //     print(e);
+  //   }
+  // }
+
+  // static Future unsubscribeTopic(String topicName) async {
+  //   await firebaseMessaging.unsubscribeFromTopic(topicName);
+  // }
 
   /// Update push notification token to Firestore
   ///
   /// [user] is needed because when this method may be called immediately
   ///   after login but before `Firebase.AuthStateChange()` and when it happens,
   ///   the user appears not to be logged in even if the user already logged in.
-  static updateToken(User user) {
-    if (firebaseMessagingToken == null) return;
-    FirebaseFirestore.instance
-        .collection('users')
-        .doc(userController.user.uid)
-        .collection('meta')
-        .doc('tokens')
-        .set({firebaseMessagingToken: true}, SetOptions(merge: true));
-  }
+  // static updateToken(User user) {
+  //   if (firebaseMessagingToken == null) return;
+  //   FirebaseFirestore.instance
+  //       .collection('users')
+  //       .doc(userController.user.uid)
+  //       .collection('meta')
+  //       .doc('tokens')
+  //       .set({firebaseMessagingToken: true}, SetOptions(merge: true));
+  // }
 
-  static Future<void> _firebaseMessagingRequestPermission() async {
-    /// Ask permission to iOS user for Push Notification.
-    if (Platform.isIOS) {
-      firebaseMessaging.onIosSettingsRegistered.listen((event) {
-        // Do something after user accepts the request.
-      });
-      await firebaseMessaging
-          .requestNotificationPermissions(IosNotificationSettings());
-    } else {
-      /// For Android, no permission request is required. just get Push token.
-      await firebaseMessaging.requestNotificationPermissions();
-    }
-  }
+  // static Future<void> _firebaseMessagingRequestPermission() async {
+  //   /// Ask permission to iOS user for Push Notification.
+  //   if (Platform.isIOS) {
+  //     firebaseMessaging.onIosSettingsRegistered.listen((event) {
+  //       // Do something after user accepts the request.
+  //     });
+  //     await firebaseMessaging
+  //         .requestNotificationPermissions(IosNotificationSettings());
+  //   } else {
+  //     /// For Android, no permission request is required. just get Push token.
+  //     await firebaseMessaging.requestNotificationPermissions();
+  //   }
+  // }
 
-  static _firebaseMessagingCallbackHandlers() {
-    /// Configure callback handlers for
-    /// - foreground
-    /// - background
-    /// - exited
-    firebaseMessaging.configure(
-      onMessage: (Map<String, dynamic> message) async {
-        print('onMessage: $message');
-        _firebaseMessagingDisplayAndNavigate(message, true);
-      },
-      onLaunch: (Map<String, dynamic> message) async {
-        print('onLaunch: $message');
-        _firebaseMessagingDisplayAndNavigate(message, false);
-      },
-      onResume: (Map<String, dynamic> message) async {
-        print('onResume: $message');
-        _firebaseMessagingDisplayAndNavigate(message, false);
-      },
-    );
-  }
+  // static _firebaseMessagingCallbackHandlers() {
+  //   /// Configure callback handlers for
+  //   /// - foreground
+  //   /// - background
+  //   /// - exited
+  //   firebaseMessaging.configure(
+  //     onMessage: (Map<String, dynamic> message) async {
+  //       print('onMessage: $message');
+  //       _firebaseMessagingDisplayAndNavigate(message, true);
+  //     },
+  //     onLaunch: (Map<String, dynamic> message) async {
+  //       print('onLaunch: $message');
+  //       _firebaseMessagingDisplayAndNavigate(message, false);
+  //     },
+  //     onResume: (Map<String, dynamic> message) async {
+  //       print('onResume: $message');
+  //       _firebaseMessagingDisplayAndNavigate(message, false);
+  //     },
+  //   );
+  // }
 
-  /// Display notification & navigate
-  ///
-  /// @note the data on `onMessage` is like below;
-  ///   {notification: {title: This is title., body: Notification test.}, data: {click_action: FLUTTER_NOTIFICATION_CLICK}}
-  /// But the data on `onResume` and `onLaunch` are like below;
-  ///   { data: {click_action: FLUTTER_NOTIFICATION_CLICK} }
-  static void _firebaseMessagingDisplayAndNavigate(
-      Map<String, dynamic> message, bool display) {
-    var notification = message['notification'];
+  // /// Display notification & navigate
+  // ///
+  // /// @note the data on `onMessage` is like below;
+  // ///   {notification: {title: This is title., body: Notification test.}, data: {click_action: FLUTTER_NOTIFICATION_CLICK}}
+  // /// But the data on `onResume` and `onLaunch` are like below;
+  // ///   { data: {click_action: FLUTTER_NOTIFICATION_CLICK} }
+  // static void _firebaseMessagingDisplayAndNavigate(
+  //     Map<String, dynamic> message, bool display) {
+  //   var notification = message['notification'];
 
-    /// iOS 에서는 title, body 가 `message['aps']['alert']` 에 들어온다.
-    if (message['aps'] != null && message['aps']['alert'] != null) {
-      notification = message['aps']['alert'];
-    }
-    // iOS 에서는 data 속성없이, 객체에 바로 저장된다.
-    var data = message['data'] ?? message;
+  //   /// iOS 에서는 title, body 가 `message['aps']['alert']` 에 들어온다.
+  //   if (message['aps'] != null && message['aps']['alert'] != null) {
+  //     notification = message['aps']['alert'];
+  //   }
+  //   // iOS 에서는 data 속성없이, 객체에 바로 저장된다.
+  //   var data = message['data'] ?? message;
 
-    // return if the senderID is the owner.
-    if (data != null && data['senderID'] == userController.user.uid) {
-      return;
-    }
+  //   // return if the senderID is the owner.
+  //   if (data != null && data['senderID'] == userController.user.uid) {
+  //     return;
+  //   }
 
-    if (display) {
-      Get.snackbar(
-        notification['title'].toString(),
-        notification['body'].toString(),
-        onTap: (_) {
-          // print('onTap data: ');
-          // print(data);
-          Get.toNamed(data['route']);
-        },
-        mainButton: FlatButton(
-          child: Text('Open'),
-          onPressed: () {
-            // print('mainButton data: ');
-            // print(data);
-            Get.toNamed(data['route']);
-          },
-        ),
-      );
-    } else {
-      // TODO: Make it work.
-      /// App will come here when the user open the app by tapping a push notification on the system tray.
-      /// Do something based on the `data`.
-      if (data != null && data['postId'] != null) {
-        // Get.toNamed(Settings.postViewRoute, arguments: {'postId': data['postId']});
-      }
-    }
-  }
+  //   if (display) {
+  //     Get.snackbar(
+  //       notification['title'].toString(),
+  //       notification['body'].toString(),
+  //       onTap: (_) {
+  //         // print('onTap data: ');
+  //         // print(data);
+  //         Get.toNamed(data['route']);
+  //       },
+  //       mainButton: FlatButton(
+  //         child: Text('Open'),
+  //         onPressed: () {
+  //           // print('mainButton data: ');
+  //           // print(data);
+  //           Get.toNamed(data['route']);
+  //         },
+  //       ),
+  //     );
+  //   } else {
+  //     // TODO: Make it work.
+  //     /// App will come here when the user open the app by tapping a push notification on the system tray.
+  //     /// Do something based on the `data`.
+  //     if (data != null && data['postId'] != null) {
+  //       // Get.toNamed(Settings.postViewRoute, arguments: {'postId': data['postId']});
+  //     }
+  //   }
+  // }
 
   /// Pick photo ( or file ) from Camera or Photo Library
   ///

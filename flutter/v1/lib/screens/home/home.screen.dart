@@ -82,16 +82,13 @@ class _HomeScreenState extends State<HomeScreen> {
             onPressed: () async {
               users
                   .doc(Service.userController.user.uid)
-                  .collection('tokens')
+                  .collection('meta')
+                  .doc('tokens')
                   .snapshots()
-                  .listen((QuerySnapshot snapshot) {
-                if (snapshot.size == 0) return;
-
+                  .listen((DocumentSnapshot document) {
                 List<String> tokens = [];
-                snapshot.docs.forEach((DocumentSnapshot document) {
-                  print(document.id);
-                  tokens.add(document.id);
-                });
+                print(document.id);
+                tokens.add(document.id);
 
                 print(tokens);
 
@@ -99,9 +96,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   'test title message only',
                   'test body message, from test notification button.',
                   route: RouteNames.profile,
-                  token: Service.firebaseMessagingToken,
+                  token: ff.firebaseMessagingToken,
                   tokens: tokens,
-                  topic: App.Settings.allTopic,
+                  topic: ff.allTopic,
                 );
               });
             },
