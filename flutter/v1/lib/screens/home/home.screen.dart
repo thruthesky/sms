@@ -37,7 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Column(
         children: [
           StreamBuilder(
-            stream: ff.authStateChanges,
+            stream: ff.userChange,
             builder: (context, snapshot) {
               if (ff.user == null) {
                 return Column(

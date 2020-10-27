@@ -141,11 +141,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   setState(() => loading = true);
 
                   try {
-                    await ff.updateProfile(ProfileUpdateData(
-                      displayName: displayNameController.text,
-                      gender: gender,
-                      birthday: birthday,
-                    ));
+                    await ff.updateProfile({
+                      'displayName': displayNameController.text,
+                      'gender': gender,
+                      'birthday': birthday,
+                    });
                     Get.snackbar('Update', 'Profile updated!');
                   } catch (e) {
                     Service.error(e);
