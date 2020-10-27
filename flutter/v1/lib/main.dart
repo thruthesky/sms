@@ -37,7 +37,7 @@ class _MainAppState extends State<MainApp> with AfterLayoutMixin<MainApp> {
 
   @override
   void initState() {
-    ff = FireFlutter();
+    ff = FireFlutter(enableNotification: true);
     super.initState();
   }
 
