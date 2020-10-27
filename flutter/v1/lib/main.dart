@@ -1,4 +1,5 @@
 import 'package:after_layout/after_layout.dart';
+import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:v1/controllers/user.controller.dart';
 import 'package:v1/screens/admin/admin.category.screen.dart';
@@ -9,6 +10,7 @@ import 'package:v1/screens/settings/settings.screen.dart';
 
 import 'package:v1/screens/forum/forum.edit.screen.dart';
 import 'package:v1/screens/forum/forum.screen.dart';
+import 'package:v1/services/global_variables.dart';
 import 'package:v1/services/translations.dart';
 import 'package:v1/screens/home/home.screen.dart';
 import 'package:v1/screens/login/login.screen.dart';
@@ -32,6 +34,12 @@ class MainApp extends StatefulWidget {
 
 class _MainAppState extends State<MainApp> with AfterLayoutMixin<MainApp> {
   final c = Get.put(UserController());
+
+  @override
+  void initState() {
+    ff = FireFlutter();
+    super.initState();
+  }
 
   @override
   void afterFirstLayout(BuildContext context) {
