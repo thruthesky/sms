@@ -435,74 +435,74 @@ class Service {
     return file;
   }
 
-  Future<void> sendNotification(
-    title,
-    body, {
-    route,
-    token,
-    tokens,
-    topic,
-  }) async {
-    print('SendNotification');
-    if (token == null && tokens == null && topic == null)
-      return alert('Token/Topic is not provided.');
+  // Future<void> sendNotification(
+  //   title,
+  //   body, {
+  //   route,
+  //   token,
+  //   tokens,
+  //   topic,
+  // }) async {
+  //   print('SendNotification');
+  //   if (token == null && tokens == null && topic == null)
+  //     return alert('Token/Topic is not provided.');
 
-    final postUrl = 'https://fcm.googleapis.com/fcm/send';
+  //   final postUrl = 'https://fcm.googleapis.com/fcm/send';
 
-    // String toParams = "/topics/" + App.Settings.allTopic;
-    // print(token);
-    // print(topic);
+  //   // String toParams = "/topics/" + App.Settings.allTopic;
+  //   // print(token);
+  //   // print(topic);
 
-    final req = [];
-    if (token != null) req.add({'key': 'to', 'value': token});
-    if (topic != null) req.add({'key': 'to', 'value': "/topics/" + topic});
-    if (tokens != null) req.add({'key': 'registration_ids', 'value': tokens});
+  //   final req = [];
+  //   if (token != null) req.add({'key': 'to', 'value': token});
+  //   if (topic != null) req.add({'key': 'to', 'value': "/topics/" + topic});
+  //   if (tokens != null) req.add({'key': 'registration_ids', 'value': tokens});
 
-    final headers = {
-      HttpHeaders.contentTypeHeader: "application/json",
-      HttpHeaders.authorizationHeader: "key=" + App.Settings.firebaseServerToken
-    };
+  //   final headers = {
+  //     HttpHeaders.contentTypeHeader: "application/json",
+  //     HttpHeaders.authorizationHeader: "key=" + App.Settings.firebaseServerToken
+  //   };
 
-    req.forEach((el) async {
-      final data = {
-        "notification": {"body": body, "title": title},
-        "priority": "high",
-        "data": {
-          "click_action": "FLUTTER_NOTIFICATION_CLICK",
-          "id": "1",
-          "status": "done",
-          "sound": 'default',
-          "senderID": userController.user.uid,
-          'route': route,
-        }
-      };
-      data[el['key']] = el['value'];
-      final encodeData = jsonEncode(data);
-      var dio = Dio();
+  //   req.forEach((el) async {
+  //     final data = {
+  //       "notification": {"body": body, "title": title},
+  //       "priority": "high",
+  //       "data": {
+  //         "click_action": "FLUTTER_NOTIFICATION_CLICK",
+  //         "id": "1",
+  //         "status": "done",
+  //         "sound": 'default',
+  //         "senderID": userController.user.uid,
+  //         'route': route,
+  //       }
+  //     };
+  //     data[el['key']] = el['value'];
+  //     final encodeData = jsonEncode(data);
+  //     var dio = Dio();
 
-      print('try sending notification');
-      try {
-        var response = await dio.post(
-          postUrl,
-          data: encodeData,
-          options: Options(
-            headers: headers,
-          ),
-        );
-        if (response.statusCode == 200) {
-          // on success do
-          print("notification success");
-        } else {
-          // on failure do
-          print("notification failure");
-        }
-        print(response.data);
-      } catch (e) {
-        print('Dio error in sendNotification');
-        print(e);
-      }
-    });
-  }
+  //     print('try sending notification');
+  //     try {
+  //       var response = await dio.post(
+  //         postUrl,
+  //         data: encodeData,
+  //         options: Options(
+  //           headers: headers,
+  //         ),
+  //       );
+  //       if (response.statusCode == 200) {
+  //         // on success do
+  //         print("notification success");
+  //       } else {
+  //         // on failure do
+  //         print("notification failure");
+  //       }
+  //       print(response.data);
+  //     } catch (e) {
+  //       print('Dio error in sendNotification');
+  //       print(e);
+  //     }
+  //   });
+  // }
 
   static Future<String> uploadFile(
     String collection,

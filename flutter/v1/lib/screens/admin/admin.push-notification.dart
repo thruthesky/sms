@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/instance_manager.dart';
 import 'package:v1/controllers/user.controller.dart';
 import 'package:get/get.dart';
+import 'package:v1/services/global_variables.dart';
 
 import 'package:v1/services/service.dart';
 import 'package:v1/services/spaces.dart';
@@ -97,7 +98,7 @@ class _AdminPushNotificationScreenState
                       child: Text("Submit"),
                       onPressed: () async {
                         /// send notification here
-                        Service().sendNotification(
+                        ff.sendNotification(
                           titleController.text,
                           bodyController.text,
                           topic: selectedItem,

@@ -130,9 +130,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           "notifyPost": true,
                           "notifyComment": true,
                         },
-                        "tokens": {
-                          'my-token-id-ooo': true,
-                        },
+                        // "tokens": {
+                        //   '${ff.firebaseMessagingToken}': true,
+                        // },
                       },
                     );
                     Service.onLogin(user);
