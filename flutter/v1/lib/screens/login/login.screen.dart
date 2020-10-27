@@ -68,7 +68,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       email: emailController.text,
                       password: passwordController.text,
                     );
-                    Service.onLogin(user);
+                    Service.onLogin(user.user);
                     Get.toNamed(RouteNames.home);
                   } catch (e) {
                     setState(() => loading = false);

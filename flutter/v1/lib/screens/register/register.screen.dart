@@ -7,6 +7,8 @@ import 'package:v1/services/route-names.dart';
 import 'package:v1/services/spaces.dart';
 import 'package:v1/widgets/user/birthday-picker.dart';
 
+import 'package:fireflutter/fireflutter.dart';
+
 class RegisterScreen extends StatefulWidget {
   @override
   _RegisterScreenState createState() => _RegisterScreenState();
@@ -113,29 +115,46 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   FocusScope.of(context).requestFocus(new FocusNode());
 
                   try {
-                    /// Log into Firebase with email/password
-                    UserCredential userCredential = await FirebaseAuth.instance
-                        .createUserWithEmailAndPassword(
+                    final ff = FireFlutter();
+                    User user = await ff.register(
                       email: emailController.text,
                       password: passwordController.text,
+                      displayName: nicknameController.text,
+                      data: {
+                        "gender": gender,
+                        "birthday": birthDate,
+                      },
+                      meta: {
+                        'public': {
+                          "notifyPost": true,
+                          "notifyComment": true,
+                        }
+                      },
                     );
-                    print(userCredential.user);
 
-                    await userCredential.user
-                        .updateProfile(displayName: nicknameController.text);
+                    // /// Log into Firebase with email/password
+                    // UserCredential userCredential = await FirebaseAuth.instance
+                    //     .createUserWithEmailAndPassword(
+                    //   email: emailController.text,
+                    //   password: passwordController.text,
+                    // );
+                    // print(userCredential.user);
 
-                    /// Login Success
-                    CollectionReference users =
-                        FirebaseFirestore.instance.collection('users');
+                    // await userCredential.user
+                    //     .updateProfile(displayName: nicknameController.text);
 
-                    /// Update other user information
-                    await users.doc(userCredential.user.uid).set({
-                      "gender": gender,
-                      "birthday": birthDate,
-                      "notifyPost": true,
-                      "notifyComment": true,
-                    }, SetOptions(merge: true));
-                    Service.onLogin(userCredential);
+                    // /// Login Success
+                    // CollectionReference users =
+                    //     FirebaseFirestore.instance.collection('users');
+
+                    // /// Update other user information
+                    // await users.doc(userCredential.user.uid).set({
+                    //   "gender": gender,
+                    //   "birthday": birthDate,
+                    //   "notifyPost": true,
+                    //   "notifyComment": true,
+                    // }, SetOptions(merge: true));
+                    Service.onLogin(user);
                     Get.toNamed(RouteNames.home);
                   } catch (e) {
                     setState(() => loading = false);

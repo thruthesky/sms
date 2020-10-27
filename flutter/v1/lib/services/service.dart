@@ -178,7 +178,7 @@ class Service {
       UserCredential user =
           await FirebaseAuth.instance.signInWithCredential(credential);
 
-      onLogin(user);
+      onLogin(user.user);
       Get.toNamed(RouteNames.home);
     } catch (e) {
       error(e);
@@ -211,18 +211,16 @@ class Service {
       UserCredential user = await FirebaseAuth.instance
           .signInWithCredential(facebookAuthCredential);
 
-      onLogin(user);
+      onLogin(user.user);
       Get.toNamed(RouteNames.home);
     } catch (e) {
       error(e);
     }
   }
 
-  static onLogin(UserCredential userCredential) {
-    User user = userCredential.user;
-
+  static onLogin(User user) {
     /// Update extra information information
-    usersRef.doc(userCredential.user.uid).set({
+    usersRef.doc(user.uid).set({
       "notifyPost": true,
       "notifyComment": true,
     }, SetOptions(merge: true));
