@@ -115,22 +115,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                   try {
                     User user = await ff.register(
-                      RegisterData(
-                        email: emailController.text,
-                        password: passwordController.text,
-                        displayName: displayNameController.text,
-                        gender: gender,
-                        birthday: birthday,
-                        meta: {
-                          'public': {
-                            "notifyPost": true,
-                            "notifyComment": true,
-                          },
-                          "tokens": {
-                            'my-token-id-ooo': true,
-                          },
+                      {
+                        'email': emailController.text,
+                        'password': passwordController.text,
+                        'displayName': displayNameController.text,
+                        'gender': gender,
+                        'birthday': birthday,
+                      },
+                      meta: {
+                        'public': {
+                          "notifyPost": true,
+                          "notifyComment": true,
                         },
-                      ),
+                        "tokens": {
+                          'my-token-id-ooo': true,
+                        },
+                      },
                     );
                     Service.onLogin(user);
                     Get.toNamed(RouteNames.home);
