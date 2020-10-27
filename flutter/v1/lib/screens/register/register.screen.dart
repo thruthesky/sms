@@ -113,6 +113,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   /// remove any input focus.
                   FocusScope.of(context).requestFocus(new FocusNode());
 
+                  setState(() {
+                    loading = true;
+                  });
                   try {
                     User user = await ff.register(
                       {
