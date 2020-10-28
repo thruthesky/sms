@@ -524,7 +524,8 @@ class Service {
     return url;
   }
 
-  static bool isMyPost(PostModel post) {
-    return post.uid == userController.uid;
+  static bool isMine(dynamic data) {
+    if (data == null || data['uid'] == null) return false;
+    return data['uid'] == userController.uid;
   }
 }

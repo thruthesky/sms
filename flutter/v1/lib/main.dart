@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:after_layout/after_layout.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
@@ -68,6 +70,9 @@ class _MainAppState extends State<MainApp> with AfterLayoutMixin<MainApp> {
   @override
   void initState() {
     super.initState();
+
+    Timer(Duration(milliseconds: 300),
+        () => Get.toNamed('forum', arguments: {'category': 'qna'}));
   }
 
   @override
