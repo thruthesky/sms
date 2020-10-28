@@ -1,14 +1,10 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:devicelocale/devicelocale.dart';
-import 'package:dio/dio.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -16,11 +12,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:v1/controllers/user.controller.dart';
 import 'package:v1/services/definitions.dart';
 import 'package:v1/services/functions.dart';
-import 'package:v1/services/global_variables.dart';
-import 'package:v1/services/models.dart';
-import 'package:v1/services/route-names.dart';
 import 'package:v1/services/translations.dart';
-import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:v1/settings.dart' as App;
 import 'package:v1/widgets/commons/photo-picker-bottom-sheet.dart';
 
