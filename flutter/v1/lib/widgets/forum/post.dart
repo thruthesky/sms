@@ -153,8 +153,11 @@ class _PostState extends State<Post> {
                         ConfirmDialog(title: 'Delete Post?'.tr),
                       );
 
-                      if (confirm != null && confirm) {
-                        ff.deletePost(widget.post['id']);
+                      if (confirm == null || !confirm) return;
+                      try {
+                        await ff.deletePost(widget.post['id']);
+                      } catch (e) {
+                        Service.error(e);
                       }
                     },
                   ),
