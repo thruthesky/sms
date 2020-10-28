@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
+import 'package:v1/services/global_variables.dart';
 import 'package:v1/services/service.dart';
 import 'package:v1/services/route-names.dart';
 import 'package:v1/services/spaces.dart';
 import 'package:v1/widgets/user/birthday-picker.dart';
+import 'package:fireflutter/fireflutter.dart';
 
 class RegisterScreen extends StatefulWidget {
   @override
@@ -15,12 +16,12 @@ class RegisterScreen extends StatefulWidget {
 class _RegisterScreenState extends State<RegisterScreen> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
-  final nicknameController = TextEditingController();
+  final displayNameController = TextEditingController();
 
   final passNode = FocusNode();
   final nicknameNode = FocusNode();
 
-  DateTime birthDate;
+  DateTime birthday;
   String gender = 'M';
 
   bool loading = false;
@@ -28,7 +29,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   void initState() {
     final now = DateTime.now();
-    birthDate = now;
+    birthday = now;
     super.initState();
   }
 
@@ -70,7 +71,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
               TextFormField(
                 key: ValueKey('nickname'),
-                controller: nicknameController,
+                controller: displayNameController,
                 focusNode: nicknameNode,
                 keyboardType: TextInputType.text,
                 decoration: InputDecoration(labelText: "Nickname"),
@@ -78,10 +79,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
               SizedBox(height: Space.md),
               Text('Birthday'),
               BirthdayPicker(
-                initialValue: birthDate,
+                initialValue: birthday,
                 onChange: (date) {
                   setState(() {
-                    this.birthDate = date;
+                    this.birthday = date;
                   });
                 },
               ),
@@ -107,33 +108,34 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
               SizedBox(height: Space.xl),
               RaisedButton(
-                child: Text("Submit"),
+                child: loading ? CircularProgressIndicator() : Text("Submit"),
                 onPressed: () async {
                   /// remove any input focus.
                   FocusScope.of(context).requestFocus(new FocusNode());
 
+                  setState(() {
+                    loading = true;
+                  });
                   try {
-                    /// Log into Firebase with email/password
-                    UserCredential userCredential = await FirebaseAuth.instance
-                        .createUserWithEmailAndPassword(
-                      email: emailController.text,
-                      password: passwordController.text,
+                    User user = await ff.register(
+                      {
+                        'email': emailController.text,
+                        'password': passwordController.text,
+                        'displayName': displayNameController.text,
+                        'gender': gender,
+                        'birthday': birthday,
+                      },
+                      meta: {
+                        'public': {
+                          "notifyPost": true,
+                          "notifyComment": true,
+                        },
+                        // "tokens": {
+                        //   '${ff.firebaseMessagingToken}': true,
+                        // },
+                      },
                     );
-                    print(userCredential.user);
-
-                    await userCredential.user
-                        .updateProfile(displayName: nicknameController.text);
-
-                    /// Login Success
-                    CollectionReference users =
-                        FirebaseFirestore.instance.collection('users');
-
-                    /// Update other user information
-                    await users.doc(userCredential.user.uid).set({
-                      "gender": gender,
-                      "birthday": birthDate,
-                    });
-                    Service.onLogin(userCredential);
+                    Service.onLogin(user);
                     Get.toNamed(RouteNames.home);
                   } catch (e) {
                     setState(() => loading = false);

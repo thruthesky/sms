@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:v1/controllers/user.controller.dart';
 import 'package:v1/services/functions.dart';
+import 'package:v1/services/global_variables.dart';
 import 'package:v1/services/models.dart';
 import 'package:v1/services/route-names.dart';
 import 'package:v1/services/service.dart';
@@ -31,13 +32,16 @@ class _ForumScreenState extends State<ForumScreen> with AfterLayoutMixin {
   bool inLoading = false;
   int pageNo = 0;
 
+  bool notificationPost = false;
+  bool notificationComment = false;
+
   // 무제한 스크롤은 ScrollController 로 감지하고
   // 스크롤이 맨 밑으로 될 때, Listener 핸들러를 실행한다.
   ScrollController scrollController =
       ScrollController(initialScrollOffset: 0.0, keepScrollOffset: true);
 
   @override
-  void afterFirstLayout(BuildContext context) {
+  void afterFirstLayout(BuildContext context) async {
     final args = routerArguments(context);
     category = args['category'];
     // print('category ??: $category');
@@ -53,6 +57,35 @@ class _ForumScreenState extends State<ForumScreen> with AfterLayoutMixin {
 
     /// fetch posts for the first time.
     fetchPosts();
+
+    if (Service.userController.isLoggedIn) {
+      // final dynamic data = Service.userController.user;
+
+      // this.notification = data['notificationPost_' + category] ?? false;
+
+      Service.usersRef
+          .doc(Service.userController.user.uid)
+          .collection('meta')
+          .doc('public')
+          .get()
+          .then(
+        (DocumentSnapshot doc) {
+          if (!doc.exists) {
+            // It's not an error. User may not have documentation. see README
+            print('User has no document. fine.');
+            return;
+          }
+          final data = doc.data();
+
+          print(data);
+          this.notificationPost =
+              data['notification_post_' + category] ?? false;
+          this.notificationComment =
+              data['notification_comment_' + category] ?? false;
+          setState(() {});
+        },
+      );
+    }
   }
 
   @override
@@ -154,7 +187,7 @@ class _ForumScreenState extends State<ForumScreen> with AfterLayoutMixin {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Forum'),
+        title: Text("$category".tr),
         actions: [
           IconButton(
             icon: Icon(Icons.add),
@@ -162,7 +195,59 @@ class _ForumScreenState extends State<ForumScreen> with AfterLayoutMixin {
               RouteNames.forumEdit,
               arguments: {'category': category},
             ),
-          )
+          ),
+          IconButton(
+              icon: notificationPost == true
+                  ? Icon(Icons.notifications_active)
+                  : Icon(Icons.notifications_off),
+              onPressed: () {
+                if (Service.userController.isNotLoggedIn) {
+                  return Service.alert(
+                      'Must Login to subscribe to ' + category);
+                }
+                setState(() {
+                  notificationPost = !notificationPost;
+                });
+                final topic = "notification_post_" + category;
+                if (notificationPost) {
+                  ff.subscribeTopic(topic);
+                } else {
+                  ff.unsubscribeTopic(topic);
+                }
+                Service.usersRef
+                    .doc(Service.userController.user.uid)
+                    .collection('meta')
+                    .doc('public')
+                    .set({
+                  "$topic": notificationPost,
+                }, SetOptions(merge: true));
+              }),
+          IconButton(
+              icon: notificationComment == true
+                  ? Icon(Icons.notifications_active_outlined)
+                  : Icon(Icons.notifications_off_outlined),
+              onPressed: () {
+                if (Service.userController.isNotLoggedIn) {
+                  return Service.alert(
+                      'Must Login to subscribe to ' + category);
+                }
+                setState(() {
+                  notificationComment = !notificationComment;
+                });
+                final topic = "notification_comment_" + category;
+                if (notificationComment) {
+                  ff.subscribeTopic(topic);
+                } else {
+                  ff.unsubscribeTopic(topic);
+                }
+                Service.usersRef
+                    .doc(Service.userController.user.uid)
+                    .collection('meta')
+                    .doc('public')
+                    .set({
+                  "$topic": notificationComment,
+                }, SetOptions(merge: true));
+              })
         ],
       ),
       body: SingleChildScrollView(
@@ -279,6 +364,10 @@ class _CommentEditFormState extends State<CommentEditForm> {
     super.initState();
   }
 
+  /// Returns the order string of the new comment
+  ///
+  /// @TODO: Move this method to `functions.dart`.
+  ///
   getCommentOrderOf() {
     /// If it is the first depth of child.
     if (parent == null) {
@@ -292,8 +381,8 @@ class _CommentEditFormState extends State<CommentEditForm> {
     String depthOrder = parent.order.split('.')[depth];
     print('depthOrder: $depthOrder');
 
-    int i = widget.commentIndex + 1;
-    for (i; i < widget.post.comments.length; i++) {
+    int i;
+    for (i = widget.commentIndex + 1; i < widget.post.comments.length; i++) {
       CommentModel c = widget.post.comments[i];
       String findOrder = c.order.split('.')[depth];
       if (depthOrder != findOrder) break;
@@ -325,6 +414,7 @@ class _CommentEditFormState extends State<CommentEditForm> {
               // final postDoc = postDocument(widget.post.id);
               final commentCol = commentsCollection(widget.post.id);
               print('ref.path: ' + commentCol.path.toString());
+              String order = getCommentOrderOf();
               final data = {
                 'uid': user.uid,
                 'content': contentController.text,
@@ -335,13 +425,91 @@ class _CommentEditFormState extends State<CommentEditForm> {
                 /// 	- last comment of siblings.
 
                 'depth': parent != null ? parent.depth + 1 : 0,
-                'order': getCommentOrderOf(),
+                'order': order,
                 'createdAt': FieldValue.serverTimestamp(),
                 'updatedAt': FieldValue.serverTimestamp(),
               };
               print(data);
               await commentCol.add(data);
+
+              /// Comment is created by this time.
+              ///
+              ///
+              List<String> uids = [];
+
+              final CollectionReference colUsers =
+                  FirebaseFirestore.instance.collection('users');
+
+              // check post owner if he want to receive notification
+              final docSnapshot = await colUsers
+                  .doc(widget.post.uid)
+                  .collection('meta')
+                  .doc('public')
+                  .get();
+
+              Map<String, dynamic> postOwnerPublic = docSnapshot.data();
+              if (!postOwnerPublic.isNull &&
+                  postOwnerPublic['notifyPost'] == true) {
+                uids.add(widget.post.uid);
+              }
+
+              // get ancestors uid
+              List<CommentModel> ancestors =
+                  getAncestors(widget.post.comments, order);
+              print('ancestors:');
+              print(ancestors);
+              if (ancestors.isNotEmpty) {
+                print('ancestors:before loop');
+                for (var c in ancestors) {
+                  final docSnapshot = await colUsers
+                      .doc(c.uid)
+                      .collection('meta')
+                      .doc('public')
+                      .get();
+                  Map<String, dynamic> ancestorDoc = docSnapshot.data();
+
+                  if (ancestorDoc.isNull) continue;
+                  if (ancestorDoc[
+                              'notification_comment_' + widget.post.category] !=
+                          true &&
+                      ancestorDoc['notifyComment'] == true) {
+                    uids.add(c.uid);
+                  }
+                }
+                uids = uids.toSet().toList();
+              }
+
+              print(uids);
+              List<String> tokens = [];
+              for (var uid in uids) {
+                final docSnapshot = await colUsers
+                    .doc(uid)
+                    .collection('meta')
+                    .doc('tokens')
+                    .get();
+                Map<String, dynamic> tokensDoc = docSnapshot.data();
+                if (tokensDoc.isNull) continue;
+                for (var token in tokensDoc.keys) {
+                  print(token);
+                  tokens.add(token);
+                }
+              }
+
+              print('tokens');
+              print(tokens);
+
+              // print(uids);
+
+              // send notification with tokens and topic.
+              ff.sendNotification(
+                widget.post.title,
+                contentController.text,
+                route: widget.post.category,
+                topic: "notification_comment_" + widget.post.category,
+                tokens: uids,
+              );
             } catch (e) {
+              print(e);
               Service.error(e);
             }
           },
@@ -364,6 +532,7 @@ class Comments extends StatefulWidget {
 class _CommentsState extends State<Comments> {
   @override
   Widget build(BuildContext context) {
+    // print('-------------------- comments');
     return Column(
       children: [
         for (int i = 0; i < widget.post.comments.length; i++)
@@ -386,15 +555,17 @@ class _CommentState extends State<Comment> {
   @override
   Widget build(BuildContext context) {
     CommentModel comment = widget.post.comments[widget.commentIndex];
+    // print('${comment.order} ${comment.content}');
     return Container(
       child: Column(
         children: [
           Container(
-              margin: EdgeInsets.only(left: Space.md * comment.depth),
-              padding: EdgeInsets.all(Space.md),
-              width: double.infinity,
-              color: Colors.grey[300],
-              child: Text("${comment.content} ${comment.order}")),
+            margin: EdgeInsets.only(left: Space.md * comment.depth),
+            padding: EdgeInsets.all(Space.md),
+            width: double.infinity,
+            color: Colors.grey[300],
+            child: Text("${comment.content} ${comment.order}"),
+          ),
           CommentEditForm(
             post: widget.post,
             commentIndex: widget.commentIndex,

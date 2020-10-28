@@ -44,11 +44,17 @@ service cloud.firestore {
       allow delete: if false;
 
 
-      // 푸시 토큰
-      // - 각 사용자 도큐먼트 하위에 기록
       // Push notification tokens.
-      // Push tokens are saved unser `/users/{uid}/tokens` collection.
-      match /tokens/{token} {
+      // Push tokens are saved unser `/users/{uid}/meta/tokens` document.
+      match /meta/tokens {
+        allow read: if true;
+        allow write: if request.auth.uid == uid;
+      }
+
+
+      // Public settings of a user.
+      // The document of `/users/{uid}/meta/public` is open for reading.
+      match /meta/public {
         allow read: if true;
         allow write: if request.auth.uid == uid;
       }

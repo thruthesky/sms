@@ -1,6 +1,6 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:v1/services/global_variables.dart';
 import 'package:v1/services/service.dart';
 import 'package:v1/services/route-names.dart';
 import 'package:v1/services/spaces.dart';
@@ -55,7 +55,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               SizedBox(height: 32),
               RaisedButton(
-                child: Text("Submit"),
+                child: loading ? CircularProgressIndicator() : Text("Submit"),
                 onPressed: () async {
                   /// remove any input focus.
                   FocusScope.of(context).requestFocus(new FocusNode());
@@ -63,12 +63,23 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   try {
                     /// Sign in with registered Firebase credentials.
-                    UserCredential user =
-                        await FirebaseAuth.instance.signInWithEmailAndPassword(
+                    // UserCredential user =
+                    //     await FirebaseAuth.instance.signInWithEmailAndPassword(
+                    //   email: emailController.text,
+                    //   password: passwordController.text,
+                    // );
+
+                    await ff.login(
                       email: emailController.text,
                       password: passwordController.text,
+                      meta: {
+                        'tokens': {
+                          'and-another-token': true,
+                        },
+                      },
                     );
-                    Service.onLogin(user);
+
+                    Service.onLogin(ff.user);
                     Get.toNamed(RouteNames.home);
                   } catch (e) {
                     setState(() => loading = false);

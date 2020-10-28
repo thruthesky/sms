@@ -31,7 +31,7 @@ class PostModel {
     this.data,
   });
 
-  factory PostModel.fromDocument(dynamic data) {
+  factory PostModel.fromDocument(Map<String, dynamic> data) {
     return PostModel(
       id: data['id'],
       uid: data['uid'],
@@ -80,5 +80,9 @@ class CommentModel {
       createdAt: json['createdAt'],
       updatedAt: json['updatedAt'],
     );
+  }
+  @override
+  String toString() {
+    return "id: $id, uid: $uid, depth: $depth, order: $order, content: $content";
   }
 }

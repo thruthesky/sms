@@ -1,9 +1,10 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:v1/controllers/user.controller.dart';
+import 'package:v1/services/global_variables.dart';
 import 'package:v1/services/service.dart';
 import 'package:v1/services/spaces.dart';
 import 'package:v1/widgets/user/birthday-picker.dart';
@@ -15,48 +16,21 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  final userController = Get.find<UserController>();
-
   /// users collection referrence
   final CollectionReference users =
       FirebaseFirestore.instance.collection('users');
 
-  final emailController = TextEditingController();
-  final nicknameController = TextEditingController();
+  final emailController = TextEditingController(text: ff.user.email);
+  final displayNameController =
+      TextEditingController(text: ff.user.displayName);
 
   final nicknameNode = FocusNode();
 
-  String gender;
-  DateTime birthDate;
+  String gender = ff.data['gender'];
+  DateTime birthday = DateTime.now();
 
   bool loading = false;
   double uploadProgress = 0;
-
-  @override
-  void initState() {
-    birthDate = DateTime.now();
-    this.emailController.text = userController.user.email;
-    this.nicknameController.text = userController.displayName;
-
-    /// get document with current logged in user's uid.
-    users.doc(userController.user.uid).get().then(
-      (DocumentSnapshot doc) {
-        if (!doc.exists) {
-          // It's not an error. User may not have documentation. see README
-          print('User has no document. fine.');
-          return;
-        }
-        final data = doc.data();
-        print(data);
-        this.gender = data['gender'];
-        Timestamp date = data['birthday'];
-        this.birthDate =
-            DateTime.fromMillisecondsSinceEpoch(date.seconds * 1000);
-        setState(() {});
-      },
-    );
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -97,7 +71,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               );
 
                               // update image url of current user.
-                              await userController.updatePhoto(url);
+                              await ff.updatePhoto(url);
                               setState(() => uploadProgress = 0);
                               print('url: $url');
                             } catch (e) {
@@ -119,10 +93,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
               SizedBox(height: Space.md),
-              Text('Email: ${userController.user.email}'),
+              Text('Email: ${ff.user.email}'),
               TextFormField(
                 key: ValueKey('nickname'),
-                controller: nicknameController,
+                controller: displayNameController,
                 focusNode: nicknameNode,
                 textInputAction: TextInputAction.done,
                 keyboardType: TextInputType.text,
@@ -131,10 +105,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
               SizedBox(height: Space.lg),
               Text('Birthday'),
               BirthdayPicker(
-                initialValue: birthDate,
+                initialValue: birthday,
                 onChange: (date) {
                   setState(() {
-                    this.birthDate = date;
+                    this.birthday = date;
                   });
                 },
               ),
@@ -160,22 +134,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               SizedBox(height: 30),
               RaisedButton(
-                child: Text("Submit"),
+                child: loading ? CircularProgressIndicator() : Text("Submit"),
                 onPressed: () async {
                   /// remove any input focus.
                   FocusScope.of(context).requestFocus(new FocusNode());
                   setState(() => loading = true);
 
                   try {
-                    await userController.user
-                        .updateProfile(displayName: nicknameController.text);
-                    await userController.reload();
-
-                    final userDoc = users.doc(userController.user.uid);
-                    await userDoc.set({
-                      "gender": gender,
-                      "birthday": birthDate,
-                    }, SetOptions(merge: true));
+                    await ff.updateProfile({
+                      'displayName': displayNameController.text,
+                      'gender': gender,
+                      'birthday': birthday,
+                    });
                     Get.snackbar('Update', 'Profile updated!');
                   } catch (e) {
                     Service.error(e);

@@ -1,13 +1,16 @@
 import 'package:after_layout/after_layout.dart';
+import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:v1/controllers/user.controller.dart';
 import 'package:v1/screens/admin/admin.category.screen.dart';
+import 'package:v1/screens/admin/admin.push-notification.dart';
 import 'package:v1/screens/admin/admin.screen.dart';
 
 import 'package:v1/screens/settings/settings.screen.dart';
 
 import 'package:v1/screens/forum/forum.edit.screen.dart';
 import 'package:v1/screens/forum/forum.screen.dart';
+import 'package:v1/services/global_variables.dart';
 import 'package:v1/services/translations.dart';
 import 'package:v1/screens/home/home.screen.dart';
 import 'package:v1/screens/login/login.screen.dart';
@@ -20,7 +23,37 @@ import 'package:get/get.dart';
 import 'package:v1/services/service.dart';
 
 void main() async {
-  await Service.initFirebase();
+  await ff.init(
+      enableNotification: true,
+      notificationHandler: (Map<String, dynamic> notification,
+          Map<String, dynamic> data, NotificationType type) {
+        print('NotificationType: $type');
+        print('notification: $notification');
+        print('data: $data');
+        if (type == NotificationType.onMessage) {
+          Get.snackbar(
+            notification['title'].toString(),
+            notification['body'].toString(),
+            onTap: (_) {
+              Get.toNamed(data['route']);
+            },
+            mainButton: FlatButton(
+              child: Text('Open'),
+              onPressed: () {
+                Get.toNamed(data['route']);
+              },
+            ),
+          );
+        } else {
+          // TODO: Make it work.
+          /// App will come here when the user open the app by tapping a push notification on the system tray.
+          /// Do something based on the `data`.
+          if (data != null && data['postId'] != null) {
+            // Get.toNamed(Settings.postViewRoute, arguments: {'postId': data['postId']});
+          }
+        }
+      });
+
   runApp(MainApp());
 }
 
@@ -31,6 +64,11 @@ class MainApp extends StatefulWidget {
 
 class _MainAppState extends State<MainApp> with AfterLayoutMixin<MainApp> {
   final c = Get.put(UserController());
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   void afterFirstLayout(BuildContext context) {
@@ -58,6 +96,9 @@ class _MainAppState extends State<MainApp> with AfterLayoutMixin<MainApp> {
         GetPage(name: RouteNames.admin, page: () => AdminScreen()),
         GetPage(
             name: RouteNames.adminCategory, page: () => AdminCategoryScreen()),
+        GetPage(
+            name: RouteNames.adminPushNotification,
+            page: () => AdminPushNotificationScreen()),
         GetPage(name: RouteNames.forum, page: () => ForumScreen()),
         GetPage(name: RouteNames.forumEdit, page: () => ForumEditScreen())
       ],
