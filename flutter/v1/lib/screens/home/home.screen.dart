@@ -57,7 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   Text("User Uid: ${ff.user.uid}"),
                   Text("User Uid: ${ff.user.email}"),
                   Text("User Nickname: ${ff.user.displayName}"),
-                  Text("User Gender: ${ff.data?.gender}"),
+                  Text("User Gender: ${ff.data['gender']}"),
                   Text("User PhotoUrl: ${ff.user.photoURL}"),
                   RaisedButton(
                     onPressed: () => Get.toNamed(RouteNames.profile),
