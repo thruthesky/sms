@@ -4,14 +4,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:v1/controllers/user.controller.dart';
-import 'package:v1/services/models.dart';
 import 'package:v1/services/route-names.dart';
 import 'package:v1/services/service.dart';
 import 'package:v1/services/spaces.dart';
 import 'package:v1/widgets/commons/confirm-dialog.dart';
+import 'package:v1/widgets/forum/comment.edit.form.dart';
+import 'package:v1/widgets/forum/comments.dart';
 
 class Post extends StatefulWidget {
-  final PostModel post;
+  final dynamic post;
 
   Post({this.post});
 
@@ -25,15 +26,19 @@ class _PostState extends State<Post> {
 
   StreamSubscription voteRefSubscription;
 
+  bool showContent = false;
+
   @override
   dispose() {
-    voteRefSubscription.cancel();
+    if (!voteRefSubscription.isNull) {
+      voteRefSubscription.cancel();
+    }
     super.dispose();
   }
 
   onVoteTap(String choice) async {
     print('onVoteTap::choice => $choice');
-    String docID = widget.post.id + '-' + userController.uid;
+    String docID = widget.post['id'] + '-' + userController.uid;
 
     /// vote document reference from the `likes` collection
     DocumentReference voteRef = firestoreInstance.doc('likes/$docID');
@@ -53,18 +58,17 @@ class _PostState extends State<Post> {
       print('create/update');
       voteRef.set({
         'uid': userController.uid,
-        'id': widget.post.id,
+        'id': widget.post['id'],
         'vote': choice,
       });
     }
 
     /// TODO: updating like and dislike property of post document.
-    voteRefSubscription =
-        voteRef.snapshots().listen((DocumentSnapshot snapshot) {
+    voteRefSubscription = voteRef.snapshots().listen((snapshot) async {
       Map<String, dynamic> data = {
-        'uid': widget.post.uid,
-        'like': widget.post.like,
-        'dislike': widget.post.dislike,
+        'uid': widget.post['uid'],
+        'like': widget.post['like'],
+        'dislike': widget.post['dislike'],
       };
 
       /// if not null, then the user may have just voted or changed their choice.
@@ -86,12 +90,12 @@ class _PostState extends State<Post> {
       }
 
       /// TODO: make sure to update have permission to update the post's data.
-      ///
+      /// NOTE: This is not working with error: `cloud_firestore/permission-denied`
       /// Firestore security rules must be considered.
-      firestoreInstance.doc('posts/${widget.post.id}').set(
-            data,
-            SetOptions(merge: true),
-          );
+      // firestoreInstance.doc('posts/${widget.post.id}').set(
+      //       data,
+      //       SetOptions(merge: true),
+      //     );
     });
   }
 
@@ -100,54 +104,66 @@ class _PostState extends State<Post> {
     return Container(
       color: Colors.grey[300],
       margin: EdgeInsets.all(Space.pageWrap),
+      padding: EdgeInsets.all(Space.md),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           ListTile(
-            contentPadding: EdgeInsets.all(Space.md),
             title: Text(
-              widget.post.title,
+              widget.post['title'],
               style: TextStyle(fontSize: Space.xl),
             ),
-            subtitle: Text(
-              widget.post.content,
-              style: TextStyle(fontSize: Space.lg),
-            ),
-          ),
-          Row(
-            children: [
-              IconButton(
-                icon: Icon(Icons.thumb_up),
-                onPressed: () => onVoteTap('like'),
-              ),
-              Text(widget.post.like.toString()),
-              IconButton(
-                icon: Icon(Icons.thumb_down),
-                onPressed: () => onVoteTap('dislike'),
-              ),
-              Text(widget.post.dislike.toString()),
-              if (Service.isMyPost(widget.post)) ...[
-                IconButton(
-                  icon: Icon(Icons.edit),
-                  onPressed: () => Get.toNamed(
-                    RouteNames.forumEdit,
-                    arguments: {'post': widget.post},
+            subtitle: widget.post['content'] == null
+                ? null
+                : Text(
+                    widget.post['content'],
+                    style: TextStyle(fontSize: Space.lg),
                   ),
-                ),
+            onTap: () => setState(() => showContent = true),
+          ),
+          if (showContent) ...[
+            Row(
+              children: [
                 IconButton(
-                  icon: Icon(Icons.delete),
-                  onPressed: () async {
-                    bool confirm = await Get.dialog(
-                      ConfirmDialog(title: 'Delete Post?'.tr),
-                    );
-
-                    if (confirm != null && confirm) {
-                      firestoreInstance.doc('posts/${widget.post.id}').delete();
-                    }
-                  },
+                  icon: Icon(Icons.thumb_up),
+                  onPressed: () => onVoteTap('like'),
                 ),
-              ]
-            ],
-          )
+                if (widget.post['like'] != null)
+                  Text(widget.post['like'].toString()),
+                IconButton(
+                  icon: Icon(Icons.thumb_down),
+                  onPressed: () => onVoteTap('dislike'),
+                ),
+                if (widget.post['dislike'] != null)
+                  Text(widget.post['dislike'].toString()),
+                if (Service.isMine(widget.post)) ...[
+                  IconButton(
+                    icon: Icon(Icons.edit),
+                    onPressed: () => Get.toNamed(
+                      RouteNames.forumEdit,
+                      arguments: {'post': widget.post},
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.delete),
+                    onPressed: () async {
+                      bool confirm = await Get.dialog(
+                        ConfirmDialog(title: 'Delete Post?'.tr),
+                      );
+
+                      if (confirm != null && confirm) {
+                        firestoreInstance
+                            .doc('posts/${widget.post['id']}')
+                            .delete();
+                      }
+                    },
+                  ),
+                ]
+              ],
+            ),
+            CommentEditForm(post: widget.post),
+            Comments(post: widget.post),
+          ],
         ],
       ),
     );
