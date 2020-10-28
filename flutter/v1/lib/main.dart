@@ -55,8 +55,8 @@ void main() async {
         }
       }
     },
-    socialLoginSuccessHandler: (user) => Get.toNamed(RouteNames.home),
-    socialLoginErrorHandler: (e) => Service.error(e),
+    // socialLoginSuccessHandler: (user) => Get.toNamed(RouteNames.home),
+    // socialLoginErrorHandler: (e) => Service.error(e),
   );
 
   runApp(MainApp());
