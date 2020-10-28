@@ -30,11 +30,11 @@ class _LoginScreenState extends State<LoginScreen> {
             children: [
               RaisedButton(
                 child: Text('Google Sign-in'),
-                onPressed: Service.signInWithGoogle,
+                onPressed: ff.signInWithGoogle,
               ),
               RaisedButton(
                 child: Text('Facebook Sign-in'),
-                onPressed: Service.signInWithFacebook,
+                onPressed: ff.signInWithFacebook,
               ),
               SizedBox(height: Space.xl),
               TextFormField(
@@ -79,7 +79,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       },
                     );
 
-                    Service.onLogin(ff.user);
+                    ff.onLogin(ff.user);
                     Get.toNamed(RouteNames.home);
                   } catch (e) {
                     setState(() => loading = false);

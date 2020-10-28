@@ -174,7 +174,6 @@ class _ForumScreenState extends State<ForumScreen> {
                 itemCount: forum.posts.length,
                 itemBuilder: (c, i) {
                   final post = forum.posts[i];
-
                   return Post(post: post);
                 },
               ),
