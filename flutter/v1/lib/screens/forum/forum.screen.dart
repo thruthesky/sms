@@ -300,23 +300,32 @@ class _ForumScreenState extends State<ForumScreen> {
                                     arguments: {'post': post})),
                           ),
                         ),
-                        Row(
+                        Flex(
+                          direction: Axis.horizontal,
                           children: [
-                            RaisedButton(
-                              onPressed: () {},
-                              child: Text('edit'),
+                            Expanded(
+                              child: RaisedButton(
+                                onPressed: () {},
+                                child: Text('edit'),
+                              ),
                             ),
-                            RaisedButton(
-                              onPressed: () {},
-                              child: Text('delete'),
+                            Expanded(
+                              child: RaisedButton(
+                                onPressed: () {},
+                                child: Text('delete'),
+                              ),
                             ),
-                            RaisedButton(
-                              onPressed: () {},
-                              child: Text('like'),
+                            Expanded(
+                              child: RaisedButton(
+                                onPressed: () {},
+                                child: Text('like'),
+                              ),
                             ),
-                            RaisedButton(
-                              onPressed: () {},
-                              child: Text('dislike'),
+                            Expanded(
+                              child: RaisedButton(
+                                onPressed: () {},
+                                child: Text('dislike'),
+                              ),
                             ),
                           ],
                         ),

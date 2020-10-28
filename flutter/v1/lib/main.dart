@@ -26,35 +26,38 @@ import 'package:v1/services/service.dart';
 
 void main() async {
   await ff.init(
-      enableNotification: true,
-      notificationHandler: (Map<String, dynamic> notification,
-          Map<String, dynamic> data, NotificationType type) {
-        print('NotificationType: $type');
-        print('notification: $notification');
-        print('data: $data');
-        if (type == NotificationType.onMessage) {
-          Get.snackbar(
-            notification['title'].toString(),
-            notification['body'].toString(),
-            onTap: (_) {
+    enableNotification: true,
+    notificationHandler: (Map<String, dynamic> notification,
+        Map<String, dynamic> data, NotificationType type) {
+      print('NotificationType: $type');
+      print('notification: $notification');
+      print('data: $data');
+      if (type == NotificationType.onMessage) {
+        Get.snackbar(
+          notification['title'].toString(),
+          notification['body'].toString(),
+          onTap: (_) {
+            Get.toNamed(data['route']);
+          },
+          mainButton: FlatButton(
+            child: Text('Open'),
+            onPressed: () {
               Get.toNamed(data['route']);
             },
-            mainButton: FlatButton(
-              child: Text('Open'),
-              onPressed: () {
-                Get.toNamed(data['route']);
-              },
-            ),
-          );
-        } else {
-          // TODO: Make it work.
-          /// App will come here when the user open the app by tapping a push notification on the system tray.
-          /// Do something based on the `data`.
-          if (data != null && data['postId'] != null) {
-            // Get.toNamed(Settings.postViewRoute, arguments: {'postId': data['postId']});
-          }
+          ),
+        );
+      } else {
+        // TODO: Make it work.
+        /// App will come here when the user open the app by tapping a push notification on the system tray.
+        /// Do something based on the `data`.
+        if (data != null && data['postId'] != null) {
+          // Get.toNamed(Settings.postViewRoute, arguments: {'postId': data['postId']});
         }
-      });
+      }
+    },
+    socialLoginSuccessHandler: (user) => Get.toNamed(RouteNames.home),
+    socialLoginErrorHandler: (e) => Service.error(e),
+  );
 
   runApp(MainApp());
 }

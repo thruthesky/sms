@@ -156,78 +156,84 @@ class Service {
   /// Google sign-in
   ///
   ///
-  static Future<void> signInWithGoogle() async {
-    // Trigger the authentication flow
+  // static Future<void> signInWithGoogle() async {
+  //   // Trigger the authentication flow
 
-    final GoogleSignInAccount googleUser = await GoogleSignIn().signIn();
-    if (googleUser == null) return error(ERROR_SIGNIN_ABORTED);
+  //   await GoogleSignIn().signOut(); // to ensure you can sign in different user.
+  //   final GoogleSignInAccount googleUser = await GoogleSignIn().signIn();
+  //   if (googleUser == null) return error(ERROR_SIGNIN_ABORTED);
 
-    try {
-      // Obtain the auth details from the request
-      final GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
+  //   try {
+  //     // Obtain the auth details from the request
+  //     final GoogleSignInAuthentication googleAuth =
+  //         await googleUser.authentication;
 
-      // Create a new credential
-      final GoogleAuthCredential credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
-      );
+  //     // Create a new credential
+  //     final GoogleAuthCredential credential = GoogleAuthProvider.credential(
+  //       accessToken: googleAuth.accessToken,
+  //       idToken: googleAuth.idToken,
+  //     );
 
-      // Once signed in, return the UserCredential
-      UserCredential user =
-          await FirebaseAuth.instance.signInWithCredential(credential);
+  //     // Once signed in, return the UserCredential
+  //     UserCredential user =
+  //         await FirebaseAuth.instance.signInWithCredential(credential);
 
-      onSocialLogin(user.user);
-      Get.toNamed(RouteNames.home);
-    } catch (e) {
-      error(e);
-    }
-  }
+  //     onSocialLogin(user.user);
+  //     Get.toNamed(RouteNames.home);
+  //   } catch (e) {
+  //     error(e);
+  //   }
+  // }
 
   /// Facebook social login
   ///
   ///
-  static Future<void> signInWithFacebook() async {
-    // Trigger the sign-in flow
-    LoginResult result;
-    try {
-      await FacebookAuth.instance
-          .logOut(); // Need to logout to avoid 'User logged in as different Facebook user'
-      result = await FacebookAuth.instance.login();
-      if (result == null || result.accessToken == null) {
-        return error(ERROR_SIGNIN_ABORTED);
-      }
-    } catch (e) {
-      error(e);
-    }
+  // static Future<void> signInWithFacebook() async {
+  //   // Trigger the sign-in flow
+  //   LoginResult result;
+  //   try {
+  //     await FacebookAuth.instance
+  //         .logOut(); // Need to logout to avoid 'User logged in as different Facebook user'
+  //     result = await FacebookAuth.instance.login();
+  //     if (result == null || result.accessToken == null) {
+  //       return error(ERROR_SIGNIN_ABORTED);
+  //     }
+  //   } catch (e) {
+  //     error(e);
+  //   }
 
-    // Create a credential from the access token
-    final FacebookAuthCredential facebookAuthCredential =
-        FacebookAuthProvider.credential(result.accessToken.token);
+  //   // Create a credential from the access token
+  //   final FacebookAuthCredential facebookAuthCredential =
+  //       FacebookAuthProvider.credential(result.accessToken.token);
 
-    try {
-      // Once signed in, return the UserCredential
-      UserCredential user = await FirebaseAuth.instance
-          .signInWithCredential(facebookAuthCredential);
+  //   try {
+  //     // Once signed in, return the UserCredential
+  //     UserCredential user = await FirebaseAuth.instance
+  //         .signInWithCredential(facebookAuthCredential);
 
-      onSocialLogin(user.user);
-      Get.toNamed(RouteNames.home);
-    } catch (e) {
-      error(e);
-    }
-  }
+  //     onSocialLogin(user.user);
+  //     Get.toNamed(RouteNames.home);
+  //   } catch (e) {
+  //     error(e);
+  //   }
+  // }
 
-  static onSocialLogin(User user) {
-    usersRef.doc(user.uid).set({
-      "notifyPost": true,
-      "notifyComment": true,
-    }, SetOptions(merge: true));
-    onLogin(user);
-  }
+  // static onSocialLogin(User user) async {
+  //   final doc =
+  //       await usersRef.doc(user.uid).collection('meta').doc('public').get();
 
-  static onLogin(User user) {
-    ff.updateToken(user);
-  }
+  //   if (!doc.exists) {
+  //     usersRef.doc(user.uid).collection('meta').doc('public').set({
+  //       "notifyPost": true,
+  //       "notifyComment": true,
+  //     }, SetOptions(merge: true));
+  //   }
+  //   onLogin(user);
+  // }
+
+  // static onLogin(User user) {
+  //   ff.updateToken(user);
+  // }
 
   // /// @attention the app must call this method on app boot.
   // /// This method is not called automatically.
