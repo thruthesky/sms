@@ -15,19 +15,6 @@ class ForumScreen extends StatefulWidget {
 }
 
 class _ForumScreenState extends State<ForumScreen> {
-  // final CollectionReference colPosts =
-  //     FirebaseFirestore.instance.collection('posts');
-
-  // StreamSubscription subscription;
-
-  // String category;
-  // List<PostModel> posts = [];
-
-  // bool noPostsYet = false;
-  // bool noMorePost = false;
-  // bool inLoading = false;
-  // int pageNo = 0;
-
   ForumData forum;
   String category;
 
@@ -95,7 +82,6 @@ class _ForumScreenState extends State<ForumScreen> {
   @override
   dispose() {
     /// unsubscribe from the stream to avoid having memory leak..
-    // subscription.cancel();
     forum.leave();
     super.dispose();
   }
