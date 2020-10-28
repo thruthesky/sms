@@ -130,30 +130,31 @@ class _ForumScreenState extends State<ForumScreen> {
                 }, SetOptions(merge: true));
               }),
           IconButton(
-              icon: notificationComment == true
-                  ? Icon(Icons.notifications_active)
-                  : Icon(Icons.notifications_off),
-              onPressed: () {
-                if (Service.userController.isNotLoggedIn) {
-                  return Service.alert('Must Login to subscribe to $category');
-                }
-                setState(() {
-                  notificationComment = !notificationComment;
-                });
-                final topic = "notification_comment_$category";
-                if (notificationComment) {
-                  ff.subscribeTopic(topic);
-                } else {
-                  ff.unsubscribeTopic(topic);
-                }
-                Service.usersRef
-                    .doc(Service.userController.user.uid)
-                    .collection('meta')
-                    .doc('public')
-                    .set({
-                  "$topic": notificationComment,
-                }, SetOptions(merge: true));
-              })
+            icon: notificationComment == true
+                ? Icon(Icons.notifications_active)
+                : Icon(Icons.notifications_off),
+            onPressed: () {
+              if (Service.userController.isNotLoggedIn) {
+                return Service.alert('Must Login to subscribe to $category');
+              }
+              setState(() {
+                notificationComment = !notificationComment;
+              });
+              final topic = "notification_comment_$category";
+              if (notificationComment) {
+                ff.subscribeTopic(topic);
+              } else {
+                ff.unsubscribeTopic(topic);
+              }
+              Service.usersRef
+                  .doc(Service.userController.user.uid)
+                  .collection('meta')
+                  .doc('public')
+                  .set({
+                "$topic": notificationComment,
+              }, SetOptions(merge: true));
+            },
+          )
         ],
       ),
       body: SingleChildScrollView(
