@@ -101,11 +101,15 @@ class _CommentState extends State<Comment> {
                               ConfirmDialog(title: 'Delete Comment?'.tr),
                             );
 
-                            if (confirm != null && confirm) {
-                              ff.deleteComment(
+                            if (confirm == null || !confirm) return;
+
+                            try {
+                              await ff.deleteComment(
                                 widget.post['id'],
                                 comment['id'],
                               );
+                            } catch (e) {
+                              Service.error(e);
                             }
                           },
                         ),
