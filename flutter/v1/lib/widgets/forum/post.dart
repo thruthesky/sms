@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:v1/controllers/user.controller.dart';
+import 'package:v1/services/global_variables.dart';
 import 'package:v1/services/route-names.dart';
 import 'package:v1/services/service.dart';
 import 'package:v1/services/spaces.dart';
@@ -153,9 +154,7 @@ class _PostState extends State<Post> {
                       );
 
                       if (confirm != null && confirm) {
-                        firestoreInstance
-                            .doc('posts/${widget.post['id']}')
-                            .delete();
+                        ff.deletePost(widget.post['id']);
                       }
                     },
                   ),
