@@ -34,7 +34,9 @@ class _ForumScreenState extends State<ForumScreen> {
 
     forum = ForumData(
       category: category,
-      render: (x) => setState(() => null),
+      render: (RenderType x) {
+        if (mounted) setState(() => null);
+      },
     );
 
     /// Scroll event handler
@@ -43,7 +45,9 @@ class _ForumScreenState extends State<ForumScreen> {
       var isEnd = scrollController.offset >
           (scrollController.position.maxScrollExtent - 200);
       // If yes, then get more posts.
-      if (isEnd) ff.fetchPosts(forum);
+      if (isEnd) {
+        ff.fetchPosts(forum);
+      }
     });
 
     /// fetch posts for the first time.

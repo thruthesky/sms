@@ -26,10 +26,11 @@ class _PostState extends State<Post> {
 
   StreamSubscription voteRefSubscription;
 
-  bool showContent = false;
+  bool showContent = true;
 
   @override
   dispose() {
+    /// TODO prove that the comment will have double event on update when the subscription is not cancelled.
     if (!voteRefSubscription.isNull) {
       voteRefSubscription.cancel();
     }

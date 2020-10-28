@@ -1,11 +1,8 @@
-import 'package:after_layout/after_layout.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:v1/controllers/user.controller.dart';
-import 'package:v1/services/functions.dart';
 import 'package:v1/services/global_variables.dart';
-import 'package:v1/services/models.dart';
 import 'package:v1/services/service.dart';
 
 class ForumEditScreen extends StatefulWidget {
@@ -13,8 +10,7 @@ class ForumEditScreen extends StatefulWidget {
   _ForumEditScreenState createState() => _ForumEditScreenState();
 }
 
-class _ForumEditScreenState extends State<ForumEditScreen>
-    with AfterLayoutMixin {
+class _ForumEditScreenState extends State<ForumEditScreen> {
   final UserController userController = Get.find<UserController>();
   final titleController = TextEditingController();
   final contentController = TextEditingController();
@@ -23,13 +19,13 @@ class _ForumEditScreenState extends State<ForumEditScreen>
       FirebaseFirestore.instance.collection('posts');
 
   String category;
-  PostModel post;
+  dynamic post;
 
   @override
-  void afterFirstLayout(BuildContext context) {
-    final args = routerArguments(context);
-    category = args['category'];
-    post = args['post'];
+  void initState() {
+    super.initState();
+    category = Get.arguments['category'];
+    post = Get.arguments['post'];
     print('post');
     print(post);
 
@@ -63,37 +59,14 @@ class _ForumEditScreenState extends State<ForumEditScreen>
                 decoration: InputDecoration(hintText: 'content'.tr)),
             RaisedButton(
               onPressed: () async {
-                final Map<String, dynamic> data = {
-                  'category': category,
-                  'title': titleController.text,
-                  'content': contentController.text,
-                  'uid': userController.uid
-                };
-                // print('data: ');
-                // print(data);
-
                 try {
-                  if (post != null) {
-                    print('updating post');
-                    data['category'] = post.category;
-                    data['updatedAt'] = FieldValue.serverTimestamp();
-                    await colPosts.doc(post.id).set(
-                          data,
-                          SetOptions(merge: true),
-                        );
-                  } else {
-                    print('creating post');
-                    // TODO: Let user can change category by giving 'more popmenu option'.
-                    data['createdAt'] = FieldValue.serverTimestamp();
-                    data['updatedAt'] = FieldValue.serverTimestamp();
-                    await colPosts.add(data);
-                    ff.sendNotification(
-                      titleController.text,
-                      contentController.text,
-                      route: category,
-                      topic: "notification_post_" + category,
-                    );
-                  }
+                  await ff.editPost({
+                    'id': post == null ? null : post['id'],
+                    'category': category,
+                    'title': titleController.text,
+                    'content': contentController.text,
+                    'uid': userController.uid
+                  });
                   Get.back();
                 } catch (e) {
                   Service.error(e);
