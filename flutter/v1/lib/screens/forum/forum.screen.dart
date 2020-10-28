@@ -7,8 +7,6 @@ import 'package:v1/services/service.dart';
 import 'package:v1/services/spaces.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:v1/widgets/commons/spinner.dart';
-import 'package:v1/widgets/forum/comment.edit.form.dart';
-import 'package:v1/widgets/forum/comments.dart';
 import 'package:v1/widgets/forum/post.dart';
 
 class ForumScreen extends StatefulWidget {
