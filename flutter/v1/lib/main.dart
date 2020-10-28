@@ -27,6 +27,8 @@ import 'package:v1/services/service.dart';
 void main() async {
   await ff.init(
     enableNotification: true,
+    firebaseServerToken:
+        'AAAAjdyAvbM:APA91bGist2NNTrrKTZElMzrNV0rpBLV7Nn674NRow-uyjG1-Uhh5wGQWyQEmy85Rcs0wlEpYT2uFJrSnlZywLzP1hkdx32FKiPJMI38evdRZO0x1vBJLc-cukMqZBKytzb3mzRfmrgL',
     notificationHandler: (Map<String, dynamic> notification,
         Map<String, dynamic> data, NotificationType type) {
       print('NotificationType: $type');
