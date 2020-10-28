@@ -7,7 +7,6 @@
 import 'dart:convert';
 import 'dart:io' as io;
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 
@@ -18,7 +17,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:flutter/services.dart' show rootBundle;
-import 'package:v1/services/models.dart';
 
 /// Returns a random string
 ///
