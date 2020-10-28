@@ -4,8 +4,6 @@ import 'package:get/instance_manager.dart';
 import 'package:v1/controllers/user.controller.dart';
 import 'package:get/get.dart';
 import 'package:v1/services/global_variables.dart';
-
-import 'package:v1/services/service.dart';
 import 'package:v1/services/spaces.dart';
 
 enum Mode { create, update, delete }
@@ -75,6 +73,7 @@ class _AdminPushNotificationScreenState
                                 setState(() => selectedItem = string),
                             items:
                                 categoryName.map((Map<String, dynamic> item) {
+                              print(item);
                               return DropdownMenuItem<String>(
                                 child: Text(item['name']),
                                 value: item['code'],
