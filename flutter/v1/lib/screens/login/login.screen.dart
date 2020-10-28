@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:kakao_flutter_sdk/all.dart';
+import 'package:kakao_flutter_sdk/auth.dart';
+import 'package:kakao_flutter_sdk/link.dart';
 import 'package:v1/services/global_variables.dart';
 import 'package:v1/services/service.dart';
 import 'package:v1/services/route-names.dart';
 import 'package:v1/services/spaces.dart';
+import 'package:v1/widgets/user/kakao_login_button.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -40,15 +45,17 @@ class _LoginScreenState extends State<LoginScreen> {
                 },
               ),
               RaisedButton(
-                  child: Text('Facebook Sign-in'),
-                  onPressed: () async {
-                    try {
-                      await ff.signInWithFacebook();
-                      Get.toNamed(RouteNames.home);
-                    } catch (e) {
-                      Service.error(e);
-                    }
-                  }),
+                child: Text('Facebook Sign-in'),
+                onPressed: () async {
+                  try {
+                    await ff.signInWithFacebook();
+                    Get.toNamed(RouteNames.home);
+                  } catch (e) {
+                    Service.error(e);
+                  }
+                },
+              ),
+              KakaoLoginButton(),
               SizedBox(height: Space.xl),
               TextFormField(
                 key: ValueKey('email'),

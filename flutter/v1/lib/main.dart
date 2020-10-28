@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:after_layout/after_layout.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
+import 'package:kakao_flutter_sdk/link.dart';
 import 'package:v1/controllers/user.controller.dart';
 import 'package:v1/screens/admin/admin.category.screen.dart';
 import 'package:v1/screens/admin/admin.push-notification.dart';
@@ -61,6 +62,9 @@ void main() async {
     // socialLoginErrorHandler: (e) => Service.error(e),
   );
 
+  KakaoContext.clientId = 'f2ab9c07815d4cf099a5e8b4d82398d4';
+  KakaoContext.javascriptClientId = '2cdb6b324434311d304ab3f367f9edf3';
+
   runApp(MainApp());
 }
 
@@ -76,8 +80,8 @@ class _MainAppState extends State<MainApp> with AfterLayoutMixin<MainApp> {
   void initState() {
     super.initState();
 
-    Timer(Duration(milliseconds: 300),
-        () => Get.toNamed('forum', arguments: {'category': 'qna'}));
+    // Timer(Duration(milliseconds: 300),
+    //     () => Get.toNamed('forum', arguments: {'category': 'qna'}));
   }
 
   @override
