@@ -14,26 +14,16 @@ dependencies:
 
   cupertino_icons: ^0.1.3
   get: ^3.13.2
-  firebase_core: "0.5.0+1"
-  firebase_auth: "^0.18.1+2"
-  google_sign_in: "^4.5.1"
-  flutter_facebook_auth: "^0.3.0"
-  cloud_firestore: "^0.14.1+3"
-  firebase_storage: "^5.0.0-dev.3"
 
   after_layout: ^1.0.7+2
   devicelocale: ^0.3.1
 
-  firebase_messaging: ^7.0.3
   image_picker: ^0.6.7+12
   permission_handler: ^5.0.1+1
   cached_network_image: ^2.3.3
   flutter_image_compress: ^0.7.0
 
   path_provider: ^1.6.21
-
-  dio: ^3.0.10
-  jiffy: ^3.0.1
 
   fireflutter:
     path: packages/fireflutter
