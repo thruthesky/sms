@@ -41,12 +41,10 @@ class _LoginScreenState extends State<LoginScreen> {
               SignInWithAppleButton(
                 onPressed: () async {
                   try {
-                    User user = await ff.signInWithApple();
-                    print(user);
+                    await ff.signInWithApple();
                     Get.toNamed(RouteNames.home);
                   } catch (e) {
                     Service.error(e);
-                    print(e);
                   }
                 },
               ),
