@@ -168,22 +168,7 @@ class _ForumScreenState extends State<ForumScreen> {
                 ),
 
                 /// post list
-                ListView.builder(
-                  physics: NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  itemCount: forum.posts.length,
-                  itemBuilder: (c, i) {
-                    return forum.posts.length == 0
-                        ? Padding(
-                            padding: EdgeInsets.all(Space.md),
-                            child: Text('No posts yet..'),
-                          )
-                        : Post(
-                            key: ValueKey(forum.posts[i]['id']),
-                            post: forum.posts[i],
-                          );
-                  },
-                ),
+                PostList(posts: forum.posts),
 
                 /// loader
                 if (forum.inLoading)
@@ -202,5 +187,24 @@ class _ForumScreenState extends State<ForumScreen> {
         ),
       ),
     );
+  }
+}
+
+class PostList extends StatelessWidget {
+  final List<dynamic> posts;
+  PostList({this.posts});
+
+  @override
+  Widget build(BuildContext context) {
+    return posts.length > 0
+        ? Column(
+            children: [
+              for (dynamic post in posts) Post(post: post),
+            ],
+          )
+        : Padding(
+            padding: EdgeInsets.all(Space.md),
+            child: Text('No posts yet..'),
+          );
   }
 }

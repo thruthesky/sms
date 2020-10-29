@@ -16,8 +16,16 @@ class CommentsList extends StatefulWidget {
 
 class _CommentsState extends State<CommentsList> {
   @override
+  void initState() {
+    if (widget.post['comments'] == null) {
+      widget.post['comments'] = [];
+    }
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return widget.post['comments'] != null
+    return widget.post['comments'].length > 0
         ? Column(
             children: [
               for (int i = 0; i < widget.post['comments'].length; i++)
@@ -29,7 +37,11 @@ class _CommentsState extends State<CommentsList> {
                 ),
             ],
           )
-        : SizedBox.shrink();
+        : Padding(
+            padding: EdgeInsets.all(Space.md),
+            child: Text('No comments yet..'),
+          );
+    ;
   }
 }
 
