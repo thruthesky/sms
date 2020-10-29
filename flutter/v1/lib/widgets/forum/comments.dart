@@ -5,6 +5,7 @@ import 'package:v1/services/service.dart';
 import 'package:v1/services/spaces.dart';
 import 'package:v1/widgets/commons/confirm-dialog.dart';
 import 'package:v1/widgets/forum/comment.edit.form.dart';
+import 'package:v1/widgets/forum/file.display.dart';
 
 class Comments extends StatefulWidget {
   Comments({
@@ -23,7 +24,10 @@ class _CommentsState extends State<Comments> {
         ? Column(
             children: [
               for (int i = 0; i < widget.post['comments'].length; i++)
-                Comment(post: widget.post, commentIndex: i),
+                Comment(
+                    post: widget.post,
+                    commentIndex: i,
+                    comment: widget.post['comments'][i]),
             ],
           )
         : SizedBox.shrink();
@@ -32,9 +36,11 @@ class _CommentsState extends State<Comments> {
 
 class Comment extends StatefulWidget {
   final dynamic post;
+  final dynamic comment;
   final int commentIndex;
   Comment({
     this.post,
+    this.comment,
     this.commentIndex,
     Key key,
   }) : super(key: key);
@@ -45,7 +51,6 @@ class Comment extends StatefulWidget {
 
 class _CommentState extends State<Comment> {
   bool inEdit = false;
-  dynamic comment;
 
   @override
   void initState() {
@@ -54,13 +59,9 @@ class _CommentState extends State<Comment> {
 
   @override
   Widget build(BuildContext context) {
-    /// TODO: remove this from here.
-    /// find another way to make this work.
-    comment = widget.post['comments'][widget.commentIndex];
-
     return Container(
       margin: EdgeInsets.only(
-        left: Space.md * comment['depth'],
+        left: Space.md * widget.comment['depth'],
         bottom: Space.md,
       ),
       padding: EdgeInsets.all(Space.md),
@@ -73,7 +74,9 @@ class _CommentState extends State<Comment> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: !inEdit
                   ? [
-                      Text("${comment['content']}"),
+                      Text("${widget.comment['content']}"),
+                      SizedBox(height: Space.md),
+                      FileDisplay(widget.comment['files']),
                       Divider(),
                       Row(
                         children: [
@@ -89,7 +92,7 @@ class _CommentState extends State<Comment> {
                               print('VOTE : like');
                             },
                           ),
-                          if (Service.isMine(comment)) ...[
+                          if (Service.isMine(widget.comment)) ...[
                             IconButton(
                               icon: Icon(Icons.edit),
                               onPressed: () {
@@ -108,7 +111,7 @@ class _CommentState extends State<Comment> {
                                 try {
                                   await ff.deleteComment(
                                     widget.post['id'],
-                                    comment['id'],
+                                    widget.comment['id'],
                                   );
                                 } catch (e) {
                                   Service.error(e);
@@ -125,8 +128,9 @@ class _CommentState extends State<Comment> {
                     ]
                   : [
                       CommentEditForm(
+                        key: ValueKey(widget.post['id'] + widget.comment['id']),
                         post: widget.post,
-                        comment: comment,
+                        comment: widget.comment,
                         showCancelButton: true,
                         onCancel: () => setState(() => inEdit = false),
                         onSuccess: () => setState(() => inEdit = false),

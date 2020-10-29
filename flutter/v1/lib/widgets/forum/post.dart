@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -9,6 +10,7 @@ import 'package:v1/services/spaces.dart';
 import 'package:v1/widgets/commons/confirm-dialog.dart';
 import 'package:v1/widgets/forum/comment.edit.form.dart';
 import 'package:v1/widgets/forum/comments.dart';
+import 'package:v1/widgets/forum/file.display.dart';
 
 class Post extends StatefulWidget {
   final dynamic post;
@@ -53,6 +55,7 @@ class _PostState extends State<Post> {
             onTap: () => setState(() => showContent = !showContent),
           ),
           if (showContent) ...[
+            FileDisplay(widget.post['files']),
             Row(
               children: [
                 IconButton(
