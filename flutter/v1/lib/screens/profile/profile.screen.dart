@@ -1,14 +1,13 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:v1/services/global_variables.dart';
 import 'package:v1/services/service.dart';
 import 'package:v1/services/spaces.dart';
-import 'package:v1/widgets/user/birthday-picker.dart';
-import 'package:v1/widgets/user/profile-image.dart';
+import 'package:v1/widgets/user/birthday_picker.dart';
+import 'package:v1/widgets/user/profile_image.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
