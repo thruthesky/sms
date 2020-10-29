@@ -42,7 +42,6 @@ class _CommentEditFormState extends State<CommentEditForm> {
 
   @override
   initState() {
-    /// TODO: this is not working here.
     if (widget.comment != null) {
       files = widget.comment['files'] ?? [];
       contentController.text = widget.comment['content'];
@@ -52,12 +51,6 @@ class _CommentEditFormState extends State<CommentEditForm> {
 
   @override
   Widget build(BuildContext context) {
-    /// TODO: this is working here yet it is not ideal to put it here.
-    /// find a way to make it work without putting this code here.
-    // if (widget.comment != null) {
-    //   files = widget.comment['files'] ?? [];
-    //   contentController.text = widget.comment['content'];
-    // }
 
     return Column(
       children: [
