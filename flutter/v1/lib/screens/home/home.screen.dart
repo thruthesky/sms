@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -5,8 +7,6 @@ import 'package:get/get.dart';
 import 'package:v1/services/global_variables.dart';
 import 'package:v1/services/route-names.dart';
 import 'package:v1/services/service.dart';
-// import 'package:v1/services/translations.dart';
-// import 'package:v1/tests/forum.test.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -19,9 +19,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
-    // final ft = ForumTest();
-    // ft.runOrderTest();
-    // ft.runAncestorTest();
     super.initState();
   }
 
@@ -54,6 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
               /// when user logged in,
               return Column(
                 children: [
+                  Text('app_title'.tr),
                   Text("User Uid: ${ff.user.uid}"),
                   Text("User Email: ${ff.user.email}"),
                   Text("User Nickname: ${ff.user.displayName}"),
