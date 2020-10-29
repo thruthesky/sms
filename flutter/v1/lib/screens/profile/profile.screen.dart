@@ -46,51 +46,48 @@ class _ProfileScreenState extends State<ProfileScreen> {
               Center(
                 child: Column(
                   children: [
-                    Stack(
-                      children: [
-                        ProfileImage(
-                          size: Space.xxl,
-                          onTap: () async {
-                            try {
-                              /// choose upload option.
-                              ImageSource source = await Get.bottomSheet(
-                                PhotoPickerBottomSheet(),
-                                backgroundColor: Colors.white,
-                              );
+                    ProfileImage(
+                      size: Space.xxl,
+                      onTap: () async {
+                        /// choose upload option.
+                        ImageSource source = await Get.bottomSheet(
+                          PhotoPickerBottomSheet(),
+                          backgroundColor: Colors.white,
+                        );
 
-                              /// do nothing when user cancel option selection.
-                              if (source == null) return null;
+                        /// do nothing when user cancel option selection.
+                        if (source == null) return null;
 
-                              /// upload picked file,
-                              final url = await ff.uploadFile(
-                                folder: 'user-profile-photos',
-                                source: source,
+                        /// delete previous photo to avoid flooding the storage with unused files.
+                        ff.deleteFile(ff.user.photoURL).catchError((e) {
+                          print('error deleting firebase file');
+                          print('error: $e');
+                        });
 
-                                /// upload progress
-                                progress: (p) => setState(
-                                  () {
-                                    this.uploadProgress = p;
-                                  },
-                                ),
-                              );
+                        try {
+                          /// upload picked file,
+                          final url = await ff.uploadFile(
+                            folder: 'user-profile-photos',
+                            source: source,
 
-                              // update image url of current user.
-                              await ff.updatePhoto(url);
-                              setState(() => uploadProgress = 0);
-                              // print('url: $url');
-                            } catch (e) {
-                              // print('error on file pick: ');
-                              print(e);
-                              Service.error(e);
-                            }
-                          },
-                        ),
-                        Positioned(
-                          child: Icon(Icons.camera_alt, size: Space.xl),
-                          bottom: Space.xxs,
-                          left: Space.xxs,
-                        )
-                      ],
+                            /// upload progress
+                            progress: (p) => setState(
+                              () {
+                                this.uploadProgress = p;
+                              },
+                            ),
+                          );
+
+                          // update image url of current user.
+                          await ff.updatePhoto(url);
+                          setState(() => uploadProgress = 0);
+                          // print('url: $url');
+                        } catch (e) {
+                          // print('error on file pick: ');
+                          print(e);
+                          Service.error(e);
+                        }
+                      },
                     ),
                     if (uploadProgress != 0) Text('$uploadProgress%')
                   ],

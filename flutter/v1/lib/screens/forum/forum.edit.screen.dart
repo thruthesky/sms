@@ -75,12 +75,12 @@ class _ForumEditScreenState extends State<ForumEditScreen> {
                   IconButton(
                     icon: Icon(Icons.camera_alt),
                     onPressed: () async {
+                      ImageSource source = await Get.bottomSheet(
+                        PhotoPickerBottomSheet(),
+                        backgroundColor: Colors.white,
+                      );
+                      if (source == null) return null;
                       try {
-                        ImageSource source = await Get.bottomSheet(
-                          PhotoPickerBottomSheet(),
-                          backgroundColor: Colors.white,
-                        );
-                        if (source == null) return null;
                         final url = await ff.uploadFile(
                           folder: 'forum-photos',
                           source: source,

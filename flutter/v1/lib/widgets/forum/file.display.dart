@@ -1,6 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:v1/services/global_variables.dart';
+import 'package:v1/services/service.dart';
 import 'package:v1/services/spaces.dart';
 import 'package:v1/widgets/commons/confirm-dialog.dart';
 
@@ -45,8 +47,13 @@ class _FileDisplayState extends State<FileDisplay> {
 
                             if (confirm == null || !confirm) return;
 
-                            widget.files.removeAt(i);
-                            setState(() {});
+                            try {
+                              await ff.deleteFile(widget.files[i]);
+                              widget.files.removeAt(i);
+                              setState(() {});
+                            } catch (e) {
+                              Service.error(e);
+                            }
                           },
                         ),
                       ),
