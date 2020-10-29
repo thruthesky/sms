@@ -49,13 +49,15 @@ class _CommentState extends State<Comment> {
 
   @override
   void initState() {
-    comment = widget.post['comments'][widget.commentIndex];
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    // print('${comment.order} ${comment.content}');
+    /// TODO: remove this from here.
+    /// find another way to make this work.
+    comment = widget.post['comments'][widget.commentIndex];
+
     return Container(
       margin: EdgeInsets.only(
         left: Space.md * comment['depth'],
@@ -69,69 +71,67 @@ class _CommentState extends State<Comment> {
             width: double.infinity,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (!inEdit) ...[
-                  Text("${comment['content']}"),
-                  Divider(),
-                  Row(
-                    children: [
-                      IconButton(
-                        icon: Icon(Icons.thumb_up),
-                        onPressed: () {},
-                      ),
-                      if (widget.post['like'] != null)
-                        Text(widget.post['like'].toString()),
-                      IconButton(
-                        icon: Icon(Icons.thumb_down),
-                        onPressed: () {},
-                      ),
-                      if (widget.post['dislike'] != null)
-                        Text(widget.post['dislike'].toString()),
-                      if (Service.isMine(comment)) ...[
-                        IconButton(
-                          icon: Icon(Icons.edit),
-                          onPressed: () {
-                            setState(() => inEdit = true);
-                          },
-                        ),
-                        IconButton(
-                          icon: Icon(Icons.delete),
-                          onPressed: () async {
-                            bool confirm = await Get.dialog(
-                              ConfirmDialog(title: 'Delete Comment?'.tr),
-                            );
+              children: !inEdit
+                  ? [
+                      Text("${comment['content']}"),
+                      Divider(),
+                      Row(
+                        children: [
+                          IconButton(
+                            icon: Icon(Icons.thumb_up),
+                            onPressed: () {},
+                          ),
+                          if (widget.post['like'] != null)
+                            Text(widget.post['like'].toString()),
+                          IconButton(
+                            icon: Icon(Icons.thumb_down),
+                            onPressed: () {},
+                          ),
+                          if (widget.post['dislike'] != null)
+                            Text(widget.post['dislike'].toString()),
+                          if (Service.isMine(comment)) ...[
+                            IconButton(
+                              icon: Icon(Icons.edit),
+                              onPressed: () {
+                                setState(() => inEdit = true);
+                              },
+                            ),
+                            IconButton(
+                              icon: Icon(Icons.delete),
+                              onPressed: () async {
+                                bool confirm = await Get.dialog(
+                                  ConfirmDialog(title: 'Delete Comment?'.tr),
+                                );
 
-                            if (confirm == null || !confirm) return;
+                                if (confirm == null || !confirm) return;
 
-                            try {
-                              await ff.deleteComment(
-                                widget.post['id'],
-                                comment['id'],
-                              );
-                            } catch (e) {
-                              Service.error(e);
-                            }
-                          },
-                        ),
-                      ]
+                                try {
+                                  await ff.deleteComment(
+                                    widget.post['id'],
+                                    comment['id'],
+                                  );
+                                } catch (e) {
+                                  Service.error(e);
+                                }
+                              },
+                            ),
+                          ]
+                        ],
+                      ),
+                      CommentEditForm(
+                        post: widget.post,
+                        commentIndex: widget.commentIndex,
+                      ),
+                    ]
+                  : [
+                      CommentEditForm(
+                        post: widget.post,
+                        comment: comment,
+                        showCancelButton: true,
+                        onCancel: () => setState(() => inEdit = false),
+                        onSuccess: () => setState(() => inEdit = false),
+                      ),
                     ],
-                  ),
-                  CommentEditForm(
-                    post: widget.post,
-                    commentIndex: widget.commentIndex,
-                  ),
-                ],
-                if (inEdit) ...[
-                  CommentEditForm(
-                    post: widget.post,
-                    comment: comment,
-                    showCancelButton: true,
-                    onCancel: () {
-                      setState(() => inEdit = false);
-                    },
-                  ),
-                ]
-              ],
             ),
           ),
         ],

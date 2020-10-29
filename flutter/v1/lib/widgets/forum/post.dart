@@ -121,7 +121,7 @@ class _PostState extends State<Post> {
                     widget.post['content'],
                     style: TextStyle(fontSize: Space.lg),
                   ),
-            onTap: () => setState(() => showContent = true),
+            onTap: () => setState(() => showContent = !showContent),
           ),
           if (showContent) ...[
             Row(

@@ -13,6 +13,7 @@ class CommentEditForm extends StatefulWidget {
     this.comment,
     this.showCancelButton = false,
     this.onCancel,
+    this.onSuccess,
     Key key,
   }) : super(key: key);
 
@@ -22,6 +23,7 @@ class CommentEditForm extends StatefulWidget {
   final bool showCancelButton;
 
   final Function onCancel;
+  final Function onSuccess;
 
   @override
   _CommentEditFormState createState() => _CommentEditFormState();
@@ -32,14 +34,21 @@ class _CommentEditFormState extends State<CommentEditForm> {
 
   @override
   initState() {
-    if (widget.comment != null) {
-      contentController.text = widget.comment['content'];
-    }
+    /// NOTE: this will not work.
+    // if (widget.comment != null) {
+    //   contentController.text = widget.comment['content'];
+    // }
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    /// TODO: remove this from here.
+    /// find another way to make it work.
+    if (widget.comment != null) {
+      contentController.text = widget.comment['content'];
+    }
+
     return Column(
       children: [
         TextFormField(
@@ -63,17 +72,21 @@ class _CommentEditFormState extends State<CommentEditForm> {
 
                 final data = {
                   'post': widget.post,
-                  'parentIndex': widget.commentIndex,
                   'content': contentController.text,
                 };
 
                 if (widget.comment != null) {
                   data['id'] = widget.comment['id'];
                   data['depth'] = widget.comment['depth'];
+                  data['order'] = widget.comment['order'];
+                } else {
+                  data['parentIndex'] = widget.commentIndex;
                 }
 
                 try {
                   await ff.editComment(data);
+                  if (widget.onSuccess != null) widget.onSuccess();
+                  contentController.text = '';
                 } catch (e) {
                   print(e);
                   Service.error(e);
