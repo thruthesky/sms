@@ -5,8 +5,9 @@ import 'package:v1/services/global_variables.dart';
 import 'package:v1/services/service.dart';
 import 'package:v1/services/route-names.dart';
 import 'package:v1/services/spaces.dart';
-import 'package:v1/widgets/user/birthday-picker.dart';
+import 'package:v1/widgets/user/birthday_picker.dart';
 import 'package:fireflutter/fireflutter.dart';
+import 'package:v1/widgets/user/kakao_login_button.dart';
 
 class RegisterScreen extends StatefulWidget {
   @override
@@ -45,12 +46,27 @@ class _RegisterScreenState extends State<RegisterScreen> {
             children: [
               RaisedButton(
                 child: Text('Google Sign-in'),
-                onPressed: ff.signInWithGoogle,
+                onPressed: () async {
+                  try {
+                    await ff.signInWithGoogle();
+                    Get.toNamed(RouteNames.home);
+                  } catch (e) {
+                    Service.error(e);
+                  }
+                },
               ),
               RaisedButton(
                 child: Text('Facebook Sign-in'),
-                onPressed: ff.signInWithFacebook,
+                onPressed: () async {
+                  try {
+                    await ff.signInWithFacebook();
+                    Get.toNamed(RouteNames.home);
+                  } catch (e) {
+                    Service.error(e);
+                  }
+                },
               ),
+              KakaoLoginButton(),
               SizedBox(height: Space.xl),
               TextFormField(
                 key: ValueKey('email'),

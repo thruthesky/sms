@@ -55,7 +55,7 @@ class _HomeScreenState extends State<HomeScreen> {
               return Column(
                 children: [
                   Text("User Uid: ${ff.user.uid}"),
-                  Text("User Uid: ${ff.user.email}"),
+                  Text("User Email: ${ff.user.email}"),
                   Text("User Nickname: ${ff.user.displayName}"),
                   Text("User Gender: ${ff.data['gender']}"),
                   Text("User PhotoUrl: ${ff.user.photoURL}"),
