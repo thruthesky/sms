@@ -79,16 +79,16 @@ class _CommentState extends State<Comment> {
                         children: [
                           IconButton(
                             icon: Icon(Icons.thumb_up),
-                            onPressed: () {},
+                            onPressed: () {
+                              print('VOTE : like');
+                            },
                           ),
-                          if (widget.post['like'] != null)
-                            Text(widget.post['like'].toString()),
                           IconButton(
                             icon: Icon(Icons.thumb_down),
-                            onPressed: () {},
+                            onPressed: () {
+                              print('VOTE : like');
+                            },
                           ),
-                          if (widget.post['dislike'] != null)
-                            Text(widget.post['dislike'].toString()),
                           if (Service.isMine(comment)) ...[
                             IconButton(
                               icon: Icon(Icons.edit),

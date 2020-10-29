@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -25,80 +23,11 @@ class _PostState extends State<Post> {
   final UserController userController = Get.find();
   final firestoreInstance = FirebaseFirestore.instance;
 
-  StreamSubscription voteRefSubscription;
-
   bool showContent = true;
 
   @override
   dispose() {
-    /// TODO prove that the comment will have double event on update when the subscription is not cancelled.
-    if (!voteRefSubscription.isNull) {
-      voteRefSubscription.cancel();
-    }
     super.dispose();
-  }
-
-  onVoteTap(String choice) async {
-    print('onVoteTap::choice => $choice');
-    String docID = widget.post['id'] + '-' + userController.uid;
-
-    /// vote document reference from the `likes` collection
-    DocumentReference voteRef = firestoreInstance.doc('likes/$docID');
-    DocumentSnapshot docSnapshot = await voteRef.get();
-    Map<String, dynamic> docData = docSnapshot.data();
-
-    /// TODO: Vote document set/update/delete
-    ///
-    /// Scenario:
-    /// 3. CREATE if the document DO NOT exists.
-    /// 2. UPDATE if the document exists but the choice is NOT the same.
-    /// 1. DELETE if the document exists and the choice is the same, .
-    if (!docData.isNull && docData['vote'] == choice) {
-      print('delete');
-      voteRef.delete();
-    } else {
-      print('create/update');
-      voteRef.set({
-        'uid': userController.uid,
-        'id': widget.post['id'],
-        'vote': choice,
-      });
-    }
-
-    /// TODO: updating like and dislike property of post document.
-    voteRefSubscription = voteRef.snapshots().listen((snapshot) async {
-      Map<String, dynamic> data = {
-        'uid': widget.post['uid'],
-        'like': widget.post['like'],
-        'dislike': widget.post['dislike'],
-      };
-
-      /// if not null, then the user may have just voted or changed their choice.
-      ///
-      /// TODO: determine if the user just voted or they changed their choice.
-      if (!snapshot.isNull) {
-        data[choice]++;
-
-        /// if docData is not null, it contains the previous choice of the user's vote.
-        /// meaning the user is changing their vote choice.
-        if (!docData.isNull) {
-          data[docData['vote']]--;
-        }
-      }
-
-      /// if null then the user have chosen a vote already and then remove their choice.
-      else {
-        data[choice]--;
-      }
-
-      /// TODO: make sure to update have permission to update the post's data.
-      /// NOTE: This is not working with error: `cloud_firestore/permission-denied`
-      /// Firestore security rules must be considered.
-      // firestoreInstance.doc('posts/${widget.post.id}').set(
-      //       data,
-      //       SetOptions(merge: true),
-      //     );
-    });
   }
 
   @override
@@ -128,16 +57,12 @@ class _PostState extends State<Post> {
               children: [
                 IconButton(
                   icon: Icon(Icons.thumb_up),
-                  onPressed: () => onVoteTap('like'),
+                  onPressed: () => print('VOTE: like'),
                 ),
-                if (widget.post['like'] != null)
-                  Text(widget.post['like'].toString()),
                 IconButton(
                   icon: Icon(Icons.thumb_down),
-                  onPressed: () => onVoteTap('dislike'),
+                  onPressed: () => print('VOTE: dislike'),
                 ),
-                if (widget.post['dislike'] != null)
-                  Text(widget.post['dislike'].toString()),
                 if (Service.isMine(widget.post)) ...[
                   IconButton(
                     icon: Icon(Icons.edit),
