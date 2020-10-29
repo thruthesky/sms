@@ -96,6 +96,8 @@ class _ForumEditScreenState extends State<ForumEditScreen> {
                         ///             this may only work on updating a post.
                         /// 
                         ///     option 2: inside ff.editPost() function, after creating a post, we update the `files` collection with files.
+                        ///           - Side effect: since the app is listening for collection changes on posts collection,
+                        ///             `modified` event will be fired for each file we add to post's `files` collection.
                         /// 
                         ///     option 3: `files` is a text-based instead of collection where we save file URLs as string seperated with comma.
                         /// 
