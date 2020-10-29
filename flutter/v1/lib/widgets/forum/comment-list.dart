@@ -7,33 +7,20 @@ import 'package:v1/widgets/commons/confirm-dialog.dart';
 import 'package:v1/widgets/forum/comment.edit.form.dart';
 import 'package:v1/widgets/forum/file.display.dart';
 
-class CommentsList extends StatefulWidget {
+class CommentsList extends StatelessWidget {
   final dynamic post;
   CommentsList({this.post});
-  @override
-  _CommentsState createState() => _CommentsState();
-}
-
-class _CommentsState extends State<CommentsList> {
-  @override
-  void initState() {
-    if (widget.post['comments'] == null) {
-      widget.post['comments'] = [];
-    }
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
-    return widget.post['comments'].length > 0
+    return post['comments'] != null && post['comments'].length > 0
         ? Column(
             children: [
-              for (int i = 0; i < widget.post['comments'].length; i++)
+              for (int i = 0; i < post['comments'].length; i++)
                 Comment(
-                  key: ValueKey(widget.post['comments'][i]['id']),
-                  post: widget.post,
+                  post: post,
                   commentIndex: i,
-                  comment: widget.post['comments'][i],
+                  comment: post['comments'][i],
                 ),
             ],
           )
