@@ -7,27 +7,26 @@ import 'package:v1/widgets/commons/confirm-dialog.dart';
 import 'package:v1/widgets/forum/comment.edit.form.dart';
 import 'package:v1/widgets/forum/file.display.dart';
 
-class Comments extends StatefulWidget {
-  Comments({
-    this.post,
-  });
+class CommentsList extends StatefulWidget {
   final dynamic post;
+  CommentsList({this.post});
   @override
   _CommentsState createState() => _CommentsState();
 }
 
-class _CommentsState extends State<Comments> {
+class _CommentsState extends State<CommentsList> {
   @override
   Widget build(BuildContext context) {
-    // print('-------------------- comments');
     return widget.post['comments'] != null
         ? Column(
             children: [
               for (int i = 0; i < widget.post['comments'].length; i++)
                 Comment(
-                    post: widget.post,
-                    commentIndex: i,
-                    comment: widget.post['comments'][i]),
+                  key: ValueKey(widget.post['comments'][i]['id']),
+                  post: widget.post,
+                  commentIndex: i,
+                  comment: widget.post['comments'][i],
+                ),
             ],
           )
         : SizedBox.shrink();
@@ -72,12 +71,30 @@ class _CommentState extends State<Comment> {
             width: double.infinity,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: !inEdit
+              children: inEdit
+
+                  /// show when in edit mode
                   ? [
+                      CommentEditForm(
+                        key: ValueKey(widget.post['id'] + widget.comment['id']),
+                        post: widget.post,
+                        comment: widget.comment,
+                        showCancelButton: true,
+                        onCancel: () => setState(() => inEdit = false),
+                        onSuccess: () => setState(() => inEdit = false),
+                      ),
+                    ]
+
+                  /// show when NOT in edit mode
+                  : [
+                      /// content
                       Text("${widget.comment['content']}"),
-                      SizedBox(height: Space.md),
+
+                      /// files display
                       FileDisplay(widget.comment['files']),
                       Divider(),
+
+                      /// buttons
                       Row(
                         children: [
                           IconButton(
@@ -121,19 +138,11 @@ class _CommentState extends State<Comment> {
                           ]
                         ],
                       ),
+
+                      /// reply box
                       CommentEditForm(
                         post: widget.post,
-                        commentIndex: widget.commentIndex,
-                      ),
-                    ]
-                  : [
-                      CommentEditForm(
-                        key: ValueKey(widget.post['id'] + widget.comment['id']),
-                        post: widget.post,
-                        comment: widget.comment,
-                        showCancelButton: true,
-                        onCancel: () => setState(() => inEdit = false),
-                        onSuccess: () => setState(() => inEdit = false),
+                        parentIndex: widget.commentIndex,
                       ),
                     ],
             ),

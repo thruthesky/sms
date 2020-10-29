@@ -9,12 +9,13 @@ import 'package:v1/widgets/commons/confirm-dialog.dart';
 import 'package:v1/widgets/commons/photo-picker-bottom-sheet.dart';
 
 /// [post] is required
-/// [commentIndex] is optional and used only when creating a new comment.
+/// [parentIndex] is optional and used only when creating a new comment.
 /// [comment] is optional and used only when updatedin a comment.
+///
 class CommentEditForm extends StatefulWidget {
   const CommentEditForm({
     @required this.post,
-    this.commentIndex,
+    this.parentIndex,
     this.comment,
     this.showCancelButton = false,
     this.onCancel,
@@ -24,7 +25,7 @@ class CommentEditForm extends StatefulWidget {
 
   final dynamic post;
   final dynamic comment;
-  final int commentIndex;
+  final int parentIndex;
   final bool showCancelButton;
 
   final Function onCancel;
@@ -51,7 +52,6 @@ class _CommentEditFormState extends State<CommentEditForm> {
 
   @override
   Widget build(BuildContext context) {
-
     return Column(
       children: [
         Row(
@@ -60,21 +60,15 @@ class _CommentEditFormState extends State<CommentEditForm> {
               icon: Icon(Icons.camera_alt),
               onPressed: () async {
                 try {
-                  /// choose upload option.
                   ImageSource source = await Get.bottomSheet(
                     PhotoPickerBottomSheet(),
                     backgroundColor: Colors.white,
                   );
 
-                  /// do nothing when user cancel option selection.
                   if (source == null) return null;
-
-                  /// upload picked file,
                   final url = await ff.uploadFile(
                     folder: 'forum-photos',
                     source: source,
-
-                    /// upload progress
                     progress: (p) => setState(() => uploadProgress = p),
                   );
 
@@ -122,7 +116,7 @@ class _CommentEditFormState extends State<CommentEditForm> {
                   data['depth'] = widget.comment['depth'];
                   data['order'] = widget.comment['order'];
                 } else {
-                  data['parentIndex'] = widget.commentIndex;
+                  data['parentIndex'] = widget.parentIndex;
                 }
 
                 try {

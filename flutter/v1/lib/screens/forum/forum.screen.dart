@@ -54,10 +54,6 @@ class _ForumScreenState extends State<ForumScreen> {
     ff.fetchPosts(forum);
 
     if (Service.userController.isLoggedIn) {
-      // final dynamic data = Service.userController.user;
-
-      // this.notification = data['notificationPost_' + category] ?? false;
-
       Service.usersRef
           .doc(Service.userController.user.uid)
           .collection('meta')
@@ -159,41 +155,49 @@ class _ForumScreenState extends State<ForumScreen> {
       ),
       body: SingleChildScrollView(
         controller: scrollController,
-        child: Container(
-          child: Column(
-            children: [
-              RaisedButton(
-                onPressed: () => Get.toNamed(
-                  RouteNames.forumEdit,
-                  arguments: {'category': category},
+        child: SafeArea(
+          child: Container(
+            child: Column(
+              children: [
+                RaisedButton(
+                  onPressed: () => Get.toNamed(
+                    RouteNames.forumEdit,
+                    arguments: {'category': category},
+                  ),
+                  child: Text('Create'),
                 ),
-                child: Text('Create'),
-              ),
-              ListView.builder(
-                physics: NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                itemCount: forum.posts.length,
-                itemBuilder: (c, i) {
-                  final post = forum.posts[i];
-                  return Post(post: post);
-                },
-              ),
-              if (forum.inLoading)
-                Padding(
-                  padding: EdgeInsets.all(Space.md),
-                  child: CommonSpinner(),
+
+                /// post list
+                ListView.builder(
+                  physics: NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  itemCount: forum.posts.length,
+                  itemBuilder: (c, i) {
+                    return forum.posts.length == 0
+                        ? Padding(
+                            padding: EdgeInsets.all(Space.md),
+                            child: Text('No posts yet..'),
+                          )
+                        : Post(
+                            key: ValueKey(forum.posts[i]['id']),
+                            post: forum.posts[i],
+                          );
+                  },
                 ),
-              if (forum.noMorePosts)
-                Padding(
-                  padding: EdgeInsets.all(Space.md),
-                  child: Text('No more posts..'),
-                ),
-              // if (noPostsYet)
-              //   Padding(
-              //     padding: EdgeInsets.all(Space.md),
-              //     child: Text('No posts yet..'),
-              //   ),
-            ],
+
+                /// loader
+                if (forum.inLoading)
+                  Padding(
+                    padding: EdgeInsets.all(Space.md),
+                    child: CommonSpinner(),
+                  ),
+                if (forum.noMorePosts)
+                  Padding(
+                    padding: EdgeInsets.all(Space.md),
+                    child: Text('No more posts..'),
+                  ),
+              ],
+            ),
           ),
         ),
       ),

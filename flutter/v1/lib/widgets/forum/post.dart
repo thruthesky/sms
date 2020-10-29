@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -9,13 +8,16 @@ import 'package:v1/services/service.dart';
 import 'package:v1/services/spaces.dart';
 import 'package:v1/widgets/commons/confirm-dialog.dart';
 import 'package:v1/widgets/forum/comment.edit.form.dart';
-import 'package:v1/widgets/forum/comments.dart';
+import 'package:v1/widgets/forum/comment-list.dart';
 import 'package:v1/widgets/forum/file.display.dart';
 
 class Post extends StatefulWidget {
   final dynamic post;
 
-  Post({this.post});
+  Post({
+    this.post,
+    Key key,
+  }) : super(key: key);
 
   @override
   _PostState createState() => _PostState();
@@ -41,21 +43,30 @@ class _PostState extends State<Post> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ListTile(
-            title: Text(
+          GestureDetector(
+            child: Text(
               widget.post['title'],
               style: TextStyle(fontSize: Space.xl),
             ),
-            subtitle: widget.post['content'] == null
-                ? null
-                : Text(
-                    widget.post['content'],
-                    style: TextStyle(fontSize: Space.lg),
-                  ),
-            onTap: () => setState(() => showContent = !showContent),
+            onTap: () => setState(() {
+              showContent = !showContent;
+            }),
           ),
           if (showContent) ...[
+            /// content
+            if (widget.post['content'] != null)
+              Padding(
+                child: Text(
+                  widget.post['content'],
+                  style: TextStyle(fontSize: Space.lg),
+                ),
+                padding: EdgeInsets.only(top: Space.md),
+              ),
+
+            /// Files display
             FileDisplay(widget.post['files']),
+
+            /// buttons
             Row(
               children: [
                 IconButton(
@@ -92,8 +103,12 @@ class _PostState extends State<Post> {
                 ]
               ],
             ),
+
+            /// comment box
             CommentEditForm(post: widget.post),
-            Comments(post: widget.post),
+
+            /// comment list
+            CommentsList(post: widget.post),
           ],
         ],
       ),
