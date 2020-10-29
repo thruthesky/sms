@@ -32,6 +32,8 @@ class ProfileImage extends StatelessWidget {
                 }
                 return CachedNetworkImage(
                   imageUrl: ff.user.photoURL,
+                  height: size * 2,
+                  width: size * 2,
                   placeholder: (context, url) => CommonSpinner(),
                   errorWidget: (context, url, error) => CircleAvatar(
                     backgroundColor: Colors.grey,
@@ -55,7 +57,6 @@ class ProfileImage extends StatelessWidget {
           Positioned(
             child: Icon(Icons.camera_alt, size: Space.xl),
             bottom: Space.xxs,
-            left: Space.xxs,
           )
         ],
       ),

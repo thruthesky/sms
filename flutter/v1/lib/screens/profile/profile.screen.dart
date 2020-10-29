@@ -58,12 +58,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         /// do nothing when user cancel option selection.
                         if (source == null) return null;
 
-                        /// delete previous photo to avoid flooding the storage with unused files.
-                        ff.deleteFile(ff.user.photoURL).catchError((e) {
-                          print('error deleting firebase file');
-                          print('error: $e');
-                        });
-
                         try {
                           /// upload picked file,
                           final url = await ff.uploadFile(
