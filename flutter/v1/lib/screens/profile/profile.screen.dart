@@ -51,17 +51,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           onTap: () async {
                             try {
                               /// select file.
-                              File file =
-                                  await Service.pickImage(maxWidth: Space.xxxl);
+                              File file = await Service.pickImage(
+                                maxWidth: Space.xxxl,
+                              );
+
+                              /// if no file is selected then do nothing.
                               if (file == null) return;
-                              print('success: file picked: ${file.path}');
+                              // print('success: file picked: ${file.path}');
 
                               /// upload picked file,
-                              final url = await Service.uploadFile(
-                                'profilePhotos/',
-                                file,
+                              final url = await ff.uploadFile(
+                                collection: 'profilePhotos',
+                                file: file,
 
-                                /// update progress
+                                /// upload progress
                                 progress: (p) => setState(
                                   () {
                                     this.uploadProgress = p;
@@ -72,9 +75,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               // update image url of current user.
                               await ff.updatePhoto(url);
                               setState(() => uploadProgress = 0);
-                              print('url: $url');
+                              // print('url: $url');
                             } catch (e) {
-                              print('error on file pick: ');
+                              // print('error on file pick: ');
                               print(e);
                               Service.error(e);
                             }
