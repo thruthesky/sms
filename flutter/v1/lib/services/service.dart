@@ -104,31 +104,31 @@ class Service {
   ///
   /// [download] will be called after translation text has been downloaded. (works on offline)
   /// @see README for details
-  static updateLocale({Function download}) async {
-    /// Change language on boot
-    if (App.Settings.changeUserLanguageOnBoot) {
-      /// Get locale
-      String locale = await initLocale();
-      Get.updateLocale(Locale(locale));
-    }
+  // static updateLocale({Function download}) async {
+  //   /// Change language on boot
+  //   if (App.Settings.changeUserLanguageOnBoot) {
+  //     /// Get locale
+  //     String locale = await initLocale();
+  //     Get.updateLocale(Locale(locale));
+  //   }
 
-    /// Download texts from translation
-    CollectionReference texts =
-        FirebaseFirestore.instance.collection('settings/translations/texts');
+  //   /// Download texts from translation
+  //   CollectionReference texts =
+  //       FirebaseFirestore.instance.collection('settings/translations/texts');
 
-    /// Update downloaded texts into `GetX locale translations`
-    texts.snapshots().listen((QuerySnapshot snapshot) {
-      if (snapshot.size == 0) return;
-      snapshot.docs.forEach((DocumentSnapshot document) {
-        updateTranslation(document.id, document.data());
-      });
+  //   /// Update downloaded texts into `GetX locale translations`
+  //   texts.snapshots().listen((QuerySnapshot snapshot) {
+  //     if (snapshot.size == 0) return;
+  //     snapshot.docs.forEach((DocumentSnapshot document) {
+  //       updateTranslation(document.id, document.data());
+  //     });
 
-      /// Call `download` callback to re-render the whole app after downloading translations.
-      if (download != null) {
-        download();
-      }
-    });
-  }
+  //     /// Call `download` callback to re-render the whole app after downloading translations.
+  //     if (download != null) {
+  //       download();
+  //     }
+  //   });
+  // }
 
   static bool isMine(dynamic data) {
     if (data == null || data['uid'] == null) return false;

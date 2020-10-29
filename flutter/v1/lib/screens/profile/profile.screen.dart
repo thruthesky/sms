@@ -42,6 +42,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Text('app_title'.tr),
               Center(
                 child: Column(
                   children: [
