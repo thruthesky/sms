@@ -1,20 +1,12 @@
-import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:devicelocale/devicelocale.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:get/get.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:v1/controllers/user.controller.dart';
-import 'package:v1/services/definitions.dart';
-import 'package:v1/services/functions.dart';
 import 'package:v1/services/translations.dart';
 import 'package:v1/settings.dart' as App;
-import 'package:v1/widgets/commons/photo-picker-bottom-sheet.dart';
 
 class Service {
   /// [locale] has the current locale.
@@ -136,75 +128,6 @@ class Service {
         download();
       }
     });
-  }
-
-  static Future<File> pickImage({
-    double maxWidth = 1024,
-    int quality = 80,
-  }) async {
-    /// instantiate image picker.
-    final picker = ImagePicker();
-
-    /// choose upload option.
-    ImageSource res = await Get.bottomSheet(
-      PhotoPickerBottomSheet(),
-      backgroundColor: Colors.white,
-    );
-
-    /// do nothing when user cancel option selection.
-    if (res == null) return null;
-
-    Permission permission =
-        res == ImageSource.camera ? Permission.camera : Permission.photos;
-
-    /// request permission status.
-    ///
-    /// Android:
-    ///   - Camera permission is automatically granted, meaning it will not ask for permission.
-    ///     unless we specify the following on the AndroidManifest.xml:
-    ///       - <uses-permission android:name="android.permission.CAMERA" />
-    PermissionStatus permissionStatus = await permission.status;
-    print('permission status:');
-    print(permissionStatus);
-
-    /// if permission is permanently denied,
-    /// the only way to grant permission is changing in AppSettings.
-    if (permissionStatus.isPermanentlyDenied) {
-      await openAppSettings();
-    }
-
-    /// alert the user if the permission is restricted.
-    if (permissionStatus.isRestricted) {
-      error(ERROR_PERMISSION_RESTRICTED);
-      return null;
-    }
-
-    /// check if the app have the permission to access camera or photos
-    if (permissionStatus.isUndetermined || permissionStatus.isDenied) {
-      /// request permission if not granted, or user haven't chosen permission yet.
-      print('requesting permisssion again');
-      // does not request permission again. (BUG: iOS)
-      // await permission.request();
-    }
-
-    PickedFile pickedFile = await picker.getImage(
-      source: res,
-      maxWidth: maxWidth,
-      imageQuality: quality,
-    );
-
-    // return null if user picked nothing.
-    if (pickedFile == null) return null;
-    print('pickedFile.path: ${pickedFile.path} ');
-
-    String localFile = await localFilePath(randomString() + '.jpeg');
-    File file = await FlutterImageCompress.compressAndGetFile(
-      pickedFile.path, // source file
-      localFile, // target file. Overwrite the source with compressed.
-      quality: quality,
-    );
-
-    return file;
   }
 
   static bool isMine(dynamic data) {

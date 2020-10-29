@@ -48,40 +48,6 @@ class ProfileImage extends StatelessWidget {
                 },
               );
             }),
-
-        // GetBuilder<UserController>(
-        //   builder: (user) {
-        //     return user.photoUrl != null
-        //         ? CachedNetworkImage(
-        //             imageUrl: user.photoUrl,
-        //             placeholder: (context, url) => CommonSpinner(),
-        //             errorWidget: (context, url, error) => CircleAvatar(
-        //               backgroundColor: Colors.grey,
-        //               radius: size,
-        //               child: Icon(
-        //                 Icons.error,
-        //                 size: Space.xxxl,
-        //                 color: Colors.grey[300],
-        //               ),
-        //             ),
-        //             imageBuilder: (context, provider) {
-        //               return CircleAvatar(
-        //                 backgroundImage: provider,
-        //                 radius: size,
-        //               );
-        //             },
-        //           )
-        //         : CircleAvatar(
-        //             backgroundColor: Colors.grey,
-        //             radius: size,
-        //             child: Icon(
-        //               Icons.person,
-        //               size: Space.xxxl,
-        //               color: Colors.grey[300],
-        //             ),
-        //           );
-        //   },
-        // ),
       ),
       onTap: onTap,
     );

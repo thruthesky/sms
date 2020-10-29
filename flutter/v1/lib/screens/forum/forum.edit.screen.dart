@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -68,44 +66,44 @@ class _ForumEditScreenState extends State<ForumEditScreen> {
                   IconButton(
                     icon: Icon(Icons.camera_alt),
                     onPressed: () async {
-                      try {
-                        File file = await Service.pickImage(
-                          maxWidth: Space.xxxl,
-                        );
+                      // try {
+                      //   File file = await Service.pickImage(
+                      //     maxWidth: Space.xxxl,
+                      //   );
 
-                        if (file == null) return;
-                        // print('success: file picked: ${file.path}');
+                      //   if (file == null) return;
+                      //   // print('success: file picked: ${file.path}');
 
-                        /// upload picked file,
-                        final url = await ff.uploadFile(
-                          collection: 'forum-images',
-                          file: file,
+                      //   /// upload picked file,
+                      //   final url = await ff.uploadFile(
+                      //     collection: 'forum-images',
+                      //     file: file,
 
-                          /// upload progress
-                          progress: (p) => setState(
-                            () {
-                              this.uploadProgress = p;
-                            },
-                          ),
-                        );
+                      //     /// upload progress
+                      //     progress: (p) => setState(
+                      //       () {
+                      //         this.uploadProgress = p;
+                      //       },
+                      //     ),
+                      //   );
 
-                        /// TODO: add images to post `files` collection.
-                        ///  how?
-                        ///     option 1: everytime user pick an image, we connect to database and update the collection.
-                        ///           - Problem is when the post is not yet created. we don't have a reference to a post document.
-                        ///             this may only work on updating a post.
-                        /// 
-                        ///     option 2: inside ff.editPost() function, after creating a post, we update the `files` collection with files.
-                        ///           - Side effect: since the app is listening for collection changes on posts collection,
-                        ///             `modified` event will be fired for each file we add to post's `files` collection.
-                        /// 
-                        ///     option 3: `files` is a text-based instead of collection where we save file URLs as string seperated with comma.
-                        /// 
-                        ///     other options .... nothing comes to mind yet.
+                      /// TODO: add images to post `files` collection.
+                      ///  how?
+                      ///     option 1: everytime user pick an image, we connect to database and update the collection.
+                      ///           - Problem is when the post is not yet created. we don't have a reference to a post document.
+                      ///             this may only work on updating a post.
+                      ///
+                      ///     option 2: inside ff.editPost() function, after creating a post, we update the `files` collection with files.
+                      ///           - Side effect: since the app is listening for collection changes on posts collection,
+                      ///             `modified` event will be fired for each file we add to post's `files` collection.
+                      ///
+                      ///     option 3: `files` is a text-based instead of collection where we save file URLs as string seperated with comma.
+                      ///
+                      ///     other options .... nothing comes to mind yet.
 
-                      } catch (e) {
-                        Service.error(e);
-                      }
+                      // } catch (e) {
+                      //   Service.error(e);
+                      // }
                     },
                   ),
                   Spacer(),

@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'package:image_picker/image_picker.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:v1/services/global_variables.dart';
 import 'package:v1/services/service.dart';
 import 'package:v1/services/spaces.dart';
+import 'package:v1/widgets/commons/photo-picker-bottom-sheet.dart';
 import 'package:v1/widgets/user/birthday_picker.dart';
 import 'package:v1/widgets/user/profile_image.dart';
 
@@ -50,19 +51,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           size: Space.xxl,
                           onTap: () async {
                             try {
-                              /// select file.
-                              File file = await Service.pickImage(
-                                maxWidth: Space.xxxl,
+                              /// choose upload option.
+                              ImageSource source = await Get.bottomSheet(
+                                PhotoPickerBottomSheet(),
+                                backgroundColor: Colors.white,
                               );
 
-                              /// if no file is selected then do nothing.
-                              if (file == null) return;
-                              // print('success: file picked: ${file.path}');
+                              /// do nothing when user cancel option selection.
+                              if (source == null) return null;
 
                               /// upload picked file,
                               final url = await ff.uploadFile(
-                                collection: 'profilePhotos',
-                                file: file,
+                                folder: 'user-profile-photos',
+                                source: source,
 
                                 /// upload progress
                                 progress: (p) => setState(

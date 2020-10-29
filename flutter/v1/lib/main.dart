@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:after_layout/after_layout.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
