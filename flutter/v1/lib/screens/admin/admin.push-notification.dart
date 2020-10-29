@@ -40,8 +40,7 @@ class _AdminPushNotificationScreenState
         categoryName.add(
             {'name': data['id'], 'code': 'notification_post_' + data['id']});
       });
-
-      print(categoryName);
+      setState(() {});
     });
     super.initState();
   }
@@ -73,7 +72,6 @@ class _AdminPushNotificationScreenState
                                 setState(() => selectedItem = string),
                             items:
                                 categoryName.map((Map<String, dynamic> item) {
-                              print(item);
                               return DropdownMenuItem<String>(
                                 child: Text(item['name']),
                                 value: item['code'],
