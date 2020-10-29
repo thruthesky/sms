@@ -26,7 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('home'.tr),
+        title: Text(ff.remoteConfig.getString('app_title')),
       ),
       body: Column(
         children: [
