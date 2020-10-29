@@ -22,10 +22,13 @@ class KakaoLoginButton extends StatelessWidget {
           /// 카카오톡 앱이 핸드폰에 설치되었는가?
           final installed = await isKakaoTalkInstalled();
 
+          print('installed: $installed');
+
           /// 카카오톡 앱이 설치 되었으면, 앱으로 로그인, 아니면 OAuth 로 로그인.
           final authCode = installed
               ? await AuthCodeClient.instance.requestWithTalk()
               : await AuthCodeClient.instance.request();
+          // final authCode = await AuthCodeClient.instance.requestWithTalk();
 
           AccessTokenResponse token =
               await AuthApi.instance.issueAccessToken(authCode);
@@ -55,14 +58,18 @@ class KakaoLoginButton extends StatelessWidget {
                 : '',
           };
 
+          print('user data: $data');
+
           try {
             await ff.login(email: data['email'], password: data['password']);
+            Get.toNamed(RouteNames.home);
           } catch (e) {
             if (e.code == 'user-not-found') {
               print('register...');
               await ff.register(data);
               Get.toNamed(RouteNames.home);
             } else {
+              print('rethrow $e');
               rethrow;
             }
           }

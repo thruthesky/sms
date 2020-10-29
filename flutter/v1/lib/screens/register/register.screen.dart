@@ -6,6 +6,7 @@ import 'package:v1/services/service.dart';
 import 'package:v1/services/route-names.dart';
 import 'package:v1/services/spaces.dart';
 import 'package:v1/widgets/user/birthday_picker.dart';
+import 'package:v1/widgets/user/kakao_login_button.dart';
 
 class RegisterScreen extends StatefulWidget {
   @override
@@ -43,12 +44,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               RaisedButton(
-                child: Text('Google Sign-in'),
-                onPressed: ff.signInWithGoogle,
-              ),
-              RaisedButton(
-                child: Text('Facebook Sign-in'),
-                onPressed: ff.signInWithFacebook,
+                child: Text(
+                    'Social Login.\nYou can login with your SNS Accounts.'),
+                onPressed: () => Get.toNamed(RouteNames.login),
               ),
               SizedBox(height: Space.xl),
               TextFormField(

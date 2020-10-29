@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:kakao_flutter_sdk/all.dart';
-import 'package:kakao_flutter_sdk/auth.dart';
-import 'package:kakao_flutter_sdk/link.dart';
 import 'package:v1/services/global_variables.dart';
 import 'package:v1/services/service.dart';
 import 'package:v1/services/route-names.dart';
 import 'package:v1/services/spaces.dart';
 import 'package:v1/widgets/user/kakao_login_button.dart';
+
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+
+import 'dart:math';
+import 'dart:convert';
+import 'dart:io';
+import 'package:crypto/crypto.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -33,6 +38,18 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              SignInWithAppleButton(
+                onPressed: () async {
+                  try {
+                    User user = await ff.signInWithApple();
+                    print(user);
+                    Get.toNamed(RouteNames.home);
+                  } catch (e) {
+                    Service.error(e);
+                    print(e);
+                  }
+                },
+              ),
               RaisedButton(
                 child: Text('Google Sign-in'),
                 onPressed: () async {
