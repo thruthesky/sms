@@ -28,50 +28,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
   bool loading = false;
 
-  String _createNonce(int length) {
-    final random = Random();
-    final charCodes = List<int>.generate(length, (_) {
-      int codeUnit;
-
-      switch (random.nextInt(3)) {
-        case 0:
-          codeUnit = random.nextInt(10) + 48;
-          break;
-        case 1:
-          codeUnit = random.nextInt(26) + 65;
-          break;
-        case 2:
-          codeUnit = random.nextInt(26) + 97;
-          break;
-      }
-
-      return codeUnit;
-    });
-
-    return String.fromCharCodes(charCodes);
-  }
-
-  Future<OAuthCredential> _createAppleOAuthCred() async {
-    final nonce = _createNonce(32);
-    print('nonce: $nonce');
-
-    final nativeAppleCred = await SignInWithApple.getAppleIDCredential(
-      scopes: [
-        AppleIDAuthorizationScopes.email,
-        AppleIDAuthorizationScopes.fullName,
-      ],
-      nonce: sha256.convert(utf8.encode(nonce)).toString(),
-    );
-    return new OAuthCredential(
-      providerId: "apple.com", // MUST be "apple.com"
-      signInMethod: "oauth", // MUST be "oauth"
-      accessToken: nativeAppleCred
-          .identityToken, // propagate Apple ID token to BOTH accessToken and idToken parameters
-      idToken: nativeAppleCred.identityToken,
-      rawNonce: nonce,
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -85,12 +41,9 @@ class _LoginScreenState extends State<LoginScreen> {
               SignInWithAppleButton(
                 onPressed: () async {
                   try {
-                    final oauthCred = await _createAppleOAuthCred();
-                    print(oauthCred);
-
-                    UserCredential userCredential = await FirebaseAuth.instance
-                        .signInWithCredential(oauthCred);
-                    print(userCredential.user);
+                    User user = await ff.signInWithApple();
+                    print(user);
+                    Get.toNamed(RouteNames.home);
                   } catch (e) {
                     Service.error(e);
                     print(e);

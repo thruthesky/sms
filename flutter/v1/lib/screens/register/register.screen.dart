@@ -44,28 +44,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               RaisedButton(
-                child: Text('Google Sign-in'),
-                onPressed: () async {
-                  try {
-                    await ff.signInWithGoogle();
-                    Get.toNamed(RouteNames.home);
-                  } catch (e) {
-                    Service.error(e);
-                  }
-                },
+                child: Text(
+                    'Social Login.\nYou can login with your SNS Accounts.'),
+                onPressed: () => Get.toNamed(RouteNames.login),
               ),
-              RaisedButton(
-                child: Text('Facebook Sign-in'),
-                onPressed: () async {
-                  try {
-                    await ff.signInWithFacebook();
-                    Get.toNamed(RouteNames.home);
-                  } catch (e) {
-                    Service.error(e);
-                  }
-                },
-              ),
-              KakaoLoginButton(),
               SizedBox(height: Space.xl),
               TextFormField(
                 key: ValueKey('email'),
