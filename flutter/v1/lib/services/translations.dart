@@ -10,27 +10,15 @@ Map<String, Map<String, String>> translations = {
     "app_title": "App Title",
     "home": "Home",
     "menu": "Menu",
+    "qna": "QnA"
   },
   "ko": {
     "app_title": "앱 제목",
     "home": "홈",
     "menu": "메뉴",
-  },
+    "qna": "질문게시판",
+  }
 };
-
-/// This is the Object that will be
-///
-// Map<String, Map<String, String>> translations = {};
-
-/// Convert `translations` json text into `GetX locale format`.
-// convertJsonToTranslationFormat() {
-//   translations.forEach((code, value) {
-//     for (var ln in value.keys) {
-//       if (translations[ln] == null) translations[ln] = {};
-//       translations[ln][code] = value[ln];
-//     }
-//   });
-// }
 
 /// Update `translations` from Firestore into `GetX local format`.
 updateTranslations(Map<String, dynamic> data) {

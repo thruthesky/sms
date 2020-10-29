@@ -12,6 +12,7 @@ import 'package:v1/screens/settings/settings.screen.dart';
 import 'package:v1/screens/forum/forum.edit.screen.dart';
 import 'package:v1/screens/forum/forum.screen.dart';
 import 'package:v1/services/global_variables.dart';
+import 'package:v1/services/service.dart';
 import 'package:v1/services/translations.dart';
 import 'package:v1/screens/home/home.screen.dart';
 import 'package:v1/screens/login/login.screen.dart';
@@ -28,11 +29,12 @@ void main() async {
       enableNotification: true,
       firebaseServerToken:
           'AAAAjdyAvbM:APA91bGist2NNTrrKTZElMzrNV0rpBLV7Nn674NRow-uyjG1-Uhh5wGQWyQEmy85Rcs0wlEpYT2uFJrSnlZywLzP1hkdx32FKiPJMI38evdRZO0x1vBJLc-cukMqZBKytzb3mzRfmrgL',
-      defaultConfigs: {
-        'app_title': 'SMS Title',
-        'app_desc': 'SMS Description',
-        'translations': translations,
+      settings: {
+        "forum": {
+          "no-of-posts-per-fetch": 10,
+        },
       },
+      translations: translations,
     );
   } catch (e) {
     print('===========> $e');
@@ -56,9 +58,20 @@ class _MainAppState extends State<MainApp> {
   void initState() {
     super.initState();
 
-    ff.configDownload.listen((translations) => setState(() {
-          updateTranslations(translations);
-        }));
+    Service.initLocale();
+
+    ff.settingsChange.listen((settings) {});
+    ff.translationsChange.listen((translations) {
+      updateTranslations(translations);
+      print(translations);
+      setState(() {});
+    });
+
+    // updateTranslations({
+    //   "en": {"abc": "ABC"},
+    //   "ko": {"abc": "에이비씨"}
+    // });
+    // print(translations);
 
     ff.notification.listen(
       (x) {
