@@ -26,12 +26,11 @@ class _ForumEditScreenState extends State<ForumEditScreen> {
     super.initState();
     category = Get.arguments['category'];
     post = Get.arguments['post'];
-    print('post');
-    print(post);
 
     if (post != null) {
-      titleController.text = post.title;
-      contentController.text = post.content;
+      titleController.text = post['title'];
+      contentController.text = post['content'];
+      category = post['category'];
     }
   }
 

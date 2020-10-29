@@ -6,7 +6,6 @@ import 'package:v1/services/service.dart';
 import 'package:v1/services/route-names.dart';
 import 'package:v1/services/spaces.dart';
 import 'package:v1/widgets/user/birthday_picker.dart';
-import 'package:fireflutter/fireflutter.dart';
 import 'package:v1/widgets/user/kakao_login_button.dart';
 
 class RegisterScreen extends StatefulWidget {
