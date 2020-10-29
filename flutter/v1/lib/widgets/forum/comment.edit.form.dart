@@ -1,12 +1,10 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:v1/services/global_variables.dart';
 import 'package:v1/services/service.dart';
-import 'package:v1/services/spaces.dart';
-import 'package:v1/widgets/commons/confirm-dialog.dart';
 import 'package:v1/widgets/commons/photo-picker-bottom-sheet.dart';
+import 'package:v1/widgets/forum/file.display.dart';
 
 /// [post] is required
 /// [parentIndex] is optional and used only when creating a new comment.
@@ -73,9 +71,7 @@ class _CommentEditFormState extends State<CommentEditForm> {
                   );
 
                   files.add(url);
-                  setState(() {
-                    uploadProgress = 0;
-                  });
+                  setState(() => uploadProgress = 0);
                 } catch (e) {
                   Service.error(e);
                 }
@@ -133,33 +129,7 @@ class _CommentEditFormState extends State<CommentEditForm> {
             )
           ],
         ),
-        for (int i = 0; i < files.length; i++)
-          Stack(
-            children: [
-              CachedNetworkImage(imageUrl: files[i]),
-              Positioned(
-                top: Space.sm,
-                right: Space.sm,
-                child: IconButton(
-                  icon: Icon(
-                    Icons.delete,
-                    size: Space.xl,
-                    color: Colors.red,
-                  ),
-                  onPressed: () async {
-                    bool confirm = await Get.dialog(
-                      ConfirmDialog(title: 'Delete Image?'.tr),
-                    );
-
-                    if (confirm == null || !confirm) return;
-
-                    files.removeAt(i);
-                    setState(() {});
-                  },
-                ),
-              ),
-            ],
-          )
+        FileDisplay(files, inEdit: true)
       ],
     );
   }

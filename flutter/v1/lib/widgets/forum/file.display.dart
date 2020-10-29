@@ -1,20 +1,56 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:v1/services/spaces.dart';
+import 'package:v1/widgets/commons/confirm-dialog.dart';
 
-class FileDisplay extends StatelessWidget {
-  FileDisplay(this.files);
+class FileDisplay extends StatefulWidget {
+  FileDisplay(
+    this.files, {
+    this.inEdit = false,
+  });
   final List<dynamic> files;
+  final bool inEdit;
 
   @override
+  _FileDisplayState createState() => _FileDisplayState();
+}
+
+class _FileDisplayState extends State<FileDisplay> {
+  @override
   Widget build(BuildContext context) {
-    return files != null && files.length > 0
+    return widget.files != null && widget.files.length > 0
         ? Column(
             children: [
-              SizedBox(height: Space.md),
-              for (String url in files)
-                CachedNetworkImage(
-                  imageUrl: url,
+              for (int i = 0; i < widget.files.length; i++)
+                Stack(
+                  children: [
+                    CachedNetworkImage(imageUrl: widget.files[i]),
+
+                    /// show only when in edit mode
+                    if (widget.inEdit)
+                      Positioned(
+                        top: Space.sm,
+                        right: Space.sm,
+                        child: IconButton(
+                          icon: Icon(
+                            Icons.delete,
+                            size: Space.xl,
+                            color: Colors.red,
+                          ),
+                          onPressed: () async {
+                            bool confirm = await Get.dialog(
+                              ConfirmDialog(title: 'Delete Image?'.tr),
+                            );
+
+                            if (confirm == null || !confirm) return;
+
+                            widget.files.removeAt(i);
+                            setState(() {});
+                          },
+                        ),
+                      ),
+                  ],
                 )
             ],
           )

@@ -9,6 +9,7 @@ import 'package:v1/services/service.dart';
 import 'package:v1/services/spaces.dart';
 import 'package:v1/widgets/commons/confirm-dialog.dart';
 import 'package:v1/widgets/commons/photo-picker-bottom-sheet.dart';
+import 'package:v1/widgets/forum/file.display.dart';
 
 class ForumEditScreen extends StatefulWidget {
   @override
@@ -26,8 +27,7 @@ class _ForumEditScreenState extends State<ForumEditScreen> {
   String category;
   dynamic post;
 
-  List<dynamic> files;
-
+  List<dynamic> files = [];
   double uploadProgress = 0;
 
   @override
@@ -63,40 +63,32 @@ class _ForumEditScreenState extends State<ForumEditScreen> {
           child: Column(
             children: [
               TextFormField(
-                  controller: titleController,
-                  decoration: InputDecoration(hintText: 'title'.tr)),
+                controller: titleController,
+                decoration: InputDecoration(hintText: 'title'.tr),
+              ),
               TextFormField(
-                  controller: contentController,
-                  decoration: InputDecoration(hintText: 'content'.tr)),
+                controller: contentController,
+                decoration: InputDecoration(hintText: 'content'.tr),
+              ),
               Row(
                 children: [
                   IconButton(
                     icon: Icon(Icons.camera_alt),
                     onPressed: () async {
                       try {
-                        /// choose upload option.
                         ImageSource source = await Get.bottomSheet(
                           PhotoPickerBottomSheet(),
                           backgroundColor: Colors.white,
                         );
-
-                        /// do nothing when user cancel option selection.
                         if (source == null) return null;
-
-                        /// upload picked file,
                         final url = await ff.uploadFile(
                           folder: 'forum-photos',
                           source: source,
-
-                          /// upload progress
-                          progress: (p) =>
-                              setState(() => this.uploadProgress = p),
+                          progress: (p) => setState(() => uploadProgress = p),
                         );
 
                         files.add(url);
-                        setState(() {
-                          uploadProgress = 0;
-                        });
+                        setState(() => uploadProgress = 0);
                       } catch (e) {
                         Service.error(e);
                       }
@@ -130,33 +122,7 @@ class _ForumEditScreenState extends State<ForumEditScreen> {
                   ),
                 ],
               ),
-              for (int i = 0; i < files.length; i++)
-                Stack(
-                  children: [
-                    CachedNetworkImage(imageUrl: files[i]),
-                    Positioned(
-                      top: Space.sm,
-                      right: Space.sm,
-                      child: IconButton(
-                        icon: Icon(
-                          Icons.delete,
-                          size: Space.xl,
-                          color: Colors.red,
-                        ),
-                        onPressed: () async {
-                          bool confirm = await Get.dialog(
-                            ConfirmDialog(title: 'Delete Image?'.tr),
-                          );
-
-                          if (confirm == null || !confirm) return;
-
-                          files.removeAt(i);
-                          setState(() {});
-                        },
-                      ),
-                    ),
-                  ],
-                )
+              FileDisplay(files, inEdit: true)
             ],
           ),
         ),
