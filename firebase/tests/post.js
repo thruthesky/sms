@@ -87,7 +87,7 @@ describe("Post", () => {
   it("Creating success", async () => {
     const db = await setup(myAuth, mockMyPost);
     const postsCol = db.collection("posts");
-    console.log(data());
+    // console.log(data());
     await assertSucceeds(postsCol.add(data()));
   });
 
