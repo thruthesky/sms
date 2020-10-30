@@ -63,8 +63,7 @@ class _MainAppState extends State<MainApp> {
     Service.initLocale();
 
     ff.settingsChange.listen((settings) {
-      print('settings changed: ');
-      print(settings);
+      ///
     });
     ff.translationsChange.listen(
         (translations) => setState(() => updateTranslations(translations)));
