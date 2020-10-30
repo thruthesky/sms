@@ -5,6 +5,7 @@ import 'package:v1/controllers/user.controller.dart';
 import 'package:v1/screens/admin/admin.category.screen.dart';
 import 'package:v1/screens/admin/admin.push-notification.dart';
 import 'package:v1/screens/admin/admin.screen.dart';
+import 'package:v1/screens/forum/forum.view.screen.dart';
 import 'package:v1/screens/mobile-auth/mobile-auth.screen.dart';
 import 'package:v1/screens/mobile-auth/mobile-code-verification.screen.dart';
 
@@ -30,12 +31,7 @@ void main() async {
       enableNotification: true,
       firebaseServerToken:
           'AAAAjdyAvbM:APA91bGist2NNTrrKTZElMzrNV0rpBLV7Nn674NRow-uyjG1-Uhh5wGQWyQEmy85Rcs0wlEpYT2uFJrSnlZywLzP1hkdx32FKiPJMI38evdRZO0x1vBJLc-cukMqZBKytzb3mzRfmrgL',
-      settings: {
-        "app": {},
-        "forum": {
-          "no-of-posts-per-fetch": 10,
-        },
-      },
+      settings: {},
       translations: translations,
     );
   } catch (e) {
@@ -60,19 +56,14 @@ class _MainAppState extends State<MainApp> {
   void initState() {
     super.initState();
 
-    Service.initLocale();
+    Service.initLocale().then((value) => Get.updateLocale(Locale(value)));
 
     ff.settingsChange.listen((settings) {
       ///
+      setState(() {}); // You may re-render the screen if you wish.
     });
     ff.translationsChange.listen(
         (translations) => setState(() => updateTranslations(translations)));
-
-    // updateTranslations({
-    //   "en": {"abc": "ABC"},
-    //   "ko": {"abc": "에이비씨"}
-    // });
-    // print(translations);
 
     ff.notification.listen(
       (x) {
@@ -136,6 +127,7 @@ class _MainAppState extends State<MainApp> {
             page: () => AdminPushNotificationScreen()),
         GetPage(name: RouteNames.forum, page: () => ForumScreen()),
         GetPage(name: RouteNames.forumEdit, page: () => ForumEditScreen()),
+        GetPage(name: RouteNames.forumView, page: () => ForumViewScreen()),
         GetPage(name: RouteNames.mobileAuth, page: () => MobileAuthScreen()),
         GetPage(
             name: RouteNames.mobileCodeVerification,

@@ -119,60 +119,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ],
                 );
               }),
-          // GetBuilder<UserController>(builder: (user) {
-          //   return Column(
-          //     children: [
-          //       Text("User Uid: ${user.uid}"),
-          //       Text("User Nickname: ${user.displayName}"),
-          //       if (user.isNotLoggedIn) ...[],
-          //       if (user.isLoggedIn) ...[
-          //         Text(
-          //           'Post Notification',
-          //           style: TextStyle(fontSize: Space.lg),
-          //         ),
-          //         Text('Comment Notification under my post'),
-          //         Switch(
-          //           value: notifyPost,
-          //           onChanged: (value) async {
-          //             try {
-          //               final userDoc = users.doc(userController.user.uid);
-          //               await userDoc.set({
-          //                 "notifyPost": value,
-          //               }, SetOptions(merge: true));
-          //               Get.snackbar('Update', 'Settings updated!');
-          //             } catch (e) {
-          //               Service.error(e);
-          //             }
-          //             setState(() {
-          //               notifyPost = value;
-          //               print(notifyPost);
-          //             });
-          //           },
-          //         ),
-          //         Text('Comment Notification under my comment'),
-          //         Switch(
-          //           value: notifyComment,
-          //           onChanged: (value) async {
-          //             try {
-          //               final userDoc = users.doc(userController.user.uid);
-          //               await userDoc.set({
-          //                 "notifyComment": value,
-          //               }, SetOptions(merge: true));
-          //               Get.snackbar('Update', 'Settings updated!');
-          //             } catch (e) {
-          //               Service.error(e);
-          //             }
-          //             setState(() {
-          //               notifyComment = value;
-          //               print(notifyComment);
-          //             });
-          //           },
-          //         ),
-          //         Text(Service.firebaseMessagingToken.substring(0, 20)),
-          //       ],
-          //     ],
-          //   );
-          // }),
         ],
       ),
     );

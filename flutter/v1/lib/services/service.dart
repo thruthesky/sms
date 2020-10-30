@@ -27,6 +27,7 @@ class Service {
   static Future<String> initLocale() async {
     String current = await Devicelocale.currentLocale;
     locale = current.substring(0, 2);
+    // Get.updateLocale(Locale(locale));
     return locale;
   }
 
