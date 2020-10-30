@@ -68,7 +68,7 @@ class _MainAppState extends State<MainApp> {
     ff.notification.listen(
       (x) {
         Map<String, dynamic> notification = x['notification'];
-        Map<String, dynamic> data = x['data'];
+        Map<dynamic, dynamic> data = x['data'];
         NotificationType type = x['type'];
         print('NotificationType: $type');
         print('notification: $notification');
@@ -78,21 +78,20 @@ class _MainAppState extends State<MainApp> {
             notification['title'].toString(),
             notification['body'].toString(),
             onTap: (_) {
-              Get.toNamed(data['route']);
+              Get.toNamed(data['screen'], arguments: {'id': data['id']});
             },
             mainButton: FlatButton(
               child: Text('Open'),
               onPressed: () {
-                Get.toNamed(data['route']);
+                Get.toNamed(data['screen'], arguments: {'id': data['id']});
               },
             ),
           );
         } else {
-          // TODO: Make it work.
           /// App will come here when the user open the app by tapping a push notification on the system tray.
-          /// Do something based on the `data`.
-          if (data != null && data['postId'] != null) {
-            // Get.toNamed(Settings.postViewRoute, arguments: {'postId': data['postId']});
+          if (data != null && data['screen'] != null) {
+            Get.toNamed(data['screen'],
+                arguments: {'id': data['id'], 'data': data});
           }
         }
       },

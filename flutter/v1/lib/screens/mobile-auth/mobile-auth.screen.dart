@@ -12,10 +12,10 @@ class MobileAuthScreen extends StatefulWidget {
 }
 
 class _MobileAuthScreenState extends State<MobileAuthScreen> {
-  final mobileNumberController = TextEditingController(text: '9654101043');
+  final mobileNumberController = TextEditingController(text: '9999999999');
 
   bool loading = false;
-  String countryCode = '+63';
+  String countryCode = '+1';
   String get internationalNo => '$countryCode${mobileNumberController.text}';
 
   @override
@@ -56,13 +56,11 @@ class _MobileAuthScreenState extends State<MobileAuthScreen> {
                 FocusScope.of(context).requestFocus(new FocusNode());
                 ff.mobileAuthSendCode(
                   internationalNo,
-                  codeSent: (verificationID) {
-                    print('verificationID');
-                    print(verificationID);
-
+                  onCodeSent: (verificationID, codeResendToken) {
                     Get.toNamed(RouteNames.mobileCodeVerification, arguments: {
                       'verificationID': verificationID,
                       'internationalNo': internationalNo,
+                      'codeResendToken': codeResendToken
                     });
                   },
                   onError: (e) => Service.error(e),
