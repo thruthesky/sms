@@ -57,13 +57,14 @@ class _CommentEditFormState extends State<CommentEditForm> {
             IconButton(
               icon: Icon(Icons.camera_alt),
               onPressed: () async {
-                try {
-                  ImageSource source = await Get.bottomSheet(
-                    PhotoPickerBottomSheet(),
-                    backgroundColor: Colors.white,
-                  );
+                ImageSource source = await Get.bottomSheet(
+                  PhotoPickerBottomSheet(),
+                  backgroundColor: Colors.white,
+                );
 
-                  if (source == null) return null;
+                if (source == null) return;
+
+                try {
                   final url = await ff.uploadFile(
                     folder: 'forum-photos',
                     source: source,
@@ -99,7 +100,11 @@ class _CommentEditFormState extends State<CommentEditForm> {
             Spacer(),
             RaisedButton(
               onPressed: () async {
-                if (contentController.text.trim().length == 0) return;
+                /// remove focus
+                FocusScope.of(context).requestFocus(FocusNode());
+
+                if (contentController.text.trim().length == 0 &&
+                    files.length == 0) return;
 
                 final data = {
                   'post': widget.post,

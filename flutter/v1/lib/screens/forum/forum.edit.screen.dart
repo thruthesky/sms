@@ -102,7 +102,16 @@ class _ForumEditScreenState extends State<ForumEditScreen> {
                   SizedBox(width: Space.md),
                   RaisedButton(
                     onPressed: () async {
+                      /// remove focus
+                      FocusScope.of(context).requestFocus(FocusNode());
+
                       try {
+                        if (titleController.text.isNullOrBlank &&
+                            contentController.text.isNullOrBlank &&
+                            files.isEmpty) {
+                          throw "Please input something";
+                        }
+
                         await ff.editPost({
                           'id': post == null ? null : post['id'],
                           'category': category,
