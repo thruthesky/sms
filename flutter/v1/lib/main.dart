@@ -6,6 +6,8 @@ import 'package:v1/controllers/user.controller.dart';
 import 'package:v1/screens/admin/admin.category.screen.dart';
 import 'package:v1/screens/admin/admin.push-notification.dart';
 import 'package:v1/screens/admin/admin.screen.dart';
+import 'package:v1/screens/mobile-auth/mobile-auth.screen.dart';
+import 'package:v1/screens/mobile-auth/mobile-code-verification.screen.dart';
 
 import 'package:v1/screens/settings/settings.screen.dart';
 
@@ -134,7 +136,9 @@ class _MainAppState extends State<MainApp> {
             name: RouteNames.adminPushNotification,
             page: () => AdminPushNotificationScreen()),
         GetPage(name: RouteNames.forum, page: () => ForumScreen()),
-        GetPage(name: RouteNames.forumEdit, page: () => ForumEditScreen())
+        GetPage(name: RouteNames.forumEdit, page: () => ForumEditScreen()),
+        GetPage(name: RouteNames.mobileAuth, page: () => MobileAuthScreen()),
+        GetPage(name: RouteNames.mobileCodeVerification, page: () => MobileCodeVerificationScreen())
       ],
     );
   }

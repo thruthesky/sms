@@ -14,4 +14,6 @@ class RouteNames {
   static final String adminPushNotification = '/adminPushNotification';
   static final String forum = '/forum';
   static final String forumEdit = '/forumEdit';
+  static final String mobileAuth = '/mobileAuth';
+  static final String mobileCodeVerification = '/mobileCodeVerification';
 }
