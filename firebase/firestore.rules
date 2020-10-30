@@ -144,19 +144,6 @@ service cloud.firestore {
           request.resource.data.dislikes == resource.data.dislikes ||
           request.resource.data.dislikes == resource.data.dislikes + 1
         )
-        && (
-          /// like, dislike 만 전송해서 수정하려 한다면,
-          /// 먼저, posts/{postId}/votes-history/{uid} 에
-          ///   {choice: 'like' 또는 'dislike', updatedAt: timestamp } 와 같이 저장하고,
-          ///   
-          /// 마지막으로, {postId} 에 likes 또는 dislikes 에 1을 증감합니다.
-          /// 이 때, 1 값을 증감할 때, updatedAt 으로 부터 최소 30초가 지나야, 해당 글/코멘트에 다시 likes/dislikes 를 할 수 있다.
-          /// 
-          /// 즉, likes, dislikes 값을 속여서, 계속해서 likes 하나만 증가 시킬 수 있지만, 적어도 30초에 한번만 할 수 있다.
-          /// 즉, 해킹에 어느 정도 대비를 할 수 있다.
-          /// 이 값을 설정으로 수정 할 수 있도록 한다.
-          /// 주의: updatedAt 이 값자체를 30초가 지나지 않으면, 변경 할 수 없도록 한다.
-        )
       )
       ;
 
