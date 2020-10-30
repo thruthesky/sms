@@ -112,17 +112,39 @@ service cloud.firestore {
       //
       // Condition 1. A user can update his post.
       // Input params of [Condition 1]
-      // category: the category and is optional. If it has value, than it will change the category but the category must exising in category collection
-      // uid: the user uid and this is Optional. This value must be same with the value that is already saved in the document. Meaning it cannot be changed.
-      // updatedAt: This is FieldValue.serverTimestamp() and required, and must have different value from the value in the document.
+      // category: **required**. The category must be exit and may be changed.
+      // uid: **optinonal** The user uid. This value must be same with the value that is already saved in the document. Meaning it cannot be changed.
+      // updatedAt: **required** This is FieldValue.serverTimestamp(), and must have bigger value from the value in the document.
       // All other fields are optinal.
+
+
+      // User cannot vote on other's post with other properties.
+      // User can only vote on other's post without properties (except likes and dislikes)
+      // `likes` and `dislikes` can be increased or decreased by 1.
+      // `likes` and `dislikes` can be increased or decreased together or indivisually.
+      // User can vote on his own post.
       allow update: if
-      
+      (
         myDocument()
-        && (notUpdating('uid'))
+        && notUpdating('uid')
         && req('updatedAt') > res('updatedAt')
         && categoryExist()
-      
+      )
+      || (
+        onlyUpdating(['likes', 'dislikes'])
+        && (
+          request.resource.data.likes == 0 ||
+          request.resource.data.likes == 1 ||
+          request.resource.data.likes == resource.data.likes - 1 ||
+          request.resource.data.likes == resource.data.likes ||
+          request.resource.data.likes == resource.data.likes + 1 ||
+          request.resource.data.dislikes == 0 ||
+          request.resource.data.dislikes == 1 ||
+          request.resource.data.dislikes == resource.data.dislikes - 1 ||
+          request.resource.data.dislikes == resource.data.dislikes ||
+          request.resource.data.dislikes == resource.data.dislikes + 1
+        )
+      )
       ;
 
 
@@ -130,6 +152,7 @@ service cloud.firestore {
       //
       // 필수 입력: 없음.
       allow delete: if myDocument();
+
 
 
       // 코멘트
@@ -184,16 +207,16 @@ service cloud.firestore {
 
 
 
-    // 추천/비추천
-    match /likes/{like} {
-      // 읽기는 로그인만 하면 된다.
-      // 타인의 likes 정보를 읽을 수 있다. 별 중요한 정보가 아니다.
-      // 굳이, 존재하지 않으면, 통과 && Documennt 가 존재하면 내 글인지 확인 할 필요가 없다.
-      allow read: if login();
-      allow create: if login() && toBeMyDocument() && request.resource.data.keys().hasOnly(['uid', 'id', 'vote']);
-      allow update: if login() && myDocument() && notUpdating('uid') && request.resource.data.keys().hasOnly(['uid', 'id', 'vote']);
-      allow delete: if login() && myDocument();
-    }
+    // // 추천/비추천
+    // match /likes/{like} {
+    //   // 읽기는 로그인만 하면 된다.
+    //   // 타인의 likes 정보를 읽을 수 있다. 별 중요한 정보가 아니다.
+    //   // 굳이, 존재하지 않으면, 통과 && Documennt 가 존재하면 내 글인지 확인 할 필요가 없다.
+    //   allow read: if login();
+    //   allow create: if login() && toBeMyDocument() && request.resource.data.keys().hasOnly(['uid', 'id', 'vote']);
+    //   allow update: if login() && myDocument() && notUpdating('uid') && request.resource.data.keys().hasOnly(['uid', 'id', 'vote']);
+    //   allow delete: if login() && myDocument();
+    // }
     
 
     // 설정. 모든 사람이 읽을 수 있지만, 관리자만 쓰기 가능.
@@ -261,9 +284,9 @@ service cloud.firestore {
     // 특정 값만 업데이트하는지 확인
     //
     // 예) onlyUpdating(['like', 'dislike']);
-    // function onlyUpdating(fields) {
-    //   return request.resource.data.diff(resource.data).affectedKeys().hasOnly(fields);
-    // }
+    function onlyUpdating(fields) {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(fields);
+    }
 
 
 
