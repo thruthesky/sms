@@ -1,14 +1,18 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
+import 'package:v1/services/global_variables.dart';
+import 'package:v1/services/route-names.dart';
 import 'package:v1/services/service.dart';
 import 'package:v1/services/spaces.dart';
 
 class MobileCodeVerificationScreen extends StatefulWidget {
   @override
-  _MobileCodeVerificationScreenState createState() => _MobileCodeVerificationScreenState();
+  _MobileCodeVerificationScreenState createState() =>
+      _MobileCodeVerificationScreenState();
 }
 
-class _MobileCodeVerificationScreenState extends State<MobileCodeVerificationScreen> {
+class _MobileCodeVerificationScreenState
+    extends State<MobileCodeVerificationScreen> {
   final codeController = TextEditingController();
 
   String verificationID;
@@ -19,11 +23,6 @@ class _MobileCodeVerificationScreenState extends State<MobileCodeVerificationScr
     dynamic args = Get.arguments;
     verificationID = args['verificationID'];
     internationalNo = args['internationalNo'];
-
-    print('verificationID');
-    print(verificationID);
-    print('internationalNo');
-    print(internationalNo);
     super.initState();
   }
 
@@ -40,19 +39,25 @@ class _MobileCodeVerificationScreenState extends State<MobileCodeVerificationScr
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: Space.xl),
+            Text('Verification Code sent to: $internationalNo'),
+            SizedBox(height: Space.xl),
             TextFormField(
               controller: codeController,
               decoration: InputDecoration(labelText: 'inputCode'.tr),
             ),
             RaisedButton(
               child: Text('submit'),
-              onPressed: () {
+              onPressed: () async {
                 FocusScope.of(context).requestFocus(new FocusNode());
-                print('Code:');
-                print(codeController.text);
-
-                /// TODO: Code verification
-                Service.error('TODO: Code verification');
+                try {
+                  await ff.mobileAuthVerifyCode(
+                    code: codeController.text,
+                    verificationId: verificationID,
+                  );
+                  Get.toNamed(RouteNames.home);
+                } catch (e) {
+                  Service.error(e);
+                }
               },
             )
           ],
