@@ -1,4 +1,3 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -89,7 +88,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 ff.sendNotification(
                   'test title message only',
                   'test body message, from test notification button.',
-                  route: RouteNames.profile,
                   token: ff.firebaseMessagingToken,
                   tokens: tokens,
                   topic: ff.allTopic,
@@ -119,7 +117,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           RaisedButton(
             onPressed: () => Get.toNamed(RouteNames.forumView,
-                arguments: {'post_uid': '0YJHJum1EYb6ZaFOVNPx'}),
+                arguments: {'postId': '0YJHJum1EYb6ZaFOVNPx'}),
             child: Text('Post View'),
           ),
         ],

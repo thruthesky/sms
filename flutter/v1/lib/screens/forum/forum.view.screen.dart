@@ -14,10 +14,9 @@ class _ForumViewScreenState extends State<ForumViewScreen> {
   @override
   void initState() {
     super.initState();
-    var postUid = Get.arguments['post_uid'];
-    print('post_uid');
-    print(postUid);
-    ff.postDocument(postUid).get().then((docSnapshot) {
+    String id = Get.arguments['id'];
+
+    ff.postDocument(id).get().then((docSnapshot) {
       if (!docSnapshot.exists) return false;
       post = docSnapshot.data();
       setState(() {});
