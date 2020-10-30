@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:v1/services/global_variables.dart';
+import 'package:v1/services/route-names.dart';
 import 'package:v1/services/service.dart';
 import 'package:v1/services/spaces.dart';
 import 'package:v1/widgets/user/country_code_selector.dart';
@@ -10,16 +12,19 @@ class MobileAuthScreen extends StatefulWidget {
 }
 
 class _MobileAuthScreenState extends State<MobileAuthScreen> {
-  final mobileNumberController = TextEditingController();
+  final mobileNumberController = TextEditingController(text: '9654101043');
 
   bool loading = false;
-  String countryCode = '+82';
+  String countryCode = '+63';
   String get internationalNo => '$countryCode${mobileNumberController.text}';
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Mobile Auth')),
+      appBar: AppBar(
+        title: Text('Mobile Auth'),
+        automaticallyImplyLeading: false,
+      ),
       body: Container(
         padding: EdgeInsets.all(Space.pageWrap),
         child: Column(
@@ -49,14 +54,19 @@ class _MobileAuthScreenState extends State<MobileAuthScreen> {
               child: Text('submit'),
               onPressed: () {
                 FocusScope.of(context).requestFocus(new FocusNode());
-                try {
-                  if (mobileNumberController.text.isNullOrBlank) {
-                    throw "Input your number";
-                  }
-                  print(internationalNo);
-                } catch (e) {
-                  Service.error(e);
-                }
+                ff.mobileAuthSendCode(
+                  internationalNo,
+                  codeSent: (verificationID) {
+                    print('verificationID');
+                    print(verificationID);
+
+                    Get.toNamed(RouteNames.mobileCodeVerification, arguments: {
+                      'verificationID': verificationID,
+                      'internationalNo': internationalNo,
+                    });
+                  },
+                  onError: (e) => Service.error(e),
+                );
               },
             )
           ],
