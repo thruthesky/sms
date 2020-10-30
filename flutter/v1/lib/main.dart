@@ -1,4 +1,3 @@
-
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk/link.dart';
@@ -32,6 +31,7 @@ void main() async {
       firebaseServerToken:
           'AAAAjdyAvbM:APA91bGist2NNTrrKTZElMzrNV0rpBLV7Nn674NRow-uyjG1-Uhh5wGQWyQEmy85Rcs0wlEpYT2uFJrSnlZywLzP1hkdx32FKiPJMI38evdRZO0x1vBJLc-cukMqZBKytzb3mzRfmrgL',
       settings: {
+        "app": {},
         "forum": {
           "no-of-posts-per-fetch": 10,
         },
@@ -138,7 +138,9 @@ class _MainAppState extends State<MainApp> {
         GetPage(name: RouteNames.forum, page: () => ForumScreen()),
         GetPage(name: RouteNames.forumEdit, page: () => ForumEditScreen()),
         GetPage(name: RouteNames.mobileAuth, page: () => MobileAuthScreen()),
-        GetPage(name: RouteNames.mobileCodeVerification, page: () => MobileCodeVerificationScreen())
+        GetPage(
+            name: RouteNames.mobileCodeVerification,
+            page: () => MobileCodeVerificationScreen())
       ],
     );
   }
