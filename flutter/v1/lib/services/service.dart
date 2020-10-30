@@ -5,7 +5,6 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:v1/controllers/user.controller.dart';
-import 'package:v1/services/translations.dart';
 import 'package:v1/settings.dart' as App;
 
 class Service {
@@ -29,6 +28,7 @@ class Service {
   static Future<String> initLocale() async {
     String current = await Devicelocale.currentLocale;
     locale = current.substring(0, 2);
+    // Get.updateLocale(Locale(locale));
     return locale;
   }
 

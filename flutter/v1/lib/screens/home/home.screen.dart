@@ -118,6 +118,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 arguments: {'category': 'reminder'}),
             child: Text('Reminder'),
           ),
+          RaisedButton(
+            onPressed: () => Get.toNamed(RouteNames.forumView,
+                arguments: {'post_uid': '0YJHJum1EYb6ZaFOVNPx'}),
+            child: Text('Post View'),
+          ),
         ],
       ),
     );
