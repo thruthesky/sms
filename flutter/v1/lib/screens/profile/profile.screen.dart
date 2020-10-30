@@ -59,6 +59,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         if (source == null) return null;
 
                         try {
+                          /// delete previous file to prevent having unused files in storage.
+                          if (!ff.user.photoURL.isNullOrBlank) {
+                            await ff.deleteFile(ff.user.photoURL);
+                          }
+
                           /// upload picked file,
                           final url = await ff.uploadFile(
                             folder: 'user-profile-photos',

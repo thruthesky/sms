@@ -59,7 +59,8 @@ class _MainAppState extends State<MainApp> {
     Service.initLocale().then((value) => Get.updateLocale(Locale(value)));
 
     ff.settingsChange.listen((settings) {
-      setState(() {});
+      ///
+      setState(() {}); // You may re-render the screen if you wish.
     });
     ff.translationsChange.listen(
         (translations) => setState(() => updateTranslations(translations)));
