@@ -5,6 +5,7 @@ import 'package:v1/services/global_variables.dart';
 import 'package:v1/services/service.dart';
 import 'package:v1/services/spaces.dart';
 import 'package:v1/widgets/commons/confirm-dialog.dart';
+import 'package:v1/widgets/commons/spinner.dart';
 
 class FileDisplay extends StatefulWidget {
   FileDisplay(
@@ -27,7 +28,10 @@ class _FileDisplayState extends State<FileDisplay> {
               for (int i = 0; i < widget.files.length; i++)
                 Stack(
                   children: [
-                    CachedNetworkImage(imageUrl: widget.files[i]),
+                    CachedNetworkImage(
+                      imageUrl: widget.files[i],
+                      placeholder: (c, s) => CommonSpinner(),
+                    ),
 
                     /// show only when in edit mode
                     if (widget.inEdit)
