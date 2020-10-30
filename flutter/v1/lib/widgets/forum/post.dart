@@ -69,14 +69,18 @@ class _PostState extends State<Post> {
             /// buttons
             Row(
               children: [
-                IconButton(
-                  icon: Icon(Icons.thumb_up),
-                  onPressed: () => print('VOTE: like'),
-                ),
-                IconButton(
-                  icon: Icon(Icons.thumb_down),
-                  onPressed: () => print('VOTE: dislike'),
-                ),
+                if (ff.isShowForumVote(widget.post['category'], 'like')) ...[
+                  IconButton(
+                    icon: Icon(Icons.thumb_up),
+                    onPressed: () => print('VOTE: like'),
+                  ),
+                ],
+                if (ff.isShowForumVote(widget.post['category'], 'dislike')) ...[
+                  IconButton(
+                    icon: Icon(Icons.thumb_down),
+                    onPressed: () => print('VOTE: dislike'),
+                  ),
+                ],
                 if (Service.isMine(widget.post)) ...[
                   IconButton(
                     icon: Icon(Icons.edit),

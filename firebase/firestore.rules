@@ -73,6 +73,8 @@ service cloud.firestore {
       allow update: if admin() && notUpdating('id');
     }
 
+
+
     // 글
     match /posts/{postId} {
       // 아무나 글을 읽거나 목록 할 수 있음.
@@ -221,6 +223,11 @@ service cloud.firestore {
 
     // 설정. 모든 사람이 읽을 수 있지만, 관리자만 쓰기 가능.
     match /settings/{document=**} {
+      allow read: if true;
+      allow write: if admin();
+    }
+
+    match /translations/{document=**}  {
       allow read: if true;
       allow write: if admin();
     }
