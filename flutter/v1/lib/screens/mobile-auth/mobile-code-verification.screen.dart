@@ -17,12 +17,14 @@ class _MobileCodeVerificationScreenState
 
   String verificationID;
   String internationalNo;
+  int codeResendToken;
 
   @override
   void initState() {
     dynamic args = Get.arguments;
     verificationID = args['verificationID'];
     internationalNo = args['internationalNo'];
+    codeResendToken = args['codeResendToken'];
     super.initState();
   }
 
@@ -59,7 +61,35 @@ class _MobileCodeVerificationScreenState
                   Service.error(e);
                 }
               },
-            )
+            ),
+            Row(
+              children: [
+                RaisedButton(
+                  child: Text('changeNumber'.tr),
+                  onPressed: () {
+                    Get.back();
+                  },
+                ),
+                Spacer(),
+                RaisedButton(
+                  child: Text('resendCode'.tr),
+                  onPressed: () async {
+                    /// TODO: resend code
+                    ff.mobileAuthSendCode(
+                      internationalNo,
+                      resendToken: codeResendToken,
+                      onCodeSent: (verID, resendToken) {
+                        setState(() {
+                          verificationID = verID;
+                          codeResendToken = resendToken;
+                        });
+                      },
+                      onError: (e) => Service.error(e),
+                    );
+                  },
+                )
+              ],
+            ),
           ],
         ),
       ),

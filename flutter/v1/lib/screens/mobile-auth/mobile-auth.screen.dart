@@ -56,10 +56,11 @@ class _MobileAuthScreenState extends State<MobileAuthScreen> {
                 FocusScope.of(context).requestFocus(new FocusNode());
                 ff.mobileAuthSendCode(
                   internationalNo,
-                  onCodeSent: (verificationID) {
+                  onCodeSent: (verificationID, codeResendToken) {
                     Get.toNamed(RouteNames.mobileCodeVerification, arguments: {
                       'verificationID': verificationID,
                       'internationalNo': internationalNo,
+                      'codeResendToken': codeResendToken
                     });
                   },
                   onError: (e) => Service.error(e),
