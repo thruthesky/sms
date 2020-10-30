@@ -28,7 +28,6 @@ class CommentsList extends StatelessWidget {
             padding: EdgeInsets.all(Space.md),
             child: Text('No comments yet..'),
           );
-    ;
   }
 }
 

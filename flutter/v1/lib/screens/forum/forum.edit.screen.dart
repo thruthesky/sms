@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +6,6 @@ import 'package:v1/controllers/user.controller.dart';
 import 'package:v1/services/global_variables.dart';
 import 'package:v1/services/service.dart';
 import 'package:v1/services/spaces.dart';
-import 'package:v1/widgets/commons/confirm-dialog.dart';
 import 'package:v1/widgets/commons/photo-picker-bottom-sheet.dart';
 import 'package:v1/widgets/forum/file.display.dart';
 
@@ -104,7 +102,16 @@ class _ForumEditScreenState extends State<ForumEditScreen> {
                   SizedBox(width: Space.md),
                   RaisedButton(
                     onPressed: () async {
+                      /// remove focus
+                      FocusScope.of(context).requestFocus(FocusNode());
+
                       try {
+                        if (titleController.text.isNullOrBlank &&
+                            contentController.text.isNullOrBlank &&
+                            files.isEmpty) {
+                          throw "Please input something";
+                        }
+
                         await ff.editPost({
                           'id': post == null ? null : post['id'],
                           'category': category,

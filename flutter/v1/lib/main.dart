@@ -1,4 +1,3 @@
-import 'package:after_layout/after_layout.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk/link.dart';
@@ -7,6 +6,8 @@ import 'package:v1/screens/admin/admin.category.screen.dart';
 import 'package:v1/screens/admin/admin.push-notification.dart';
 import 'package:v1/screens/admin/admin.screen.dart';
 import 'package:v1/screens/forum/forum.view.screen.dart';
+import 'package:v1/screens/mobile-auth/mobile-auth.screen.dart';
+import 'package:v1/screens/mobile-auth/mobile-code-verification.screen.dart';
 
 import 'package:v1/screens/settings/settings.screen.dart';
 
@@ -60,10 +61,8 @@ class _MainAppState extends State<MainApp> {
     ff.settingsChange.listen((settings) {
       setState(() {});
     });
-    ff.translationsChange.listen((translations) {
-      updateTranslations(translations);
-      setState(() {});
-    });
+    ff.translationsChange.listen(
+        (translations) => setState(() => updateTranslations(translations)));
 
     ff.notification.listen(
       (x) {
@@ -127,7 +126,11 @@ class _MainAppState extends State<MainApp> {
             page: () => AdminPushNotificationScreen()),
         GetPage(name: RouteNames.forum, page: () => ForumScreen()),
         GetPage(name: RouteNames.forumEdit, page: () => ForumEditScreen()),
-        GetPage(name: RouteNames.forumView, page: () => ForumViewScreen())
+        GetPage(name: RouteNames.forumView, page: () => ForumViewScreen()),
+        GetPage(name: RouteNames.mobileAuth, page: () => MobileAuthScreen()),
+        GetPage(
+            name: RouteNames.mobileCodeVerification,
+            page: () => MobileCodeVerificationScreen())
       ],
     );
   }

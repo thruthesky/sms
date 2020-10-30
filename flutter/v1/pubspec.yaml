@@ -20,6 +20,8 @@ dependencies:
 
   cached_network_image: ^2.3.3
 
+  country_code_picker: ^1.6.2
+
   kakao_flutter_sdk: ^0.6.0-beta.1
   fireflutter:
     path: packages/fireflutter

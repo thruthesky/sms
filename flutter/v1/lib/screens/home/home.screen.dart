@@ -1,9 +1,7 @@
-import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-// import 'package:v1/controllers/user.controller.dart';
 import 'package:v1/services/global_variables.dart';
 import 'package:v1/services/route-names.dart';
 import 'package:v1/services/service.dart';
@@ -56,6 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   Text("User Email: ${ff.user.email}"),
                   Text("User Nickname: ${ff.user.displayName}"),
                   Text("User Gender: ${ff.data['gender']}"),
+                  Text("User Phone number: ${ff.user.phoneNumber}"),
                   Text("User PhotoUrl: ${ff.user.photoURL}"),
                   RaisedButton(
                     onPressed: () => Get.toNamed(RouteNames.profile),
