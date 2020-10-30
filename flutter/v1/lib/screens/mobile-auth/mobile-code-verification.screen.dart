@@ -73,8 +73,7 @@ class _MobileCodeVerificationScreenState
                 Spacer(),
                 RaisedButton(
                   child: Text('resendCode'.tr),
-                  onPressed: () async {
-                    /// TODO: resend code
+                  onPressed: () {
                     ff.mobileAuthSendCode(
                       internationalNo,
                       resendToken: codeResendToken,
