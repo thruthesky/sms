@@ -7,7 +7,7 @@ const test = require("firebase-functions-test")(
     storageBucket: "ocial-management-system.appspot.com",
     projectId: "social-management-system"
   },
-  "../service-account-key.json" //
+  "../firebase-service-account-key.json" //
 );
 
 const myFunctions = require("../index.js");
