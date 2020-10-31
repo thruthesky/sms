@@ -248,8 +248,20 @@ $ firebase deploy --only firestore,functions
 - dislike 를 한 글/코멘트에 like 를 하는 경우, like 1 증가, dislike 1 감소
 
 - like, dislike 가 아닌, 빈 문자열을 저장하는 경우, 이전에 (글/코멘트에)
+
   - like 를 했다면, 글/코멘트에 like 1 감소,
   - dislike 를 했다면, 글/코멘트에 dislike 1 감소
+
+- 추천은 async 하게 동작한다.
+
+  - 추천, 추천 취소를 빠르게
+    `like => '' => like => '' => like => ''`
+    와 같은 형태로 했을 경우,
+    실제 Firestore 에 적용되는 순서가
+    `'' => '' => '' => '' => like => like => like` 와 같이 변경 될 수 있다.
+    그래서 결국은 like 가 3 이나 증가하게된다.
+
+    이는 일반적인 side effect 로서, 이를 방지하기 위해서 클라이언트에서 progress spinner 나 disabled 형태로 보여주면 된다.
 
 ### 사용자
 
