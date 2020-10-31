@@ -119,36 +119,14 @@ service cloud.firestore {
       // updatedAt: **required** This is FieldValue.serverTimestamp(), and must have bigger value from the value in the document.
       // All other fields are optinal.
 
-
-      // User cannot vote on other's post with other properties.
-      // User can only vote on other's post without properties (except likes and dislikes)
-      // `likes` and `dislikes` can be increased or decreased by 1.
-      // `likes` and `dislikes` can be increased or decreased together or indivisually.
-      // User can vote on his own post.
       allow update: if
-      (
         myDocument()
-        && notUpdating('uid')
-        && req('updatedAt') > res('updatedAt')
-        && categoryExist()
-      )
-      || (
-        onlyUpdating(['likes', 'dislikes'])
-        && (
-          request.resource.data.likes == 0 ||
-          request.resource.data.likes == 1 ||
-          request.resource.data.likes == resource.data.likes - 1 ||
-          request.resource.data.likes == resource.data.likes ||
-          request.resource.data.likes == resource.data.likes + 1 ||
-          request.resource.data.dislikes == 0 ||
-          request.resource.data.dislikes == 1 ||
-          request.resource.data.dislikes == resource.data.dislikes - 1 ||
-          request.resource.data.dislikes == resource.data.dislikes ||
-          request.resource.data.dislikes == resource.data.dislikes + 1
-        )
-      )
+          && notUpdating('uid')
+          && notUpdating('likes')
+          && notUpdating('dislikes')
+          && req('updatedAt') > res('updatedAt')
+          && categoryExist()
       ;
-
 
       // 삭제는 자기 글만 가능
       //
@@ -156,10 +134,46 @@ service cloud.firestore {
       allow delete: if myDocument();
 
 
+      // Vote on post
+      // @see README.md
+      match /votes/{uid} {
+        allow read: if true;
+        allow write: if
+          request.auth.uid == uid
+          // && debug(req('choice'))
+          // && debug(res('choice'))
+          // && debug( request.auth.uid )
+          // && debug(uid)
+          // && debug(/databases/$(database)/documents/posts/$(postId)/votes/$(uid))
+          // If user voted for the first time, then choice can be 'like' or 'dislike'.
+          // If user voted again, then choice can be one of empty string(''), 'like', 'dislike'.
+          && 
+          (
+            // first time vote,
+            (
+              !exists(/databases/$(database)/documents/posts/$(postId)/votes/$(uid))
+              &&
+              (req('choice') == 'like' || req('choice') == 'dislike')
+            )
+            // If vote has done before, then choice must be difference.
+            ||
+            (
+              exists(/databases/$(database)/documents/posts/$(postId)/votes/$(uid))
+              &&
+              ((req('choice')) != (res('choice')))
+              &&
+              (
+                req('choice') == 'like' || req('choice') == 'dislike' || req('choice') == ''
+              )
+            )
+          )
+        ;
+      }
+
 
       // 코멘트
       // - 각 글 도큐먼트 하위에 기록
-      match /comments/{comment} {
+      match /comments/{commentId} {
         allow read: if true;
 
         // 코멘트 생성 권한
@@ -193,20 +207,49 @@ service cloud.firestore {
             && notUpdating('likes')
             && notUpdating('dislikes')
           )
-          // ||
-          // (
-          // // 본인 뿐만 아니라 타인도 이 rule 로 vote
-          //   // onlyUpdating(['like', 'dislike'])
-          //   (!req('category') && (req('like') || req('dislike')))
-          //   && updatingByOne('like')
-          //   && updatingByOne('dislike')
-          // )
           ;
 
         // 코멘트 삭제 권한
         // - 내 코멘트이면 삭제 가능
         allow delete: if login() && myDocument();
-      }
+
+
+        // Vote on comment
+        // @see README.md
+        match /votes/{uid} {
+          allow read: if true;
+          allow write: if
+            request.auth.uid == uid
+            // && debug(req('choice'))
+            // && debug(res('choice'))
+            // && debug( request.auth.uid )
+            // && debug(uid)
+            // && debug(/databases/$(database)/documents/posts/$(postId)/votes/$(uid))
+            // If user voted for the first time, then choice can be 'like' or 'dislike'.
+            // If user voted again, then choice can be one of empty string(''), 'like', 'dislike'.
+            && 
+            (
+              // first time vote,
+              (
+                !exists(/databases/$(database)/documents/posts/$(postId)/comments/$(commentId)/votes/$(uid))
+                &&
+                (req('choice') == 'like' || req('choice') == 'dislike')
+              )
+              // If vote has done before, then choice must be difference.
+              ||
+              (
+                exists(/databases/$(database)/documents/posts/$(postId)/comments/$(commentId)/votes/$(uid))
+                &&
+                ((req('choice')) != (res('choice')))
+                &&
+                (
+                  req('choice') == 'like' || req('choice') == 'dislike' || req('choice') == ''
+                )
+              )
+            )
+          ;
+        }
+      } // comments
     }
 
 
@@ -293,9 +336,9 @@ service cloud.firestore {
     // 특정 값만 업데이트하는지 확인
     //
     // 예) onlyUpdating(['like', 'dislike']);
-    function onlyUpdating(fields) {
-      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(fields);
-    }
+    // function onlyUpdating(fields) {
+    //   return request.resource.data.diff(resource.data).affectedKeys().hasOnly(fields);
+    // }
 
 
 
@@ -305,17 +348,17 @@ service cloud.firestore {
     // `field` 가 업데이트되지 않거나 또는 최대 1 증가, 최소 1 감소하는지 확인.
     //
     // TODO: like/dislike 는 동시에 1이 증가하거나 동시에 1이 감소 할 수 없다. 하지만 큰 문제가 아니기 때문에 차 후 업데이트한다.
-    function updatingByOne(field) {
-      return request.resource.data[field] is int
-        &&
-        ( 
-          request.resource.data[field] == resource.data[field] // 값이 변하지 않거나
-          ||
-          request.resource.data[field] == resource.data[field] + 1 // 값이  1 증가 하거나
-          ||
-          request.resource.data[field] == resource.data[field] - 1 // 값이  1 감소 하거나
-        );
-    }
+    // function updatingByOne(field) {
+    //   return request.resource.data[field] is int
+    //     &&
+    //     ( 
+    //       request.resource.data[field] == resource.data[field] // 값이 변하지 않거나
+    //       ||
+    //       request.resource.data[field] == resource.data[field] + 1 // 값이  1 증가 하거나
+    //       ||
+    //       request.resource.data[field] == resource.data[field] - 1 // 값이  1 감소 하거나
+    //     );
+    // }
 
     // function mustBeZero(field) {
     //   return request.resource.data[field] is int && request.resource.data[field] == 0;

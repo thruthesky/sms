@@ -169,12 +169,19 @@ $ npm run test:vote
 $ npm run test:user.token
 ```
 
-### Publish
+### Functions 테스트
+
+```
+$ cd functions
+$ npm test
+```
+
+### 파이어베이스 베포
 
 - 테스트가 끝나면 아래와 같이 배포하면 됩니다.
 
 ```
-$ firebase deploy --only firestore
+$ firebase deploy --only firestore,functions
 ```
 
 ## 프로젝트 이슈
@@ -215,7 +222,8 @@ $ firebase deploy --only firestore
 
 ### 추천 로직
 
-- 글/코멘트가 동일한 로직 사용
+- 글/코멘트가 동일한 로직 사용.
+- choice 는 like, dislike 또는 빈문자열 중 하나.
 
 - 글/코멘트에 likes, dislikes 가 없으면 0으로 초기화
 
@@ -223,8 +231,11 @@ $ firebase deploy --only firestore
 
 - choice 의 값이 빈문자열, like, 또는 dislike 중 하나가 아니면, security fules 로 에러를 내야 함 그리고 클라이언트에서 미리 방지해야 함.
 
+- 본인의 글/코멘트에 추천 할 수 있음
+
 - 처음 like 를 하는 경우, 글/코멘트의 likes 1 증가.
 - 처음 dislike 를 하는 경우, 글/코멘트의 dislikes 1 증가.
+- 처음 추천을 하는데, choice 가 없는(빈 문자열 인) 경우, 아무런 변화 없음. 클라이언트에서 방지해야 함.
 
 - like 를 한 글/코멘트에 또 like 를 하는 경우, 변화 없음. security rules 로 막고 클라이언트에서 못하도록 미리 방지 해야 함.
 - dislike 를 한 글/코멘트에 또 dislike 를 하는 경우, 변화 없음. security rules 로 막고 클라이언트에서 못하도록 미리 방지 해야 함.

@@ -22,8 +22,8 @@ async function doVotes(change) {
   }
   const postData = postDoc.data();
   // console.log("postDoc", postData);
-  if (postData.likes == undefined) postData.likes = 0;
-  if (postData.dislikes == undefined) postData.dislikes = 0;
+  if (postData.likes === undefined) postData.likes = 0;
+  if (postData.dislikes === undefined) postData.dislikes = 0;
 
   const afterVoteData = change.after.data();
   const beforeVoteData = change.before.data();
@@ -31,8 +31,9 @@ async function doVotes(change) {
   // 처음 추천 하는 경우,
   if (!change.before.exists) {
     // console.log("=> vote docuemnt does not exists");
-    if (afterVoteData.choice == "like") postData.likes++;
-    else if (afterVoteData.choice == "dislike") postData.dislikes++;
+    if (afterVoteData.choice === "like") postData.likes++;
+    else if (afterVoteData.choice === "dislike") postData.dislikes++;
+    else return; // 처음 추천인데, choice 가 like, dislike 가 아니면, 에러
     // console.log("=> postData: ", postData);
     await parentRef.set(
       { likes: postData.likes, dislikes: postData.dislikes },
@@ -46,7 +47,7 @@ async function doVotes(change) {
     //  예를 들어, 추천을 했는데, 또 추천을 하면,
     //  그냥 리턴한다.
     //  왜? 보안과 관련된 문제가 아니면, 복잡한 코딩은 클라이언트에서 편하게 한다.
-    if (beforeVoteData.choice == afterVoteData.choice) {
+    if (beforeVoteData.choice === afterVoteData.choice) {
       return;
 
       // if (afterVoteData.choice == "like") {
@@ -58,7 +59,7 @@ async function doVotes(change) {
       // } else {
       //   console.error("Choice must be like or likes");
       // }
-    } else if (afterVoteData.choice == "") {
+    } else if (afterVoteData.choice === "") {
       // 추천을 한 후, 결과 값이 없으면(빈 문자열이면, 추천 취소) 해당 추천을 글에서 1 감소한다.
       const ch = beforeVoteData.choice;
       switch (ch) {
@@ -82,10 +83,10 @@ async function doVotes(change) {
       /// 예: 이전에 like 했는데 지금은 dislike 하는 경우, 또는 그 반대
       let likes;
       let dislikes;
-      if (afterVoteData.choice == "like") {
+      if (afterVoteData.choice === "like") {
         likes = postData.likes + 1;
         dislikes = _decrease(postData.dislikes);
-      } else if (afterVoteData.choice == "dislike") {
+      } else if (afterVoteData.choice === "dislike") {
         likes = _decrease(postData.likes);
         dislikes = postData.dislikes + 1;
         // console.log("==> dislikes: ", dislikes);

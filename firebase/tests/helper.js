@@ -69,4 +69,5 @@ module.exports.setup = async (auth, data) => {
 module.exports.myAuth = myAuth;
 module.exports.myUid = myUid;
 module.exports.otherUid = otherUid;
+module.exports.otherAuth = otherAuth;
 module.exports.adminAuth = adminAuth;
