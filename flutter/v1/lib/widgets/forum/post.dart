@@ -8,7 +8,7 @@ import 'package:v1/services/service.dart';
 import 'package:v1/services/spaces.dart';
 import 'package:v1/widgets/commons/confirm-dialog.dart';
 import 'package:v1/widgets/forum/comment.edit.form.dart';
-import 'package:v1/widgets/forum/comment-list.dart';
+import 'package:v1/widgets/forum/comment_list.dart';
 import 'package:v1/widgets/forum/file.display.dart';
 
 class Post extends StatefulWidget {
@@ -25,7 +25,6 @@ class Post extends StatefulWidget {
 
 class _PostState extends State<Post> {
   final UserController userController = Get.find();
-  final firestoreInstance = FirebaseFirestore.instance;
 
   bool showContent = true;
 
@@ -70,15 +69,27 @@ class _PostState extends State<Post> {
             Row(
               children: [
                 if (ff.isShowForumVote(widget.post['category'], 'like')) ...[
-                  IconButton(
-                    icon: Icon(Icons.thumb_up),
-                    onPressed: () => print('VOTE: like'),
+                  TextButton(
+                    child: Text('Likes ${widget.post['likes'] ?? 0}'),
+                    onPressed: () async {
+                      try {
+                        await ff.likePost(widget.post['id']);
+                      } catch (e) {
+                        Service.error(e);
+                      }
+                    },
                   ),
                 ],
                 if (ff.isShowForumVote(widget.post['category'], 'dislike')) ...[
-                  IconButton(
-                    icon: Icon(Icons.thumb_down),
-                    onPressed: () => print('VOTE: dislike'),
+                  TextButton(
+                    child: Text('Dislikes ${widget.post['dislikes'] ?? 0}'),
+                    onPressed: () async {
+                      try {
+                        await ff.dislikePost(widget.post['id']);
+                      } catch (e) {
+                        Service.error(e);
+                      }
+                    },
                   ),
                 ],
                 if (Service.isMine(widget.post)) ...[

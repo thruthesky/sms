@@ -96,23 +96,33 @@ class _CommentState extends State<Comment> {
                       Row(
                         children: [
                           if (ff.isShowForumVote(
-                              widget.post['category'], 'like')) ...[
-                            IconButton(
-                              icon: Icon(Icons.thumb_up),
-                              onPressed: () {
-                                print('VOTE : like');
+                              widget.post['category'], 'like'))
+                            TextButton(
+                              child:
+                                  Text('Likes ${widget.comment['likes'] ?? 0}'),
+                              onPressed: () async {
+                                try {
+                                  await ff.likeComment(
+                                      widget.post['id'], widget.comment['id']);
+                                } catch (e) {
+                                  Service.error(e);
+                                }
                               },
                             ),
-                          ],
                           if (ff.isShowForumVote(
-                              widget.post['category'], 'dislike')) ...[
-                            IconButton(
-                              icon: Icon(Icons.thumb_down),
-                              onPressed: () {
-                                print('VOTE : like');
+                              widget.post['category'], 'dislike'))
+                            TextButton(
+                              child: Text(
+                                  'Likes ${widget.comment['dislikes'] ?? 0}'),
+                              onPressed: () async {
+                                try {
+                                  await ff.dislikeComment(
+                                      widget.post['id'], widget.comment['id']);
+                                } catch (e) {
+                                  Service.error(e);
+                                }
                               },
                             ),
-                          ],
                           if (Service.isMine(widget.comment)) ...[
                             IconButton(
                               icon: Icon(Icons.edit),

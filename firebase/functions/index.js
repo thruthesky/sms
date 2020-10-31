@@ -33,7 +33,10 @@ async function doVotes(change) {
     // console.log("=> vote docuemnt does not exists");
     if (afterVoteData.choice === "like") postData.likes++;
     else if (afterVoteData.choice === "dislike") postData.dislikes++;
-    else return; // 처음 추천인데, choice 가 like, dislike 가 아니면, 에러
+    else {
+      // 처음 추천인데, choice 값이 없거나, 공백이거나, 기타 like, dislike 가 아니면, 에러
+      return;
+    }
     // console.log("=> postData: ", postData);
     await parentRef.set(
       { likes: postData.likes, dislikes: postData.dislikes },
@@ -76,6 +79,7 @@ async function doVotes(change) {
           );
           break;
         default:
+          /// {abc: 'def'} 와 같이 choice 가 없는 값이 들어오면, 여기에 온다.
           break;
       }
     } else {
