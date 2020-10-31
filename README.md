@@ -25,6 +25,7 @@
 ## 구성
 
 - `sms/firebase` 폴더에는 Firebase 관련 코드가 있습니다. Firestore, Functions 와 관련된 코드라고 보시면 됩니다.
+  - `sms/firebase` 에는 Security Rules 나 Clould Functions 에 대한 코드가 있으며 공식 문서에서 권하는 방식으로 테스트를 하고 있습니다.
 - `sms/flutter` 폴더에는 플러터 앱 관련 코드가 있습니다.
   - 플러터에서는 `FireFlutter` 라는 패키지를 통해서 코딩을 합니다.
 - `sms/vue` 폴더에는 Vuejs 코드가 있습니다.
@@ -211,6 +212,29 @@ $ firebase deploy --only firestore
   - 그래서 도큐먼트가 삭제되면, 그 하위의 모든 속성도 삭제되도록 한다.
     - 파이어스토어에서 도큐먼트를 삭제 할 때, 하위 컬렉션이나 그 하위 정보가 자동으로 삭제되지 않는다.
     - 버전 2.0 에서는 삭제된 사용자 정보나 게시판, 코멘트 정보 등을 찾아서 상위 도큐먼트/컬렉션이 삭제되면, 하위의 컬렉션을 삭제하는 CLI 를 제공 할 예정이다.
+
+### 추천 로직
+
+- 글/코멘트가 동일한 로직 사용
+
+- 글/코멘트에 likes, dislikes 가 없으면 0으로 초기화
+
+- /posts/{postId}/votes/{uid} 또는 /posts/{postId}/comments/{commentId}/votes/{uid} 로 사용자 추천 도큐먼트 저장
+
+- choice 의 값이 빈문자열, like, 또는 dislike 중 하나가 아니면, security fules 로 에러를 내야 함 그리고 클라이언트에서 미리 방지해야 함.
+
+- 처음 like 를 하는 경우, 글/코멘트의 likes 1 증가.
+- 처음 dislike 를 하는 경우, 글/코멘트의 dislikes 1 증가.
+
+- like 를 한 글/코멘트에 또 like 를 하는 경우, 변화 없음. security rules 로 막고 클라이언트에서 못하도록 미리 방지 해야 함.
+- dislike 를 한 글/코멘트에 또 dislike 를 하는 경우, 변화 없음. security rules 로 막고 클라이언트에서 못하도록 미리 방지 해야 함.
+
+- like 를 한 글/코멘트에 dislike 를 하는 경우, like 1 감소, dislike 1 증가
+- dislike 를 한 글/코멘트에 like 를 하는 경우, like 1 증가, dislike 1 감소
+
+- like, dislike 가 아닌, 빈 문자열을 저장하는 경우, 이전에 (글/코멘트에)
+  - like 를 했다면, 글/코멘트에 like 1 감소,
+  - dislike 를 했다면, 글/코멘트에 dislike 1 감소
 
 ### 사용자
 

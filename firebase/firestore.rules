@@ -190,15 +190,17 @@ service cloud.firestore {
             && toBeMyDocument() 
             && notUpdating('uid')
             && notUpdating('order')
+            && notUpdating('likes')
+            && notUpdating('dislikes')
           )
-          ||
-          (
-          // 본인 뿐만 아니라 타인도 이 rule 로 vote
-            // onlyUpdating(['like', 'dislike'])
-            (!req('category') && (req('like') || req('dislike')))
-            && updatingByOne('like')
-            && updatingByOne('dislike')
-          )
+          // ||
+          // (
+          // // 본인 뿐만 아니라 타인도 이 rule 로 vote
+          //   // onlyUpdating(['like', 'dislike'])
+          //   (!req('category') && (req('like') || req('dislike')))
+          //   && updatingByOne('like')
+          //   && updatingByOne('dislike')
+          // )
           ;
 
         // 코멘트 삭제 권한
