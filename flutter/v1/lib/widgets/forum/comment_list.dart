@@ -6,6 +6,8 @@ import 'package:v1/services/spaces.dart';
 import 'package:v1/widgets/commons/confirm-dialog.dart';
 import 'package:v1/widgets/forum/comment.edit.form.dart';
 import 'package:v1/widgets/forum/file.display.dart';
+import 'package:v1/widgets/forum/vote_button.dart';
+import 'package:fireflutter/fireflutter.dart';
 
 class CommentsList extends StatelessWidget {
   final dynamic post;
@@ -95,34 +97,46 @@ class _CommentState extends State<Comment> {
                       /// buttons
                       Row(
                         children: [
-                          if (ff.isShowForumVote(
-                              widget.post['category'], 'like'))
-                            TextButton(
-                              child:
-                                  Text('Likes ${widget.comment['likes'] ?? 0}'),
-                              onPressed: () async {
-                                try {
-                                  await ff.likeComment(
-                                      widget.post['id'], widget.comment['id']);
-                                } catch (e) {
-                                  Service.error(e);
-                                }
-                              },
-                            ),
-                          if (ff.isShowForumVote(
-                              widget.post['category'], 'dislike'))
-                            TextButton(
-                              child: Text(
-                                  'Likes ${widget.comment['dislikes'] ?? 0}'),
-                              onPressed: () async {
-                                try {
-                                  await ff.dislikeComment(
-                                      widget.post['id'], widget.comment['id']);
-                                } catch (e) {
-                                  Service.error(e);
-                                }
-                              },
-                            ),
+                          VoteButton(
+                              post: widget.post,
+                              comment: widget.comment,
+                              choice: VoteChoice.like,
+                              state: setState),
+                          VoteButton(
+                              post: widget.post,
+                              comment: widget.comment,
+                              choice: VoteChoice.dislike,
+                              state: setState),
+
+                          // if (ff.isShowForumVote(
+                          //     widget.post['category'], 'like'))
+                          //   TextButton(
+                          //     child:
+                          //         Text('Likes ${widget.comment['likes'] ?? 0}'),
+                          //     onPressed: () async {
+                          //       try {
+                          //         await ff.likeComment(
+                          //             widget.post['id'], widget.comment['id']);
+                          //       } catch (e) {
+                          //         Service.error(e);
+                          //       }
+                          //     },
+                          //   ),
+                          // if (ff.isShowForumVote(
+                          //     widget.post['category'], 'dislike'))
+                          //   TextButton(
+                          //     child: Text(
+                          //         'Likes ${widget.comment['dislikes'] ?? 0}'),
+                          //     onPressed: () async {
+                          //       try {
+                          //         await ff.dislikeComment(
+                          //             widget.post['id'], widget.comment['id']);
+                          //       } catch (e) {
+                          //         Service.error(e);
+                          //       }
+                          //     },
+                          //   ),
+
                           if (Service.isMine(widget.comment)) ...[
                             IconButton(
                               icon: Icon(Icons.edit),

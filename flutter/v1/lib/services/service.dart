@@ -46,11 +46,11 @@ class Service {
   }
 
   static void error(dynamic e) {
-    String msg = '';
-
-    print('error(e): ');
+    print('=> error(e): ');
     print(e);
-    print('e.runtimeType: ${e.runtimeType}');
+    print('=> e.runtimeType: ${e.runtimeType}');
+
+    String msg = '';
 
     if (e is String) {
       msg = e.tr;
@@ -73,27 +73,32 @@ class Service {
     /// It can be Firebase errors, or handmaid errors.
     /// This may produce another error like 'something' has no instance getter 'code' and this is because
     /// it does not understand what [e] is.
-    else if (e.code != null && e.message != null) {
-      print("${e.message} (${e.code})");
+    else {
+      try {
+        if (e.code != null && e.message != null) {
+          print(
+              "e has code & message. message: ${e.message}, code: (${e.code})");
 
-      if (e.code == 'weak-password') {
-        msg = 'The password provided is too weak.';
-      } else if (e.code == 'email-already-in-use') {
-        msg = 'The account already exists for that email.';
-      } else if (e.code == 'permission-denied') {
-        msg = 'Permission denied. You do not have permission.';
-      } else {
-        msg = "${e.message} (${e.code})";
+          if (e.code == 'weak-password') {
+            msg = 'The password provided is too weak.';
+          } else if (e.code == 'email-already-in-use') {
+            msg = 'The account already exists for that email.';
+          } else if (e.code == 'permission-denied') {
+            msg = 'Permission denied. You do not have permission.';
+          } else {
+            msg = "${e.message} (${e.code})";
+          }
+
+          /// If there is translated text, then use it. Or use the error message above.
+          ///
+          /// firebase_auth_account-exists-with-different-credential
+
+          final translated = (e.code as String).replaceAll('/', '_').tr;
+          if (translated != e.code) msg = translated;
+        }
+      } catch (err) {
+        msg = e.toString();
       }
-
-      /// If there is translated text, then use it. Or use the error message above.
-      ///
-      /// firebase_auth_account-exists-with-different-credential
-
-      final translated = (e.code as String).replaceAll('/', '_').tr;
-      if (translated != e.code) msg = translated;
-    } else {
-      msg = 'Unknown error';
     }
     print('error msg: $msg');
     Get.snackbar('error'.tr, msg);

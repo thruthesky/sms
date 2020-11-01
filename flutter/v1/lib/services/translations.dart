@@ -10,13 +10,17 @@ Map<String, Map<String, String>> translations = {
     "app_title": "App Title",
     "home": "Home",
     "menu": "Menu",
-    "qna": "QnA"
+    "qna": "QnA",
+    "likes": "Likes",
+    "dislikes": "Dislikes",
   },
   "ko": {
     "app_title": "앱 제목",
     "home": "홈",
     "menu": "메뉴",
     "qna": "질문게시판",
+    "likes": "찬성",
+    "dislikes": "반대",
   }
 };
 
@@ -27,6 +31,8 @@ updateTranslations(Map<dynamic, dynamic> data) {
       translations[ln][name] = texts[name];
     }
   });
+  print('updated: translations');
+  print(translations);
 }
 
 /// GetX locale text translations.

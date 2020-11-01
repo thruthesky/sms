@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:v1/controllers/user.controller.dart';
@@ -10,6 +11,7 @@ import 'package:v1/widgets/commons/confirm-dialog.dart';
 import 'package:v1/widgets/forum/comment.edit.form.dart';
 import 'package:v1/widgets/forum/comment_list.dart';
 import 'package:v1/widgets/forum/file.display.dart';
+import 'package:v1/widgets/forum/vote_button.dart';
 
 class Post extends StatefulWidget {
   final dynamic post;
@@ -68,30 +70,17 @@ class _PostState extends State<Post> {
             /// buttons
             Row(
               children: [
-                if (ff.isShowForumVote(widget.post['category'], 'like')) ...[
-                  TextButton(
-                    child: Text('Likes ${widget.post['likes'] ?? 0}'),
-                    onPressed: () async {
-                      try {
-                        await ff.likePost(widget.post['id']);
-                      } catch (e) {
-                        Service.error(e);
-                      }
-                    },
-                  ),
-                ],
-                if (ff.isShowForumVote(widget.post['category'], 'dislike')) ...[
-                  TextButton(
-                    child: Text('Dislikes ${widget.post['dislikes'] ?? 0}'),
-                    onPressed: () async {
-                      try {
-                        await ff.dislikePost(widget.post['id']);
-                      } catch (e) {
-                        Service.error(e);
-                      }
-                    },
-                  ),
-                ],
+                /// TODO when `setState` is being called, it will redraw post and its comments.
+                /// If the two `VoteButton` goes into a separate widget, it won't draw its whole post.
+                VoteButton(
+                    post: widget.post,
+                    choice: VoteChoice.like,
+                    state: setState),
+                VoteButton(
+                    post: widget.post,
+                    choice: VoteChoice.dislike,
+                    padding: EdgeInsets.only(left: 2),
+                    state: setState),
                 if (Service.isMine(widget.post)) ...[
                   IconButton(
                     icon: Icon(Icons.edit),

@@ -89,10 +89,17 @@ async function doVotes(change) {
       let dislikes;
       if (afterVoteData.choice === "like") {
         likes = postData.likes + 1;
-        dislikes = _decrease(postData.dislikes);
+        /// If the previous vote was empty string(''), it means, there was no vote.
+        /// So, no need to decrease counterpart.
+        if (beforeVoteData.choice === "") dislikes = postData.dislikes;
+        else dislikes = _decrease(postData.dislikes);
       } else if (afterVoteData.choice === "dislike") {
-        likes = _decrease(postData.likes);
         dislikes = postData.dislikes + 1;
+        /// If the previous vote was empty string(''), it means, there was no vote.
+        /// So, no need to decrease counterpart.
+        if (beforeVoteData.choice === "") likes = postData.likes;
+        else likes = _decrease(postData.likes);
+
         // console.log("==> dislikes: ", dislikes);
       } else {
         console.error("Choice mus tbe like or dislike");

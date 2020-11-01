@@ -261,7 +261,7 @@ $ firebase deploy --only firestore,functions
     `'' => '' => '' => '' => like => like => like` 와 같이 변경 될 수 있다.
     그래서 결국은 like 가 3 이나 증가하게된다.
 
-    이는 일반적인 side effect 로서, 이를 방지하기 위해서 클라이언트에서 progress spinner 나 disabled 형태로 보여주면 된다.
+    이는 일반적인 side effect 로서, 이를 방지하기 위해서 클라이언트에서 progress spinner 나 disabled 형태로 최소 3초 정도 보여주거나, 3초 이내에 재 추천을 못하도록 하면 된다.
 
 ### 사용자
 
