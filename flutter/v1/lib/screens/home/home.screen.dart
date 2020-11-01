@@ -117,7 +117,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           RaisedButton(
             onPressed: () => Get.toNamed(RouteNames.forumView,
-                arguments: {'postId': '0YJHJum1EYb6ZaFOVNPx'}),
+                arguments: {'id': '0YJHJum1EYb6ZaFOVNPx'}),
             child: Text('Post View'),
           ),
           RaisedButton(
