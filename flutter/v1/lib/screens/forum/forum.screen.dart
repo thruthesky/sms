@@ -94,10 +94,7 @@ class _ForumScreenState extends State<ForumScreen> {
         actions: [
           IconButton(
             icon: Icon(Icons.add),
-            onPressed: () => Get.toNamed(
-              RouteNames.forumEdit,
-              arguments: {'category': category},
-            ),
+            onPressed: () => Service.openForum(category),
           ),
           IconButton(
               icon: notificationPost == true
@@ -160,10 +157,7 @@ class _ForumScreenState extends State<ForumScreen> {
             child: Column(
               children: [
                 RaisedButton(
-                  onPressed: () => Get.toNamed(
-                    RouteNames.forumEdit,
-                    arguments: {'category': category},
-                  ),
+                  onPressed: () => Service.openForum(category),
                   child: Text('Create'),
                 ),
 

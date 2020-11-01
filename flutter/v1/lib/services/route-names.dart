@@ -17,4 +17,5 @@ class RouteNames {
   static final String forumView = '/forumView';
   static final String mobileAuth = '/mobileAuth';
   static final String mobileCodeVerification = '/mobileCodeVerification';
+  static final String search = '/search';
 }

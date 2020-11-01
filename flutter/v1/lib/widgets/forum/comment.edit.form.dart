@@ -48,6 +48,13 @@ class _CommentEditFormState extends State<CommentEditForm> {
     super.initState();
   }
 
+  bool _changed = false;
+  bool get changed {
+    if (_changed) return true;
+    _changed = files.length > 0 || contentController.text != '';
+    return _changed;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -57,6 +64,9 @@ class _CommentEditFormState extends State<CommentEditForm> {
             IconButton(
               icon: Icon(Icons.camera_alt),
               onPressed: () async {
+                if (!ff.loggedIn) {
+                  return Service.alertLoginFirst();
+                }
                 ImageSource source = await Get.bottomSheet(
                   PhotoPickerBottomSheet(),
                   backgroundColor: Colors.white,
@@ -82,58 +92,66 @@ class _CommentEditFormState extends State<CommentEditForm> {
               child: TextFormField(
                 controller: contentController,
                 decoration: InputDecoration(hintText: 'input comment'.tr),
+                onChanged: (text) {
+                  if (_changed) return;
+                  setState(() {});
+                  if (ff.notLoggedIn) return Service.alertLoginFirst();
+                },
               ),
             ),
           ],
         ),
         if (uploadProgress != 0) LinearProgressIndicator(value: uploadProgress),
-        Row(
-          children: [
-            if (widget.showCancelButton) ...[
+        if (changed)
+          Row(
+            children: [
+              if (widget.showCancelButton) ...[
+                RaisedButton(
+                  onPressed: () {
+                    if (widget.onCancel != null) widget.onCancel();
+                  },
+                  child: Text('cancel'),
+                )
+              ],
+              Spacer(),
               RaisedButton(
-                onPressed: () {
-                  if (widget.onCancel != null) widget.onCancel();
+                onPressed: () async {
+                  if (ff.notLoggedIn) return Service.alertLoginFirst();
+
+                  /// remove focus
+                  FocusScope.of(context).requestFocus(FocusNode());
+
+                  if (contentController.text.trim().length == 0 &&
+                      files.length == 0) return;
+
+                  final data = {
+                    'post': widget.post,
+                    'content': contentController.text,
+                    'files': files
+                  };
+
+                  if (widget.comment != null) {
+                    data['id'] = widget.comment['id'];
+                    data['depth'] = widget.comment['depth'];
+                    data['order'] = widget.comment['order'];
+                  } else {
+                    data['parentIndex'] = widget.parentIndex;
+                  }
+
+                  try {
+                    await ff.editComment(data);
+                    if (widget.onSuccess != null) widget.onSuccess();
+                    contentController.text = '';
+                    files = [];
+                  } catch (e) {
+                    print(e);
+                    Service.error(e);
+                  }
                 },
-                child: Text('cancel'),
+                child: Text('submit'),
               )
             ],
-            Spacer(),
-            RaisedButton(
-              onPressed: () async {
-                /// remove focus
-                FocusScope.of(context).requestFocus(FocusNode());
-
-                if (contentController.text.trim().length == 0 &&
-                    files.length == 0) return;
-
-                final data = {
-                  'post': widget.post,
-                  'content': contentController.text,
-                  'files': files
-                };
-
-                if (widget.comment != null) {
-                  data['id'] = widget.comment['id'];
-                  data['depth'] = widget.comment['depth'];
-                  data['order'] = widget.comment['order'];
-                } else {
-                  data['parentIndex'] = widget.parentIndex;
-                }
-
-                try {
-                  await ff.editComment(data);
-                  if (widget.onSuccess != null) widget.onSuccess();
-                  contentController.text = '';
-                  files = [];
-                } catch (e) {
-                  print(e);
-                  Service.error(e);
-                }
-              },
-              child: Text('submit'),
-            )
-          ],
-        ),
+          ),
         FileDisplay(files, inEdit: true)
       ],
     );

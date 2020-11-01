@@ -120,6 +120,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 arguments: {'postId': '0YJHJum1EYb6ZaFOVNPx'}),
             child: Text('Post View'),
           ),
+          RaisedButton(
+            onPressed: () => Get.toNamed(RouteNames.search),
+            child: Text('Search'),
+          ),
         ],
       ),
     );

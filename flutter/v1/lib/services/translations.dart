@@ -31,8 +31,8 @@ updateTranslations(Map<dynamic, dynamic> data) {
       translations[ln][name] = texts[name];
     }
   });
-  print('updated: translations');
-  print(translations);
+  // print('updated: translations');
+  // print(translations);
 }
 
 /// GetX locale text translations.

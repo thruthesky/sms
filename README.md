@@ -359,3 +359,18 @@ $ firebase deploy --only firestore,functions
 ```
 ForumTest();
 ```
+
+## 풀 텍스트 검색
+
+- 게시판 글, 코멘트 검색은 Firestore 로 할 수 없다. 그래서 Algolia 로 한다.
+
+- 설정은
+
+  - `settings/app` 도큐먼트에 ALGOLIA_APP_ID(Application ID), ALGOLIA_SEARCH_KEY(Search Only Api Key), ALGOLIA_INDEX_NAME 를 기록한다.
+  - firebase/functions/index.js 의 상수 ALGOLIA_ID(Application ID), ALGOLIA_ADMIN_KEY, ALGOLIA_INDEX_NAME 에 해당 설정 값을 저장한다.
+
+- Cloud Functions 를 deploy 를 한다.
+
+- 참고로 Algolia 무료 버전은 월 1만번 검색이 가능하다. 대 부분의 소규모 앱은 월 1만번이면 충분하다.
+
+- 테스트는 % npm run test:algolia 와 같이 하면 된다.

@@ -8,6 +8,14 @@ if (!admin.apps.length) {
 const firestore = admin.firestore();
 exports.firestore = firestore;
 
+const algoliasearch = require("algoliasearch");
+const ALGOLIA_ID = "2P90MM35DW";
+const ALGOLIA_ADMIN_KEY = "e511858133eed17717b2204a564c32c7";
+const ALGOLIA_INDEX_NAME = "DEV_FORUM";
+const client = algoliasearch(ALGOLIA_ID, ALGOLIA_ADMIN_KEY);
+
+///////////////////////////////////////////////////////////////////////////////
+
 function _decrease(n) {
   n--;
   if (n < 0) return 0;
@@ -126,4 +134,35 @@ exports.voteOnComment = functions.firestore
   .document("/posts/{postId}/comments/{commentId}/votes/{uid}")
   .onWrite(async (change, context) => {
     await doVotes(change);
+  });
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//
+// 글 생성, 업데이트시 색인.
+exports.onPostWrite = functions.firestore
+  .document("/posts/{postId}")
+  .onWrite((change, context) => {
+    const note = change.after.data();
+
+    // 글 경로 저장
+    note.objectID = change.after.ref.path;
+
+    // 색인
+    const index = client.initIndex(ALGOLIA_INDEX_NAME);
+    return index.saveObject(note);
+  });
+
+// 코멘트 생성, 업데이트시 식앤
+exports.onCommentWrite = functions.firestore
+  .document("/posts/{postId}/comments/{commentId}")
+  .onWrite((change, context) => {
+    const note = change.after.data();
+
+    // 코멘트 경로 저장
+    note.objectID = change.after.ref.path;
+
+    // 색인
+    const index = client.initIndex(ALGOLIA_INDEX_NAME);
+    return index.saveObject(note);
   });

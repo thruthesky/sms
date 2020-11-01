@@ -8,6 +8,7 @@ import 'package:v1/screens/admin/admin.screen.dart';
 import 'package:v1/screens/forum/forum.view.screen.dart';
 import 'package:v1/screens/mobile-auth/mobile-auth.screen.dart';
 import 'package:v1/screens/mobile-auth/mobile-code-verification.screen.dart';
+import 'package:v1/screens/search/search.screen.dart';
 
 import 'package:v1/screens/settings/settings.screen.dart';
 
@@ -31,7 +32,14 @@ void main() async {
       enableNotification: true,
       firebaseServerToken:
           'AAAAjdyAvbM:APA91bGist2NNTrrKTZElMzrNV0rpBLV7Nn674NRow-uyjG1-Uhh5wGQWyQEmy85Rcs0wlEpYT2uFJrSnlZywLzP1hkdx32FKiPJMI38evdRZO0x1vBJLc-cukMqZBKytzb3mzRfmrgL',
-      settings: {},
+      settings: {
+        "forum": {
+          "no-of-posts-per-fetch": 10,
+          "like": true,
+          "dislike": true,
+        },
+        "app": {}
+      },
       translations: translations,
     );
   } catch (e) {
@@ -58,8 +66,10 @@ class _MainAppState extends State<MainApp> {
 
     Service.initLocale().then((value) => Get.updateLocale(Locale(value)));
 
+    /// Settings changed.
+    ///
+    /// App may needs to re-initialize based on settings change.
     ff.settingsChange.listen((settings) {
-      ///
       setState(() {}); // You may re-render the screen if you wish.
     });
     ff.translationsChange.listen(
@@ -130,7 +140,8 @@ class _MainAppState extends State<MainApp> {
         GetPage(name: RouteNames.mobileAuth, page: () => MobileAuthScreen()),
         GetPage(
             name: RouteNames.mobileCodeVerification,
-            page: () => MobileCodeVerificationScreen())
+            page: () => MobileCodeVerificationScreen()),
+        GetPage(name: RouteNames.search, page: () => SearchScreen())
       ],
     );
   }
