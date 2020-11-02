@@ -149,9 +149,9 @@ class _ForumScreenState extends State<ForumScreen> {
           )
         ],
       ),
-      body: SingleChildScrollView(
-        controller: scrollController,
-        child: SafeArea(
+      body: SafeArea(
+        child: SingleChildScrollView(
+          controller: scrollController,
           child: Container(
             child: Column(
               children: [
@@ -169,7 +169,12 @@ class _ForumScreenState extends State<ForumScreen> {
                     padding: EdgeInsets.all(Space.md),
                     child: CommonSpinner(),
                   ),
-                if (forum.noMorePosts)
+                if (forum.noPostsYet)
+                  Padding(
+                    padding: EdgeInsets.all(Space.md),
+                    child: Text('No posts yet..'),
+                  ),
+                if (forum.noMorePosts && !forum.noPostsYet)
                   Padding(
                     padding: EdgeInsets.all(Space.md),
                     child: Text('No more posts..'),
@@ -195,9 +200,6 @@ class PostList extends StatelessWidget {
               for (dynamic post in posts) Post(post: post),
             ],
           )
-        : Padding(
-            padding: EdgeInsets.all(Space.md),
-            child: Text('No posts yet..'),
-          );
+        : SizedBox.shrink();
   }
 }
