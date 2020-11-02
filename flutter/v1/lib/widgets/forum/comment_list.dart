@@ -98,45 +98,17 @@ class _CommentState extends State<Comment> {
                       Row(
                         children: [
                           VoteButton(
-                              post: widget.post,
-                              comment: widget.comment,
-                              choice: VoteChoice.like,
-                              state: setState),
+                            post: widget.post,
+                            comment: widget.comment,
+                            choice: VoteChoice.like,
+                            state: setState,
+                          ),
                           VoteButton(
-                              post: widget.post,
-                              comment: widget.comment,
-                              choice: VoteChoice.dislike,
-                              state: setState),
-
-                          // if (ff.isShowForumVote(
-                          //     widget.post['category'], 'like'))
-                          //   TextButton(
-                          //     child:
-                          //         Text('Likes ${widget.comment['likes'] ?? 0}'),
-                          //     onPressed: () async {
-                          //       try {
-                          //         await ff.likeComment(
-                          //             widget.post['id'], widget.comment['id']);
-                          //       } catch (e) {
-                          //         Service.error(e);
-                          //       }
-                          //     },
-                          //   ),
-                          // if (ff.isShowForumVote(
-                          //     widget.post['category'], 'dislike'))
-                          //   TextButton(
-                          //     child: Text(
-                          //         'Likes ${widget.comment['dislikes'] ?? 0}'),
-                          //     onPressed: () async {
-                          //       try {
-                          //         await ff.dislikeComment(
-                          //             widget.post['id'], widget.comment['id']);
-                          //       } catch (e) {
-                          //         Service.error(e);
-                          //       }
-                          //     },
-                          //   ),
-
+                            post: widget.post,
+                            comment: widget.comment,
+                            choice: VoteChoice.dislike,
+                            state: setState,
+                          ),
                           if (Service.isMine(widget.comment)) ...[
                             IconButton(
                               icon: Icon(Icons.edit),
