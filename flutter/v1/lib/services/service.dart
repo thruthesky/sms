@@ -141,15 +141,35 @@ class Service {
     return data['uid'] == userController.uid;
   }
 
-  static openForum(String category) {
+  static openForumEditScreen(String category) {
     if (ff.loggedIn) {
-      Get.toNamed(
+      openScreen(
         RouteNames.forumEdit,
         arguments: {'category': category},
       );
     } else {
       alertLoginFirst();
     }
+  }
+
+  static openForumScreen(String category) {
+    openScreen(
+      RouteNames.forum,
+      arguments: {'category': category},
+      preventDuplicates: false,
+    );
+  }
+
+  static openScreen(
+    String routeName, {
+    Map<String, dynamic> arguments,
+    bool preventDuplicates = true,
+  }) {
+    Get.toNamed(
+      routeName,
+      arguments: arguments,
+      preventDuplicates: preventDuplicates,
+    );
   }
 
   static alertLoginFirst() {

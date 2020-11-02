@@ -5,6 +5,7 @@ import 'package:v1/services/global_variables.dart';
 import 'package:v1/services/service.dart';
 import 'package:v1/services/route-names.dart';
 import 'package:v1/services/spaces.dart';
+import 'package:v1/widgets/commons/app-drawer.dart';
 import 'package:v1/widgets/user/kakao_login_button.dart';
 
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
@@ -26,6 +27,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Login')),
+      endDrawer: CommonAppDrawer(),
       body: SingleChildScrollView(
         child: Container(
           padding: EdgeInsets.all(Space.md),

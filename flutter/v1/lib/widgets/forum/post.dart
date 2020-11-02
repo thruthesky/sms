@@ -45,9 +45,20 @@ class _PostState extends State<Post> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           GestureDetector(
-            child: Text(
-              widget.post['title'],
-              style: TextStyle(fontSize: Space.xl),
+            child: Row(
+              children: [
+                IconButton(
+                  icon: Icon(Icons.online_prediction),
+                  onPressed: () {
+                    Get.toNamed(RouteNames.adminPushNotification,
+                        arguments: {'id': widget.post['id']});
+                  },
+                ),
+                Text(
+                  widget.post['title'],
+                  style: TextStyle(fontSize: Space.xl),
+                ),
+              ],
             ),
             onTap: () => setState(() {
               showContent = !showContent;

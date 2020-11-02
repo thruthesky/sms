@@ -5,6 +5,7 @@ import 'package:v1/services/global_variables.dart';
 import 'package:v1/services/service.dart';
 import 'package:v1/services/route-names.dart';
 import 'package:v1/services/spaces.dart';
+import 'package:v1/widgets/commons/app-drawer.dart';
 import 'package:v1/widgets/user/birthday_picker.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -35,6 +36,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      endDrawer: CommonAppDrawer(),
       appBar: AppBar(title: Text('Register')),
       body: SingleChildScrollView(
         child: Container(
