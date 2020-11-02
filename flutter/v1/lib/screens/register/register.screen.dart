@@ -133,7 +133,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         // },
                       },
                     );
-                    ff.onLogin(user);
                     Get.toNamed(RouteNames.mobileAuth);
                   } catch (e) {
                     setState(() => loading = false);

@@ -103,8 +103,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       },
                     );
 
-                    ff.onLogin(ff.user);
-
                     if (ff.user.phoneNumber.isNullOrBlank) {
                       Get.toNamed(RouteNames.mobileAuth);
                     } else {
