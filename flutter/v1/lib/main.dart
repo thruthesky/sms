@@ -46,7 +46,10 @@ void main() async {
           "like": true,
           "dislike": true,
         },
-        "app": {}
+        "app": {
+          "show-phone-verification-after-login": true,
+          "create-phone-verified-user-only": true,
+        }
       },
       translations: translations,
     );
@@ -77,7 +80,9 @@ class _MainAppState extends State<MainApp> {
     /// Settings changed.
     ///
     /// App may needs to re-initialize based on settings change.
+    // print(ff.appSetting());
     ff.settingsChange.listen((settings) {
+      // print(ff.appSetting());
       setState(() {}); // You may re-render the screen if you wish.
     });
     ff.translationsChange.listen(

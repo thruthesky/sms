@@ -91,11 +91,11 @@ class _ForumScreenState extends State<ForumScreen> {
       appBar: AppBar(
         title: Text(category.tr),
         actions: [
-          if (ff.userIsLoggedIn && !ff.user.phoneNumber.isNullOrBlank)
-            IconButton(
-              icon: Icon(Icons.add),
-              onPressed: () => Service.openForum(category),
-            ),
+          // if (ff.userIsLoggedIn && !ff.user.phoneNumber.isNullOrBlank)
+          IconButton(
+            icon: Icon(Icons.add),
+            onPressed: () => Service.openForum(category),
+          ),
           IconButton(
               icon: notificationPost == true
                   ? Icon(Icons.notifications_active)
