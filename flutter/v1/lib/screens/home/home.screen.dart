@@ -25,106 +25,108 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: Text('app name'.tr),
       ),
-      body: Column(
-        children: [
-          StreamBuilder(
-            stream: ff.userChange,
-            builder: (context, snapshot) {
-              if (ff.user == null) {
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            StreamBuilder(
+              stream: ff.userChange,
+              builder: (context, snapshot) {
+                if (ff.user == null) {
+                  return Column(
+                    children: [
+                      RaisedButton(
+                        onPressed: () => Get.toNamed(RouteNames.login),
+                        child: Text('Login'),
+                      ),
+                      RaisedButton(
+                        onPressed: () => Get.toNamed(RouteNames.register),
+                        child: Text('Register'),
+                      ),
+                    ],
+                  );
+                }
+
+                /// when user logged in,
                 return Column(
                   children: [
+                    Text('app_title'.tr),
+                    Text("User Uid: ${ff.user.uid}"),
+                    Text("User Email: ${ff.user.email}"),
+                    Text("User Nickname: ${ff.user.displayName}"),
+                    Text("User Gender: ${ff.data['gender']}"),
+                    Text("User Phone number: ${ff.user.phoneNumber}"),
+                    Text("User PhotoUrl: ${ff.user.photoURL}"),
                     RaisedButton(
-                      onPressed: () => Get.toNamed(RouteNames.login),
-                      child: Text('Login'),
+                      onPressed: () => Get.toNamed(RouteNames.profile),
+                      child: Text('Profile'),
                     ),
                     RaisedButton(
-                      onPressed: () => Get.toNamed(RouteNames.register),
-                      child: Text('Register'),
+                      onPressed: ff.logout,
+                      child: Text('Logout'),
+                    ),
+                    RaisedButton(
+                      onPressed: () => Get.toNamed(RouteNames.settings),
+                      child: Text('Settings'),
                     ),
                   ],
                 );
-              }
+              },
+            ),
+            RaisedButton(
+              onPressed: () async {
+                users
+                    .doc(Service.userController.user.uid)
+                    .collection('meta')
+                    .doc('tokens')
+                    .snapshots()
+                    .listen((DocumentSnapshot document) {
+                  List<String> tokens = [];
+                  print(document.id);
+                  tokens.add(document.id);
 
-              /// when user logged in,
-              return Column(
-                children: [
-                  Text('app_title'.tr),
-                  Text("User Uid: ${ff.user.uid}"),
-                  Text("User Email: ${ff.user.email}"),
-                  Text("User Nickname: ${ff.user.displayName}"),
-                  Text("User Gender: ${ff.data['gender']}"),
-                  Text("User Phone number: ${ff.user.phoneNumber}"),
-                  Text("User PhotoUrl: ${ff.user.photoURL}"),
-                  RaisedButton(
-                    onPressed: () => Get.toNamed(RouteNames.profile),
-                    child: Text('Profile'),
-                  ),
-                  RaisedButton(
-                    onPressed: ff.logout,
-                    child: Text('Logout'),
-                  ),
-                  RaisedButton(
-                    onPressed: () => Get.toNamed(RouteNames.settings),
-                    child: Text('Settings'),
-                  ),
-                ],
-              );
-            },
-          ),
-          RaisedButton(
-            onPressed: () async {
-              users
-                  .doc(Service.userController.user.uid)
-                  .collection('meta')
-                  .doc('tokens')
-                  .snapshots()
-                  .listen((DocumentSnapshot document) {
-                List<String> tokens = [];
-                print(document.id);
-                tokens.add(document.id);
+                  print(tokens);
 
-                print(tokens);
-
-                ff.sendNotification(
-                  'test title message only',
-                  'test body message, from test notification button.',
-                  token: ff.firebaseMessagingToken,
-                  tokens: tokens,
-                  topic: ff.allTopic,
-                );
-              });
-            },
-            child: Text('Send Test Notification'),
-          ),
-          RaisedButton(
-            onPressed: () => Get.toNamed(RouteNames.admin),
-            child: Text('Admin Screen'),
-          ),
-          RaisedButton(
-            onPressed: () =>
-                Get.toNamed(RouteNames.forum, arguments: {'category': 'qna'}),
-            child: Text('QnA'),
-          ),
-          RaisedButton(
-            onPressed: () => Get.toNamed(RouteNames.forum,
-                arguments: {'category': 'discussion'}),
-            child: Text('Discussion'),
-          ),
-          RaisedButton(
-            onPressed: () => Get.toNamed(RouteNames.forum,
-                arguments: {'category': 'reminder'}),
-            child: Text('Reminder'),
-          ),
-          RaisedButton(
-            onPressed: () => Get.toNamed(RouteNames.forumView,
-                arguments: {'id': '0YJHJum1EYb6ZaFOVNPx'}),
-            child: Text('Post View'),
-          ),
-          RaisedButton(
-            onPressed: () => Get.toNamed(RouteNames.search),
-            child: Text('Search'),
-          ),
-        ],
+                  ff.sendNotification(
+                    'test title message only',
+                    'test body message, from test notification button.',
+                    // token: ff.firebaseMessagingToken,
+                    // tokens: tokens,
+                    topic: ff.allTopic,
+                  );
+                });
+              },
+              child: Text('Send Test Notification'),
+            ),
+            RaisedButton(
+              onPressed: () => Get.toNamed(RouteNames.admin),
+              child: Text('Admin Screen'),
+            ),
+            RaisedButton(
+              onPressed: () =>
+                  Get.toNamed(RouteNames.forum, arguments: {'category': 'qna'}),
+              child: Text('QnA'),
+            ),
+            RaisedButton(
+              onPressed: () => Get.toNamed(RouteNames.forum,
+                  arguments: {'category': 'discussion'}),
+              child: Text('Discussion'),
+            ),
+            RaisedButton(
+              onPressed: () => Get.toNamed(RouteNames.forum,
+                  arguments: {'category': 'reminder'}),
+              child: Text('Reminder'),
+            ),
+            RaisedButton(
+              onPressed: () => Get.toNamed(RouteNames.forumView,
+                  arguments: {'id': '0YJHJum1EYb6ZaFOVNPx'}),
+              child: Text('Post View'),
+            ),
+            RaisedButton(
+              onPressed: () => Get.toNamed(RouteNames.search),
+              child: Text('Search'),
+            ),
+          ],
+        ),
       ),
     );
   }

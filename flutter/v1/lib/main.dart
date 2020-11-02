@@ -30,6 +30,14 @@ void main() async {
   try {
     await ff.init(
       enableNotification: true,
+      pushNotificationOption: {
+        "android": {
+          "sound": "alert.mp3", // it works without the ext.
+        },
+        "ios": {
+          "sound": "caralarm.wav",
+        }
+      },
       firebaseServerToken:
           'AAAAjdyAvbM:APA91bGist2NNTrrKTZElMzrNV0rpBLV7Nn674NRow-uyjG1-Uhh5wGQWyQEmy85Rcs0wlEpYT2uFJrSnlZywLzP1hkdx32FKiPJMI38evdRZO0x1vBJLc-cukMqZBKytzb3mzRfmrgL',
       settings: {
