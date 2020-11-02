@@ -78,7 +78,10 @@ class _CommentEditFormState extends State<CommentEditForm> {
                   final url = await ff.uploadFile(
                     folder: 'forum-photos',
                     source: source,
-                    progress: (p) => setState(() => uploadProgress = p),
+                    progress: (p) {
+                      print(p);
+                      setState(() => uploadProgress = p);
+                    },
                   );
 
                   files.add(url);
