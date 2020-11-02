@@ -31,7 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
             StreamBuilder(
               stream: ff.userChange,
               builder: (context, snapshot) {
-                if (ff.user == null) {
+                if (ff.userIsLoggedOut) {
                   return Column(
                     children: [
                       RaisedButton(

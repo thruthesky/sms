@@ -12,10 +12,10 @@ class MobileAuthScreen extends StatefulWidget {
 }
 
 class _MobileAuthScreenState extends State<MobileAuthScreen> {
-  final mobileNumberController = TextEditingController(text: '9999999999');
+  final mobileNumberController = TextEditingController();
 
   bool loading = false;
-  String countryCode = '+1';
+  String countryCode = '+82';
   String get internationalNo => '$countryCode${mobileNumberController.text}';
 
   @override
@@ -28,7 +28,7 @@ class _MobileAuthScreenState extends State<MobileAuthScreen> {
       body: Container(
         padding: EdgeInsets.all(Space.pageWrap),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
               'Select country code',
@@ -51,7 +51,7 @@ class _MobileAuthScreenState extends State<MobileAuthScreen> {
               decoration: InputDecoration(labelText: 'mobileNo'.tr),
             ),
             RaisedButton(
-              child: Text('submit'),
+              child: Text('submit'.tr),
               onPressed: () {
                 FocusScope.of(context).requestFocus(new FocusNode());
                 ff.mobileAuthSendCode(
@@ -65,6 +65,14 @@ class _MobileAuthScreenState extends State<MobileAuthScreen> {
                   },
                   onError: (e) => Service.error(e),
                 );
+              },
+            ),
+            Divider(),
+            RaisedButton(
+              child: Text('skip'.tr),
+              onPressed: () {
+                FocusScope.of(context).requestFocus(new FocusNode());
+                Get.toNamed(RouteNames.home);
               },
             )
           ],
