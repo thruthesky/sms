@@ -26,12 +26,12 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Text('app name'.tr),
       ),
       body: SingleChildScrollView(
-              child: Column(
+        child: Column(
           children: [
             StreamBuilder(
               stream: ff.userChange,
               builder: (context, snapshot) {
-                if (ff.user == null) {
+                if (ff.userIsLoggedOut) {
                   return Column(
                     children: [
                       RaisedButton(

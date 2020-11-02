@@ -57,6 +57,10 @@ class _CommentEditFormState extends State<CommentEditForm> {
 
   @override
   Widget build(BuildContext context) {
+
+    if (ff.userIsLoggedOut || ff.user.phoneNumber.isNullOrBlank) {
+      return SizedBox.shrink();
+    }
     return Column(
       children: [
         Row(
