@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:v1/services/global_variables.dart';
 import 'package:v1/services/route-names.dart';
 import 'package:v1/services/service.dart';
+import 'package:v1/widgets/commons/app-drawer.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -24,7 +25,9 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('app name'.tr),
+        automaticallyImplyLeading: false,
       ),
+      endDrawer: CommonAppDrawer(),
       body: SingleChildScrollView(
         child: Column(
           children: [
