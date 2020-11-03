@@ -46,13 +46,13 @@ class _PostState extends State<Post> {
           GestureDetector(
             child: Row(
               children: [
-                IconButton(
+                if(ff.isAdmin) ...[IconButton(
                   icon: Icon(Icons.online_prediction),
                   onPressed: () {
                     Get.toNamed(RouteNames.adminPushNotification,
                         arguments: {'id': widget.post['id']});
                   },
-                ),
+                )],
                 Expanded(
                   child: Text(
                     widget.post['title'],
