@@ -141,12 +141,22 @@ class Service {
     return data['uid'] == userController.uid;
   }
 
+  static bool phoneNumberRequired() {
+    if (ff.appSetting('create-phone-verified-user-only') == '') return false;
+    return ff.appSetting('create-phone-verified-user-only') == true &&
+        ff.user.phoneNumber.isNullOrBlank;
+  }
+
   static openForumEditScreen(String category) {
     if (ff.loggedIn) {
-      openScreen(
-        RouteNames.forumEdit,
-        arguments: {'category': category},
-      );
+      if (phoneNumberRequired()) {
+        alertUpdatePhoneNumber();
+      } else {
+        openScreen(
+          RouteNames.forumEdit,
+          arguments: {'category': category},
+        );
+      }
     } else {
       alertLoginFirst();
     }
@@ -180,5 +190,24 @@ class Service {
       confirmTextColor: Colors.white,
       onConfirm: () => Get.back(),
     );
+  }
+
+  static alertUpdatePhoneNumber() {
+    Get.defaultDialog(
+      title: 'alert'.tr,
+      middleText: "update phone number".tr,
+      textConfirm: "ok".tr,
+      confirmTextColor: Colors.white,
+      onConfirm: () => Get.back(),
+    );
+  }
+
+  static redirectAfterLoginOrRegister() {
+    if (ff.appSetting('show-phone-verification-after-login') == true &&
+        ff.user.phoneNumber.isNullOrBlank) {
+      Get.toNamed(RouteNames.mobileAuth);
+    } else {
+      Get.toNamed(RouteNames.home);
+    }
   }
 }

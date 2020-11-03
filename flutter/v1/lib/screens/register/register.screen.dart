@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:v1/services/global_variables.dart';
 import 'package:v1/services/service.dart';
@@ -115,7 +114,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     loading = true;
                   });
                   try {
-                    User user = await ff.register(
+                    await ff.register(
                       {
                         'email': emailController.text,
                         'password': passwordController.text,
@@ -133,7 +132,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         // },
                       },
                     );
-                    Get.toNamed(RouteNames.mobileAuth);
+                    Service.redirectAfterLoginOrRegister();
                   } catch (e) {
                     setState(() => loading = false);
                     Service.error(e);

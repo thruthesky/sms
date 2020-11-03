@@ -103,14 +103,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       },
                     );
 
-                    // print(ff.appSetting());
-                    if (ff.appSetting('show-phone-verification-after-login') ==
-                            true &&
-                        ff.user.phoneNumber.isNullOrBlank) {
-                      Get.toNamed(RouteNames.mobileAuth);
-                    } else {
-                      Get.toNamed(RouteNames.home);
-                    }
+                    Service.redirectAfterLoginOrRegister();
                   } catch (e) {
                     setState(() => loading = false);
                     Service.error(e);

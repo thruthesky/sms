@@ -92,7 +92,6 @@ class _ForumScreenState extends State<ForumScreen> {
       appBar: AppBar(
         title: Text(category.tr),
         actions: [
-          // if (ff.userIsLoggedIn && !ff.user.phoneNumber.isNullOrBlank)
           IconButton(
             icon: Icon(Icons.add),
             onPressed: () => Service.openForumEditScreen(category),

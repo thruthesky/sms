@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -54,9 +53,12 @@ class _PostState extends State<Post> {
                         arguments: {'id': widget.post['id']});
                   },
                 ),
-                Text(
-                  widget.post['title'],
-                  style: TextStyle(fontSize: Space.xl),
+                Expanded(
+                  child: Text(
+                    widget.post['title'],
+                    style: TextStyle(fontSize: Space.xl),
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
               ],
             ),

@@ -57,9 +57,6 @@ class _CommentEditFormState extends State<CommentEditForm> {
 
   @override
   Widget build(BuildContext context) {
-    // if (ff.userIsLoggedOut || ff.user.phoneNumber.isNullOrBlank) {
-    //   return SizedBox.shrink();
-    // }
     return Column(
       children: [
         Row(
@@ -69,6 +66,9 @@ class _CommentEditFormState extends State<CommentEditForm> {
               onPressed: () async {
                 if (!ff.loggedIn) {
                   return Service.alertLoginFirst();
+                }
+                if (Service.phoneNumberRequired()) {
+                  return Service.alertUpdatePhoneNumber();
                 }
                 ImageSource source = await Get.bottomSheet(
                   PhotoPickerBottomSheet(),
@@ -102,6 +102,9 @@ class _CommentEditFormState extends State<CommentEditForm> {
                   if (_changed) return;
                   setState(() {});
                   if (ff.notLoggedIn) return Service.alertLoginFirst();
+                  if (Service.phoneNumberRequired()) {
+                    return Service.alertUpdatePhoneNumber();
+                  }
                 },
               ),
             ),
@@ -123,6 +126,9 @@ class _CommentEditFormState extends State<CommentEditForm> {
               RaisedButton(
                 onPressed: () async {
                   if (ff.notLoggedIn) return Service.alertLoginFirst();
+                  if (Service.phoneNumberRequired()) {
+                    return Service.alertUpdatePhoneNumber();
+                  }
 
                   /// remove focus
                   FocusScope.of(context).requestFocus(FocusNode());
