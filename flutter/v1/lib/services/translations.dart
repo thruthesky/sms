@@ -26,6 +26,7 @@ Map<String, Map<String, String>> translations = {
 
 /// Update `translations` from Firestore into `GetX local format`.
 updateTranslations(Map<dynamic, dynamic> data) {
+  if (data == null) return;
   data.forEach((ln, texts) {
     for (var name in texts.keys) {
       translations[ln][name] = texts[name];
