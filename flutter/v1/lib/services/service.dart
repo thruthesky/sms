@@ -163,22 +163,27 @@ class Service {
   }
 
   static openForumScreen(String category) {
+    dynamic args = Get.arguments;
+    if (args != null) {
+      if (args['category'] == category) return;
+    }
+
     openScreen(
       RouteNames.forum,
       arguments: {'category': category},
-      preventDuplicates: false,
+      preventDuplicate: false,
     );
   }
 
   static openScreen(
     String routeName, {
     Map<String, dynamic> arguments,
-    bool preventDuplicates = true,
+    bool preventDuplicate = true,
   }) {
     Get.toNamed(
       routeName,
       arguments: arguments,
-      preventDuplicates: preventDuplicates,
+      preventDuplicates: preventDuplicate,
     );
   }
 

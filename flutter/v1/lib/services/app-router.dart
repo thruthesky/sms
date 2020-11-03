@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
+import 'package:v1/screens/admin/admin.category.screen.dart';
+import 'package:v1/screens/admin/admin.push-notification.dart';
+import 'package:v1/screens/admin/admin.screen.dart';
 import 'package:v1/screens/forum/forum.edit.screen.dart';
 import 'package:v1/screens/forum/forum.screen.dart';
 import 'package:v1/screens/forum/forum.view.screen.dart';
 import 'package:v1/screens/home/home.screen.dart';
 import 'package:v1/screens/login/login.screen.dart';
+import 'package:v1/screens/mobile-auth/mobile-auth.screen.dart';
+import 'package:v1/screens/mobile-auth/mobile-code-verification.screen.dart';
 import 'package:v1/screens/profile/profile.screen.dart';
 import 'package:v1/screens/register/register.screen.dart';
 import 'package:v1/screens/search/search.screen.dart';
@@ -27,6 +32,12 @@ class AppRouter extends NavigatorObserver {
       case RouteNames.register:
         route = _buildRoute(settings, RegisterScreen());
         break;
+      case RouteNames.mobileAuth:
+        route = _buildRoute(settings, MobileAuthScreen());
+        break;
+      case RouteNames.mobileCodeVerification:
+        route = _buildRoute(settings, MobileCodeVerificationScreen());
+        break;
       case RouteNames.profile:
         route = _buildRoute(settings, ProfileScreen());
         break;
@@ -44,6 +55,15 @@ class AppRouter extends NavigatorObserver {
         break;
       case RouteNames.settings:
         route = _buildRoute(settings, SettingsScreen());
+        break;
+      case RouteNames.admin:
+        route = _buildRoute(settings, AdminScreen());
+        break;
+      case RouteNames.adminCategory:
+        route = _buildRoute(settings, AdminCategoryScreen());
+        break;
+      case RouteNames.adminPushNotification:
+        route = _buildRoute(settings, AdminPushNotificationScreen());
         break;
       default:
         route = MaterialPageRoute(
