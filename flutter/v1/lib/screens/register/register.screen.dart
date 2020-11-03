@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:v1/services/global_variables.dart';
 import 'package:v1/services/service.dart';
 import 'package:v1/services/route-names.dart';
 import 'package:v1/services/spaces.dart';
+import 'package:v1/widgets/commons/app-drawer.dart';
 import 'package:v1/widgets/user/birthday_picker.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -35,6 +35,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      endDrawer: CommonAppDrawer(),
       appBar: AppBar(title: Text('Register')),
       body: SingleChildScrollView(
         child: Container(
@@ -113,7 +114,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     loading = true;
                   });
                   try {
-                    User user = await ff.register(
+                    await ff.register(
                       {
                         'email': emailController.text,
                         'password': passwordController.text,
@@ -131,8 +132,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         // },
                       },
                     );
-                    ff.onLogin(user);
-                    Get.toNamed(RouteNames.mobileAuth);
+                    Service.redirectAfterLoginOrRegister();
                   } catch (e) {
                     setState(() => loading = false);
                     Service.error(e);

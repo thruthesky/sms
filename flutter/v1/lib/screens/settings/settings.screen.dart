@@ -5,6 +5,7 @@ import 'package:v1/controllers/user.controller.dart';
 import 'package:v1/services/global_variables.dart';
 import 'package:v1/services/service.dart';
 import 'package:v1/services/spaces.dart';
+import 'package:v1/widgets/commons/app-drawer.dart';
 
 class SettingsScreen extends StatefulWidget {
   @override
@@ -51,6 +52,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       appBar: AppBar(
         title: Text('Settings'.tr),
       ),
+      endDrawer: CommonAppDrawer(),
       body: Column(
         children: [
           Container(
@@ -62,8 +64,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
               builder: (context, snapshot) {
                 return Column(
                   children: [
-                    Text("User Uid: ${ff.user.uid}"),
-                    Text("User Nickname: ${ff.user.displayName}"),
+                    Text("User Uid: ${ff.user?.uid}"),
+                    Text("User Nickname: ${ff.user?.displayName}"),
                     if (ff.user.isNull) ...[],
                     if (!ff.user.isNull) ...[
                       Text(

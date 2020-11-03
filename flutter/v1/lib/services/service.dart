@@ -5,6 +5,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:v1/controllers/user.controller.dart';
+import 'package:v1/services/app-router.dart';
 import 'package:v1/services/global_variables.dart';
 import 'package:v1/services/route-names.dart';
 
@@ -141,15 +142,51 @@ class Service {
     return data['uid'] == userController.uid;
   }
 
-  static openForum(String category) {
+  static bool phoneNumberRequired() {
+    if (ff.appSetting('create-phone-verified-user-only') == '') return false;
+    return ff.appSetting('create-phone-verified-user-only') == true &&
+        ff.user.phoneNumber.isNullOrBlank;
+  }
+
+  static openForumEditScreen(String category) {
     if (ff.loggedIn) {
-      Get.toNamed(
-        RouteNames.forumEdit,
-        arguments: {'category': category},
-      );
+      if (phoneNumberRequired()) {
+        alertUpdatePhoneNumber();
+      } else {
+        openScreen(
+          RouteNames.forumEdit,
+          arguments: {'category': category},
+        );
+      }
     } else {
       alertLoginFirst();
     }
+  }
+
+  static openForumScreen(String category) {
+    /// prevent from going to new forum screen with same category
+    dynamic args = Get.arguments;
+    if (args != null) {
+      if (args['category'] == category) return;
+    }
+
+    openScreen(
+      RouteNames.forum,
+      arguments: {'category': category},
+      preventDuplicate: false,
+    );
+  }
+
+  static openScreen(
+    String routeName, {
+    Map<String, dynamic> arguments,
+    bool preventDuplicate = true,
+  }) {
+    Get.toNamed(
+      routeName,
+      arguments: arguments,
+      preventDuplicates: preventDuplicate,
+    );
   }
 
   static alertLoginFirst() {
@@ -160,5 +197,39 @@ class Service {
       confirmTextColor: Colors.white,
       onConfirm: () => Get.back(),
     );
+  }
+
+  static alertUpdatePhoneNumber() {
+    Get.defaultDialog(
+      title: 'alert'.tr,
+      middleText: "update phone number".tr,
+      textConfirm: "ok".tr,
+      confirmTextColor: Colors.white,
+      onConfirm: () => Get.back(),
+    );
+  }
+
+  static redirectAfterLoginOrRegister() {
+    if (ff.appSetting('show-phone-verification-after-login') == true &&
+        ff.user.phoneNumber.isNullOrBlank) {
+      Get.toNamed(RouteNames.mobileAuth);
+    } else {
+      AppRouter.resetNavStack();
+      Get.offAllNamed(RouteNames.home);
+    }
+  }
+
+  static logout() {
+    /// logout to firebase intance
+    ff.logout();
+
+    if (Get.currentRoute != RouteNames.home) {
+      /// clear `AppRouter.navStack`.
+      AppRouter.resetNavStack();
+
+      /// clear all app screens until `home`,
+      /// after moving to `home` screen, `AppRouter` will at it to it's `navStack`.
+      Get.offAllNamed(RouteNames.home);
+    }
   }
 }

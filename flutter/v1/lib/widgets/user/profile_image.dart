@@ -19,7 +19,7 @@ class ProfileImage extends StatelessWidget {
             child: StreamBuilder(
               stream: ff.authStateChanges,
               builder: (context, snapshot) {
-                if (ff.user.photoURL == null) {
+                if (ff.user?.photoURL == null) {
                   return CircleAvatar(
                     backgroundColor: Colors.grey,
                     radius: size,

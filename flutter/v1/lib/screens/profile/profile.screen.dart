@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:v1/services/global_variables.dart';
 import 'package:v1/services/service.dart';
 import 'package:v1/services/spaces.dart';
+import 'package:v1/widgets/commons/app-drawer.dart';
 import 'package:v1/widgets/commons/photo-picker-bottom-sheet.dart';
 import 'package:v1/widgets/user/birthday_picker.dart';
 import 'package:v1/widgets/user/profile_image.dart';
@@ -36,6 +37,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Profile')),
+      endDrawer: CommonAppDrawer(),
       body: SingleChildScrollView(
         child: Container(
           padding: EdgeInsets.all(Space.pageWrap),
@@ -94,6 +96,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               SizedBox(height: Space.md),
               Text('Email: ${ff.user.email}'),
+              SizedBox(height: Space.md),
+              Text('Mobile number: ${ff.user.phoneNumber}'),
               TextFormField(
                 key: ValueKey('nickname'),
                 controller: displayNameController,

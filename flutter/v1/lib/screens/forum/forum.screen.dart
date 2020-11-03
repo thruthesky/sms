@@ -5,6 +5,7 @@ import 'package:v1/services/global_variables.dart';
 import 'package:v1/services/service.dart';
 import 'package:v1/services/spaces.dart';
 import 'package:fireflutter/fireflutter.dart';
+import 'package:v1/widgets/commons/app-drawer.dart';
 import 'package:v1/widgets/commons/spinner.dart';
 import 'package:v1/widgets/forum/post.dart';
 
@@ -91,11 +92,10 @@ class _ForumScreenState extends State<ForumScreen> {
       appBar: AppBar(
         title: Text(category.tr),
         actions: [
-          if (ff.userIsLoggedIn && !ff.user.phoneNumber.isNullOrBlank)
-            IconButton(
-              icon: Icon(Icons.add),
-              onPressed: () => Service.openForum(category),
-            ),
+          IconButton(
+            icon: Icon(Icons.add),
+            onPressed: () => Service.openForumEditScreen(category),
+          ),
           IconButton(
               icon: notificationPost == true
                   ? Icon(Icons.notifications_active)
@@ -147,9 +147,16 @@ class _ForumScreenState extends State<ForumScreen> {
                 "$topic": notificationComment,
               }, SetOptions(merge: true));
             },
+          ),
+          Builder(
+            builder: (context) => IconButton(
+              icon: Icon(Icons.menu),
+              onPressed: () => Scaffold.of(context).openEndDrawer(),
+            ),
           )
         ],
       ),
+      endDrawer: CommonAppDrawer(),
       body: SafeArea(
         child: SingleChildScrollView(
           controller: scrollController,

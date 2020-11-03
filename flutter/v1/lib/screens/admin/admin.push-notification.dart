@@ -5,6 +5,7 @@ import 'package:v1/controllers/user.controller.dart';
 import 'package:get/get.dart';
 import 'package:v1/services/global_variables.dart';
 import 'package:v1/services/spaces.dart';
+import 'package:v1/services/route-names.dart';
 
 enum Mode { create, update, delete }
 
@@ -30,8 +31,21 @@ class _AdminPushNotificationScreenState
   ];
   String selectedItem = 'allTopic';
 
+  Map<String, dynamic> post;
+  String id;
+
   @override
   void initState() {
+    id = Get.arguments['id'];
+
+    ff.postDocument(id).get().then((docSnapshot) {
+      if (!docSnapshot.exists) return false;
+      post = docSnapshot.data();
+      titleController.text = post['title'];
+      bodyController.text = post['content'];
+      setState(() {});
+    });
+
     categories = db.collection('categories');
     categories.snapshots().listen((QuerySnapshot snapshot) {
       if (snapshot.size == 0) return;
@@ -81,6 +95,7 @@ class _AdminPushNotificationScreenState
                         )
                       ],
                     ),
+                    id != null ? Text('Post ID #' + id) : Container(),
                     TextFormField(
                       key: ValueKey('title'),
                       controller: titleController,
@@ -96,10 +111,10 @@ class _AdminPushNotificationScreenState
                       onPressed: () async {
                         /// send notification here
                         ff.sendNotification(
-                          titleController.text,
-                          bodyController.text,
-                          topic: selectedItem,
-                        );
+                            titleController.text, bodyController.text,
+                            topic: selectedItem,
+                            id: id ?? '',
+                            screen: id != null ? RouteNames.forumView : '');
                       },
                     )
                   ]),
