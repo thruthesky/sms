@@ -96,6 +96,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               SizedBox(height: Space.md),
               Text('Email: ${ff.user.email}'),
+              SizedBox(height: Space.md),
+              Text('Mobile number: ${ff.user.phoneNumber}'),
               TextFormField(
                 key: ValueKey('nickname'),
                 controller: displayNameController,
