@@ -72,6 +72,8 @@ class MainApp extends StatefulWidget {
 class _MainAppState extends State<MainApp> {
   final c = Get.put(UserController());
 
+  Map<String, Map<String, dynamic>> stack = {};
+
   @override
   void initState() {
     super.initState();
@@ -136,29 +138,42 @@ class _MainAppState extends State<MainApp> {
       locale: Locale('ko'),
       translations: AppTranslations(),
       initialRoute: RouteNames.home,
-      // getPages: [
-      //   GetPage(name: RouteNames.home, page: () => HomeScreen()),
-      //   GetPage(name: RouteNames.login, page: () => LoginScreen()),
-      //   GetPage(name: RouteNames.register, page: () => RegisterScreen()),
-      //   GetPage(name: RouteNames.profile, page: () => ProfileScreen()),
-      //   GetPage(name: RouteNames.settings, page: () => SettingsScreen()),
-      //   GetPage(name: RouteNames.admin, page: () => AdminScreen()),
-      //   GetPage(
-      //       name: RouteNames.adminCategory, page: () => AdminCategoryScreen()),
-      //   GetPage(
-      //       name: RouteNames.adminPushNotification,
-      //       page: () => AdminPushNotificationScreen()),
-      //   GetPage(name: RouteNames.forum, page: () => ForumScreen()),
-      //   GetPage(name: RouteNames.forumEdit, page: () => ForumEditScreen()),
-      //   GetPage(name: RouteNames.forumView, page: () => ForumViewScreen()),
-      //   GetPage(name: RouteNames.mobileAuth, page: () => MobileAuthScreen()),
-      //   GetPage(
-      //       name: RouteNames.mobileCodeVerification,
-      //       page: () => MobileCodeVerificationScreen()),
-      //   GetPage(name: RouteNames.search, page: () => SearchScreen())
-      // ],
-      navigatorObservers: [AppRouter()],
-      onGenerateRoute: AppRouter.generate,
+      // routingCallback: (routing) {
+      //   if (stack[routing.current] != null) {
+      //     Map nav = stack[routing.current];
+      //     Get.removeRoute(nav['route'], id: nav['id']);
+      //   }
+
+      //   stack[routing.current] = {};
+      //   stack[routing.current]['id'] = routeIndex[routing.current];
+      //   stack[routing.current]['route'] = routing.route;
+
+      //   // Get.toNamed(routing.current, arguments: routing.args);
+      // },
+
+      getPages: [
+        GetPage(name: RouteNames.home, page: () => HomeScreen()),
+        GetPage(name: RouteNames.login, page: () => LoginScreen()),
+        GetPage(name: RouteNames.register, page: () => RegisterScreen()),
+        GetPage(name: RouteNames.profile, page: () => ProfileScreen()),
+        GetPage(name: RouteNames.settings, page: () => SettingsScreen()),
+        GetPage(name: RouteNames.admin, page: () => AdminScreen()),
+        GetPage(
+            name: RouteNames.adminCategory, page: () => AdminCategoryScreen()),
+        GetPage(
+            name: RouteNames.adminPushNotification,
+            page: () => AdminPushNotificationScreen()),
+        GetPage(name: RouteNames.forum, page: () => ForumScreen()),
+        GetPage(name: RouteNames.forumEdit, page: () => ForumEditScreen()),
+        GetPage(name: RouteNames.forumView, page: () => ForumViewScreen()),
+        GetPage(name: RouteNames.mobileAuth, page: () => MobileAuthScreen()),
+        GetPage(
+            name: RouteNames.mobileCodeVerification,
+            page: () => MobileCodeVerificationScreen()),
+        GetPage(name: RouteNames.search, page: () => SearchScreen())
+      ],
+      // navigatorObservers: [AppRouter()],
+      // onGenerateRoute: AppRouter.generate,
     );
   }
 }
