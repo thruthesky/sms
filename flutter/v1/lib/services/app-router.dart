@@ -17,6 +17,7 @@ import 'package:v1/screens/settings/settings.screen.dart';
 import 'package:v1/services/route-names.dart';
 
 class AppRouter extends NavigatorObserver {
+  /// this will hold the navigation history of the whole app.
   static Map<String, MaterialPageRoute> navStack = {};
 
   static Route<dynamic> generate(RouteSettings settings) {
@@ -91,25 +92,30 @@ class AppRouter extends NavigatorObserver {
         break;
     }
 
+    /// get routeName
     var routeName = _getRouteName(settings);
+
+    /// check if the routeName already exists on the `navStack`,
     if (navStack[routeName] != null) {
-      /// see if current page is already in `navStack`.
       /// if yes, remove it.
-      Navigator.removeRoute(
-        /// Get package provide the current overlay context.
-        Get.overlayContext,
-        navStack[routeName],
-      );
+    Navigator.removeRoute(
+      /// `Get.overlayContext` provide the current overlay context.
+      Get.overlayContext,
+      navStack[routeName],
+    );
     }
-    navStack[routeName] = route;
 
     /// add current page on top of `navStack`.
+    navStack[routeName] = route;
+
     return route;
   }
 
   @override
   void didPop(Route<dynamic> route, Route<dynamic> previousRoute) {
     final routeName = _getRouteName(route.settings);
+
+    /// remove the corresponding route in `navStack` everytime `didPop` happens.
     navStack.remove(routeName);
   }
 
@@ -119,10 +125,16 @@ class AppRouter extends NavigatorObserver {
 
   static String _getRouteName(RouteSettings settings) {
     var routeName = settings.name;
+
+    /// if the route is for forum, this includes the category as part of the `routeName`.
     if (routeName == RouteNames.forum) {
       Map<String, dynamic> args = settings.arguments;
       routeName += args['category'] ?? '';
     }
     return routeName;
+  }
+
+  static resetNavStack() {
+    navStack = {};
   }
 }
