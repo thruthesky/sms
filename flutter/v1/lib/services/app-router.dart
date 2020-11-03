@@ -135,9 +135,7 @@ class AppRouter extends NavigatorObserver {
     return routeName;
   }
 
-  static resetNavStack({
-    String routeName,
-  }) {
+  static resetNavStack() {
     navStack = {};
   }
 }
