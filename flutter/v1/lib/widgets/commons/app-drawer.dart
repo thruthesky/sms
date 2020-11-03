@@ -58,8 +58,7 @@ class _CommonAppDrawerState extends State<CommonAppDrawer> {
                     ),
                     RaisedButton(
                       onPressed: () {
-                        ff.logout();
-                        Get.offAllNamed(RouteNames.home);
+                        Service.logout();
                       },
                       child: Text('Logout'),
                     ),

@@ -64,7 +64,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: Text('Profile'),
                     ),
                     RaisedButton(
-                      onPressed: ff.logout,
+                      onPressed: Service.logout,
                       child: Text('Logout'),
                     ),
                     RaisedButton(

@@ -218,4 +218,18 @@ class Service {
       Get.offAllNamed(RouteNames.home);
     }
   }
+
+  static logout() {
+    /// logout to firebase intance
+    ff.logout();
+
+    if (Get.currentRoute != RouteNames.home) {
+      /// clear `AppRouter.navStack`.
+      AppRouter.resetNavStack();
+
+      /// clear all app screens until `home`,
+      /// after moving to `home` screen, `AppRouter` will at it to it's `navStack`.
+      Get.offAllNamed(RouteNames.home);
+    }
+  }
 }

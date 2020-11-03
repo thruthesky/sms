@@ -98,11 +98,11 @@ class AppRouter extends NavigatorObserver {
     /// check if the routeName already exists on the `navStack`,
     if (navStack[routeName] != null) {
       /// if yes, remove it.
-    Navigator.removeRoute(
-      /// `Get.overlayContext` provide the current overlay context.
-      Get.overlayContext,
-      navStack[routeName],
-    );
+      Navigator.removeRoute(
+        /// `Get.overlayContext` provide the current overlay context.
+        Get.overlayContext,
+        navStack[routeName],
+      );
     }
 
     /// add current page on top of `navStack`.
@@ -117,6 +117,7 @@ class AppRouter extends NavigatorObserver {
 
     /// remove the corresponding route in `navStack` everytime `didPop` happens.
     navStack.remove(routeName);
+    print(navStack);
   }
 
   static MaterialPageRoute _buildRoute(RouteSettings settings, Widget builder) {
@@ -134,7 +135,9 @@ class AppRouter extends NavigatorObserver {
     return routeName;
   }
 
-  static resetNavStack() {
+  static resetNavStack({
+    String routeName,
+  }) {
     navStack = {};
   }
 }

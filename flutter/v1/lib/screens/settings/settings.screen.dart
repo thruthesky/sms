@@ -64,8 +64,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
               builder: (context, snapshot) {
                 return Column(
                   children: [
-                    Text("User Uid: ${ff.user.uid}"),
-                    Text("User Nickname: ${ff.user.displayName}"),
+                    Text("User Uid: ${ff.user?.uid}"),
+                    Text("User Nickname: ${ff.user?.displayName}"),
                     if (ff.user.isNull) ...[],
                     if (!ff.user.isNull) ...[
                       Text(
