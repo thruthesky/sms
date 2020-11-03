@@ -20,11 +20,8 @@ class AppRouter {
       /// get the previous route name and remove it from stack.
       final routeName = getRouteName(routing, previous: true);
       navStack.remove(routeName);
-      print('navStack.removed');
-      print(routeName);
-      print(navStack);
     } else {
-      /// ignore if `routing.removed` is empty, since it is handled above.
+      /// ignore if `routing.removed` is not empty, since it is handled above.
       if (routing.removed.isNotEmpty) return;
 
       final routeName = getRouteName(routing);
@@ -39,10 +36,8 @@ class AppRouter {
         });
       }
 
+      /// add route to `navStack`
       navStack[routeName] = routing.route;
-      print('navStack.added');
-      print(routeName);
-      print(navStack);
     }
   }
 
