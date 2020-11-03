@@ -163,6 +163,7 @@ class Service {
   }
 
   static openForumScreen(String category) {
+    /// prevent from going to new forum screen with same category
     dynamic args = Get.arguments;
     if (args != null) {
       if (args['category'] == category) return;
@@ -212,7 +213,7 @@ class Service {
         ff.user.phoneNumber.isNullOrBlank) {
       Get.toNamed(RouteNames.mobileAuth);
     } else {
-      Get.toNamed(RouteNames.home);
+      Get.offAndToNamed(RouteNames.home);
     }
   }
 }
