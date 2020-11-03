@@ -33,10 +33,10 @@ void main() async {
       enableNotification: true,
       pushNotificationOption: {
         "android": {
-          "sound": "alert.mp3", // it works without the ext.
+          "sound": "caralarm.wav", // it works without the ext.
         },
         "ios": {
-          "sound": "caralarm.wav",
+          "sound": "caralarm.caf",
         }
       },
       firebaseServerToken:
