@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import 'package:v1/services/global_variables.dart';
 import 'package:v1/services/service.dart';
 import 'package:v1/services/spaces.dart';
-import 'package:v1/widgets/commons/confirm-dialog.dart';
+import 'package:v1/widgets/commons/confirm_dialog.dart';
 import 'package:v1/widgets/commons/spinner.dart';
 
 class FileDisplay extends StatefulWidget {

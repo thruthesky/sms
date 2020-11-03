@@ -6,8 +6,8 @@ import 'package:get/get.dart';
 import 'package:v1/services/global_variables.dart';
 import 'package:v1/services/service.dart';
 import 'package:v1/services/spaces.dart';
-import 'package:v1/widgets/commons/app-drawer.dart';
-import 'package:v1/widgets/commons/photo-picker-bottom-sheet.dart';
+import 'package:v1/widgets/commons/app_drawer.dart';
+import 'package:v1/widgets/commons/photo_picker_bottomsheet.dart';
 import 'package:v1/widgets/user/birthday_picker.dart';
 import 'package:v1/widgets/user/profile_image.dart';
 

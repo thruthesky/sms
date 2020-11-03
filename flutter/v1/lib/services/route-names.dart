@@ -19,9 +19,3 @@ class RouteNames {
   static const String mobileCodeVerification = '/mobileCodeVerification';
   static const String search = '/search';
 }
-
-Map<String, int> routeIndex = {
-  RouteNames.home: 0,
-  RouteNames.login: 1,
-  RouteNames.register: 2,
-};

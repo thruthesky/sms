@@ -166,6 +166,7 @@ class Service {
   static openForumScreen(String category) {
     /// prevent from going to new forum screen with same category
     dynamic args = Get.arguments;
+    print(args);
     if (args != null) {
       if (args['category'] == category) return;
     }
@@ -214,7 +215,7 @@ class Service {
         ff.user.phoneNumber.isNullOrBlank) {
       Get.toNamed(RouteNames.mobileAuth);
     } else {
-      AppRouter.resetNavStack();
+      // AppRouter.resetNavStack();
       Get.offAllNamed(RouteNames.home);
     }
   }
@@ -225,7 +226,7 @@ class Service {
 
     if (Get.currentRoute != RouteNames.home) {
       /// clear `AppRouter.navStack`.
-      AppRouter.resetNavStack();
+      // AppRouter.resetNavStack();
 
       /// clear all app screens until `home`,
       /// after moving to `home` screen, `AppRouter` will at it to it's `navStack`.

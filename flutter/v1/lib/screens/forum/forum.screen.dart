@@ -5,7 +5,7 @@ import 'package:v1/services/global_variables.dart';
 import 'package:v1/services/service.dart';
 import 'package:v1/services/spaces.dart';
 import 'package:fireflutter/fireflutter.dart';
-import 'package:v1/widgets/commons/app-drawer.dart';
+import 'package:v1/widgets/commons/app_drawer.dart';
 import 'package:v1/widgets/commons/spinner.dart';
 import 'package:v1/widgets/forum/post.dart';
 

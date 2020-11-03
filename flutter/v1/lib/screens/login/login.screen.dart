@@ -6,8 +6,8 @@ import 'package:v1/services/global_variables.dart';
 import 'package:v1/services/route-names.dart';
 import 'package:v1/services/service.dart';
 import 'package:v1/services/spaces.dart';
-import 'package:v1/widgets/commons/app-bar.dart';
-import 'package:v1/widgets/commons/app-drawer.dart';
+import 'package:v1/widgets/commons/app_bar.dart';
+import 'package:v1/widgets/commons/app_drawer.dart';
 import 'package:v1/widgets/miscellaneous/or_divider.dart';
 import 'package:v1/widgets/user/social_login_buttons.dart';
 

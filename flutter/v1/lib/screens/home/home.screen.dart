@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import 'package:v1/services/global_variables.dart';
 import 'package:v1/services/route-names.dart';
 import 'package:v1/services/service.dart';
-import 'package:v1/widgets/commons/app-drawer.dart';
+import 'package:v1/widgets/commons/app_drawer.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -105,8 +105,10 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Text('Admin Screen'),
             ),
             RaisedButton(
-              onPressed: () =>
-                  Get.toNamed(RouteNames.forum, arguments: {'category': 'qna'}),
+              onPressed: () => Get.toNamed(
+                RouteNames.forum,
+                arguments: {'category': 'qna'},
+              ),
               child: Text('QnA'),
             ),
             RaisedButton(

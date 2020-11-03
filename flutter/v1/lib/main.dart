@@ -138,19 +138,7 @@ class _MainAppState extends State<MainApp> {
       locale: Locale('ko'),
       translations: AppTranslations(),
       initialRoute: RouteNames.home,
-      // routingCallback: (routing) {
-      //   if (stack[routing.current] != null) {
-      //     Map nav = stack[routing.current];
-      //     Get.removeRoute(nav['route'], id: nav['id']);
-      //   }
-
-      //   stack[routing.current] = {};
-      //   stack[routing.current]['id'] = routeIndex[routing.current];
-      //   stack[routing.current]['route'] = routing.route;
-
-      //   // Get.toNamed(routing.current, arguments: routing.args);
-      // },
-
+      routingCallback: AppRouter.observer,
       getPages: [
         GetPage(name: RouteNames.home, page: () => HomeScreen()),
         GetPage(name: RouteNames.login, page: () => LoginScreen()),
@@ -172,8 +160,6 @@ class _MainAppState extends State<MainApp> {
             page: () => MobileCodeVerificationScreen()),
         GetPage(name: RouteNames.search, page: () => SearchScreen())
       ],
-      // navigatorObservers: [AppRouter()],
-      // onGenerateRoute: AppRouter.generate,
     );
   }
 }
