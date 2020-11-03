@@ -117,7 +117,6 @@ class AppRouter extends NavigatorObserver {
 
     /// remove the corresponding route in `navStack` everytime `didPop` happens.
     navStack.remove(routeName);
-    print(navStack);
   }
 
   static MaterialPageRoute _buildRoute(RouteSettings settings, Widget builder) {
