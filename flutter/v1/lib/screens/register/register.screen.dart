@@ -195,6 +195,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 FlatButton(
                   color: Color(0xff0098E1),
                   padding: EdgeInsets.all(Space.md),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5),
+                  ),
                   child: Text(
                     "REGISTER",
                     style: TextStyle(

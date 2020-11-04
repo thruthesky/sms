@@ -26,32 +26,87 @@ class _MobileAuthScreenState extends State<MobileAuthScreen> {
         automaticallyImplyLeading: false,
       ),
       body: Container(
-        padding: EdgeInsets.all(Space.pageWrap),
+        padding: EdgeInsets.all(Space.xl),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            SizedBox(height: Space.xl),
             Text(
-              'Select country code',
+              'Mobile Number Verification',
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            Text(
+              'Verification',
+              style: TextStyle(
+                fontSize: 40,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Text(
+              'Please verify your country & number and submit',
+              style: TextStyle(
+                fontSize: 12,
+                color: Color(0xff5F5F5F),
+              ),
+            ),
+            SizedBox(height: Space.xxl),
+            Text(
+              'Select Country Code',
               style: TextStyle(
                 color: Color(0xff5f5f5f),
-                fontWeight: FontWeight.w500,
+                fontWeight: FontWeight.bold,
               ),
             ),
             SizedBox(height: Space.xxs),
             CountryCodeSelector(
+              fontWeight: FontWeight.w500,
+              padding: EdgeInsets.all(Space.md),
+              iconSize: Space.lg,
               enabled: !loading,
               initialSelection: countryCode,
               onChanged: (_) {
                 countryCode = _.dialCode;
               },
             ),
-            SizedBox(height: Space.xl),
+            SizedBox(height: Space.xxl),
+            Text(
+              'Mobile Number',
+              style: TextStyle(
+                color: Color(0xff5f5f5f),
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             TextFormField(
               controller: mobileNumberController,
-              decoration: InputDecoration(labelText: 'mobileNo'.tr),
+              keyboardType: TextInputType.number,
+              style: TextStyle(
+                fontSize: Space.lg,
+              ),
+              decoration: InputDecoration(
+                hintText: '000-000-000',
+                hintStyle: TextStyle(
+                  fontSize: Space.lg,
+                  color: Color(0x95959599),
+                ),
+              ),
             ),
-            RaisedButton(
-              child: Text('submit'.tr),
+            SizedBox(height: Space.xxl),
+            FlatButton(
+              color: Color(0xff0098E1),
+              padding: EdgeInsets.all(Space.md),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(5),
+              ),
+              child: Text(
+                "SEND CODE",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                ),
+              ),
               onPressed: () {
                 FocusScope.of(context).requestFocus(new FocusNode());
                 ff.mobileAuthSendCode(
@@ -67,9 +122,19 @@ class _MobileAuthScreenState extends State<MobileAuthScreen> {
                 );
               },
             ),
-            Divider(),
-            RaisedButton(
-              child: Text('skip'.tr),
+            SizedBox(height: Space.lg),
+            FlatButton(
+              child: Text(
+                'SKIP'.tr,
+                style: TextStyle(
+                  fontSize: Space.md,
+                ),
+              ),
+              color: Color(0x11000000),
+              padding: EdgeInsets.all(Space.md),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(Space.xxs),
+              ),
               onPressed: () {
                 FocusScope.of(context).requestFocus(new FocusNode());
                 Get.toNamed(RouteNames.home);

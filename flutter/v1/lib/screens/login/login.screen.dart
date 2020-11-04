@@ -106,11 +106,15 @@ class _LoginScreenState extends State<LoginScreen> {
                 Center(
                   child: CircularProgressIndicator(),
                 ),
+
               /// Submit button
               if (!loading)
                 FlatButton(
                   color: Color(0xff0098E1),
                   padding: EdgeInsets.all(Space.md),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5),
+                  ),
                   child: Text(
                     "LOGIN",
                     style: TextStyle(
