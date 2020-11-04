@@ -131,7 +131,7 @@ class _MainAppState extends State<MainApp> {
       locale: Locale('ko'),
       translations: AppTranslations(),
       initialRoute: RouteNames.home,
-      routingCallback: AppRouter.observer,
+      // routingCallback: AppRouter.observer,
       getPages: [
         GetPage(name: RouteNames.home, page: () => HomeScreen()),
         GetPage(name: RouteNames.login, page: () => LoginScreen()),

@@ -43,7 +43,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Text('Login'),
                       ),
                       RaisedButton(
-                        onPressed: () => Get.toNamed(RouteNames.register),
+                        onPressed: () =>
+                            Get.toNamed(RouteNames.register, id: 2),
                         child: Text('Register'),
                       ),
                     ],
@@ -65,7 +66,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: Text('Profile'),
                     ),
                     RaisedButton(
-                      onPressed: Service.logout,
+                      onPressed: ff.logout,
                       child: Text('Logout'),
                     ),
                     RaisedButton(
