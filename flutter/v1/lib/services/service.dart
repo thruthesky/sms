@@ -215,7 +215,8 @@ class Service {
         ff.user.phoneNumber.isNullOrBlank) {
       Get.toNamed(RouteNames.mobileAuth);
     } else {
-      // AppRouter.resetNavStack();
+      /// reset `AppRouter.navStack`
+      AppRouter.resetNavStack();
       Get.offAllNamed(RouteNames.home);
     }
   }
@@ -224,12 +225,13 @@ class Service {
     /// logout to firebase intance
     ff.logout();
 
+    /// redirect to home only when not in `HomeScreen`.
     if (Get.currentRoute != RouteNames.home) {
-      /// clear `AppRouter.navStack`.
-      // AppRouter.resetNavStack();
+      /// reset `AppRouter.navStack`
+      AppRouter.resetNavStack();
 
       /// clear all app screens until `home`,
-      /// after moving to `home` screen, `AppRouter` will at it to it's `navStack`.
+      /// after moving to `home` screen, `AppRouter` will add it to it's `navStack`.
       Get.offAllNamed(RouteNames.home);
     }
   }

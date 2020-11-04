@@ -4,40 +4,48 @@ import 'package:get/route_manager.dart';
 import 'package:v1/services/route_names.dart';
 
 class AppRouter {
-  /// this will hold the navigation history of the whole app.
+  /// this will hold the duplicate navigation history of the app.
   static Map<String, Route> navStack = {};
 
   /// all route navigation events will invoke this method
-  ///   - calling `Get.removeRoute` inside this method will invoke this method.
   ///
-  /// NOTE: `routing.removed` will always have a `String` value.
-  ///   - empty string if the navigation event is not removing a route.
+  ///
+  /// Things to consider:
+  ///   - calling `Get.removeRoute` inside this method will invoke this method.
+  ///   - `routing.removed` will always have an empty `String` value if the navigation event is not removing a route.
+  ///   - `Bottomsheet`, `Dialog`, `Snackbar`, `Alerts` and any other `Overlays` can also trigger this method.
+  /// 
+  ///   - `navStack` must also be reset whenever the app remove screens by batch (ex. by calling `Get.offAllNamed(routeName)`).
   static observer(Routing routing) {
-    print('Previous route : ${routing.previous}');
-    print('Current route : ${routing.current}');
-    print('Route is Bottom sheet ${routing.isBottomSheet}');
-    print('Route is Dialog ${routing.isDialog}');
-    print('Route is Snackbar ${routing.isSnackbar}');
 
-    if (routing.current == routing.previous) return;
+    /// same page navigation is ignored since `Get` preventDuplicate property.
+    /// it is only possible when navigating to `forum` screen.
+    /// 
+    /// @SEE `service.dart:openScreen()` and `service.dart:openForumScreen()` for reference.
+    if (routing.current == routing.previous &&
+        routing.current != RouteNames.forum) return;
     if (routing.isBottomSheet || routing.isDialog || routing.isSnackbar) return;
 
     /// if `routing.removed` is not empty, remove also from `navStack`.
     if (routing.removed.isNotEmpty) {
-      print('Route is removed!! ${routing.removed}');
-      navStack.remove(routing.removed);
+      /// get removed route name, remove it from `navStack`.
+      final routeName = getRouteName(routing, removed: true);
+      navStack.remove(routeName);
       Get.routing.args = null;
       return;
     }
 
-    /// if navigation event is going to previous page, we only remove previous route from `navStack`.
+    /// if navigation event is going back, remove previous route from `navStack`.
     if (routing.isBack) {
-      /// get the previous route name and remove it from stack.
+      /// get the previous route name and remove it from `navStack`.
       final routeName = getRouteName(routing, previous: true);
       print('Previous route is removed!! $routeName');
       navStack.remove(routeName);
       Get.routing.args = null;
-    } else {
+    }
+
+    /// if not going back, check `navStack` for duplicates.
+    else {
       final routeName = getRouteName(routing);
       final Route navRoute = navStack[routeName];
 
@@ -58,18 +66,28 @@ class AppRouter {
     print('Nav Stack : $navStack');
   }
 
-  /// if `previous` is set to true, it will use the `previous` route name instead of `current`.
+  /// if `previous` is set to true, it will use the `previous` route.
+  /// if `removed` is set to true, it will use the `removed` route.
   static String getRouteName(
     Routing routing, {
     bool previous = false,
+    bool removed = false,
   }) {
-    String routeName = previous ? routing.previous : routing.current;
+    String routeName = routing.current;
+    if (previous) routeName = routing.previous;
+    if (removed) routeName = routing.removed;
 
-    /// if the route name contains the forum route name, it adds the category to `routeName`.
+    /// if the route is forum route name, it adds the [category] from the routing argumets to `routeName`.
     if (routeName == RouteNames.forum) {
       dynamic args = routing.args;
-      routeName += args['category'];
+      if (args != null) routeName += args['category'];
     }
+
     return routeName;
+  }
+
+  static resetNavStack() {
+    navStack = {};
+    print('navStack reset: $navStack');
   }
 }
