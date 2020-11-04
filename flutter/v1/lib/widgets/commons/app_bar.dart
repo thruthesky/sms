@@ -27,7 +27,6 @@ class CommonAppBar extends StatefulWidget implements PreferredSizeWidget {
 }
 
 class _CommonAppBarState extends State<CommonAppBar> {
-
   @override
   Widget build(BuildContext context) {
     return AppBar(
@@ -38,14 +37,15 @@ class _CommonAppBarState extends State<CommonAppBar> {
       elevation: widget.elevation,
       actions: [
         if (widget.actions.isNotEmpty) ...widget.actions,
-        Builder(
-          builder: (context) => IconButton(
-            icon: Icon(Icons.menu),
-            onPressed: () {
-              Scaffold.of(context).openEndDrawer();
-            },
+        if (Scaffold.of(context).hasEndDrawer)
+          Builder(
+            builder: (context) => IconButton(
+              icon: Icon(Icons.menu),
+              onPressed: () {
+                Scaffold.of(context).openEndDrawer();
+              },
+            ),
           ),
-        ),
       ],
     );
   }

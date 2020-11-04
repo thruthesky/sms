@@ -4,6 +4,7 @@ import 'package:v1/services/global_variables.dart';
 import 'package:v1/services/route_names.dart';
 import 'package:v1/services/service.dart';
 import 'package:v1/services/spaces.dart';
+import 'package:v1/widgets/commons/app_bar.dart';
 import 'package:v1/widgets/miscellaneous/or_divider.dart';
 
 class MobileCodeVerificationScreen extends StatefulWidget {
@@ -20,6 +21,8 @@ class _MobileCodeVerificationScreenState
   String internationalNo;
   int codeResendToken;
 
+  bool loading = false;
+
   @override
   void initState() {
     dynamic args = Get.arguments;
@@ -32,9 +35,9 @@ class _MobileCodeVerificationScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: CommonAppBar(
         title: Text('Code Verification'),
-        automaticallyImplyLeading: false,
+        showBackButton: false,
       ),
       body: Container(
         padding: EdgeInsets.all(Space.xl),
@@ -90,33 +93,43 @@ class _MobileCodeVerificationScreenState
             ),
             SizedBox(height: Space.xxl),
 
+            if (loading)
+              Center(
+                child: CircularProgressIndicator(),
+              ),
+
             /// Verify button
-            FlatButton(
-              color: Color(0xff0098E1),
-              padding: EdgeInsets.all(Space.md),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(5),
-              ),
-              child: Text(
-                "VERIFY",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
+            if (!loading)
+              FlatButton(
+                color: Color(0xff0098E1),
+                padding: EdgeInsets.all(Space.md),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(5),
                 ),
+                child: Text(
+                  "VERIFY",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                  ),
+                ),
+                onPressed: () async {
+                  FocusScope.of(context).requestFocus(new FocusNode());
+                  if (loading) return;
+                  setState(() => loading = true);
+                  try {
+                    await ff.mobileAuthVerifyCode(
+                      code: codeController.text,
+                      verificationId: verificationID,
+                    );
+                    setState(() => loading = false);
+                    Get.toNamed(RouteNames.home);
+                  } catch (e) {
+                    setState(() => loading = false);
+                    Service.error(e);
+                  }
+                },
               ),
-              onPressed: () async {
-                FocusScope.of(context).requestFocus(new FocusNode());
-                try {
-                  await ff.mobileAuthVerifyCode(
-                    code: codeController.text,
-                    verificationId: verificationID,
-                  );
-                  Get.toNamed(RouteNames.home);
-                } catch (e) {
-                  Service.error(e);
-                }
-              },
-            ),
 
             SizedBox(height: Space.xxl),
             OrDivider(),

@@ -40,11 +40,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
       endDrawer: CommonAppDrawer(),
       body: SingleChildScrollView(
         child: Container(
-          padding: EdgeInsets.all(Space.pageWrap),
+          padding: EdgeInsets.all(Space.xl),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('app_title'.tr),
+              Text(
+                'Touch and update your information'.tr,
+                style: TextStyle(
+                  fontSize: Space.sm,
+                  color: Color(0xFF707070),
+                ),
+              ),
+              SizedBox(height: Space.xxl),
+
+              /// Profile image
               Center(
                 child: Column(
                   children: [

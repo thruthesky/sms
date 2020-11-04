@@ -4,6 +4,7 @@ import 'package:v1/services/global_variables.dart';
 import 'package:v1/services/route_names.dart';
 import 'package:v1/services/service.dart';
 import 'package:v1/services/spaces.dart';
+import 'package:v1/widgets/commons/app_bar.dart';
 import 'package:v1/widgets/user/country_code_selector.dart';
 
 class MobileAuthScreen extends StatefulWidget {
@@ -21,9 +22,9 @@ class _MobileAuthScreenState extends State<MobileAuthScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: CommonAppBar(
         title: Text('Mobile Auth'),
-        automaticallyImplyLeading: false,
+        showBackButton: false,
       ),
       body: Container(
         padding: EdgeInsets.all(Space.xl),
@@ -94,34 +95,47 @@ class _MobileAuthScreenState extends State<MobileAuthScreen> {
               ),
             ),
             SizedBox(height: Space.xxl),
-            FlatButton(
-              color: Color(0xff0098E1),
-              padding: EdgeInsets.all(Space.md),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(5),
+            if (loading)
+              Center(
+                child: CircularProgressIndicator(),
               ),
-              child: Text(
-                "SEND CODE",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
+            if (!loading)
+              FlatButton(
+                color: Color(0xff0098E1),
+                padding: EdgeInsets.all(Space.md),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(5),
                 ),
+                child: Text(
+                  "SEND CODE",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                  ),
+                ),
+                onPressed: () {
+                  FocusScope.of(context).requestFocus(new FocusNode());
+
+                  if (loading) return;
+                  setState(() => loading = true);
+                  ff.mobileAuthSendCode(
+                    internationalNo,
+                    onCodeSent: (verificationID, codeResendToken) {
+                      setState(() => loading = false);
+                      Get.toNamed(RouteNames.mobileCodeVerification,
+                          arguments: {
+                            'verificationID': verificationID,
+                            'internationalNo': internationalNo,
+                            'codeResendToken': codeResendToken
+                          });
+                    },
+                    onError: (e) {
+                      setState(() => loading = false);
+                      Service.error(e);
+                    },
+                  );
+                },
               ),
-              onPressed: () {
-                FocusScope.of(context).requestFocus(new FocusNode());
-                ff.mobileAuthSendCode(
-                  internationalNo,
-                  onCodeSent: (verificationID, codeResendToken) {
-                    Get.toNamed(RouteNames.mobileCodeVerification, arguments: {
-                      'verificationID': verificationID,
-                      'internationalNo': internationalNo,
-                      'codeResendToken': codeResendToken
-                    });
-                  },
-                  onError: (e) => Service.error(e),
-                );
-              },
-            ),
             SizedBox(height: Space.lg),
             FlatButton(
               child: Text(
