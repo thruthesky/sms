@@ -18,6 +18,13 @@ class AppRouter {
   ///   - `routing.removed` will only have a value when `Get.removeRoute` is called.
   ///   - even if `routing.isBack` returns `true`, `routing.removed` won't have a value.
   static observer(Routing routing) {
+    /// if `current` and `previous` routes are the same, an overlay may have opened or closed.
+    ///   - example of this is the [datePicker] used in register screen.
+    if (routing.current == routing.previous &&
+        routing.current != RouteNames.forum) {
+      return;
+    }
+
     /// ignore non-screen overlays.
     if (routing.isBottomSheet || routing.isDialog || routing.isSnackbar) return;
 

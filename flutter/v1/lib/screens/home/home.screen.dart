@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:v1/services/global_variables.dart';
 import 'package:v1/services/route_names.dart';
 import 'package:v1/services/service.dart';
+import 'package:v1/widgets/commons/app_bar.dart';
 import 'package:v1/widgets/commons/app_drawer.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -23,9 +24,9 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: CommonAppBar(
         title: Text('app name'.tr),
-        automaticallyImplyLeading: false,
+        showBackButton: false,
       ),
       endDrawer: CommonAppDrawer(),
       body: SingleChildScrollView(
