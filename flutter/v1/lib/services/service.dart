@@ -5,9 +5,9 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:v1/controllers/user.controller.dart';
-import 'package:v1/services/app-router.dart';
+import 'package:v1/services/app_router.dart';
 import 'package:v1/services/global_variables.dart';
-import 'package:v1/services/route-names.dart';
+import 'package:v1/services/route_names.dart';
 
 class Service {
   /// [locale] has the current locale.

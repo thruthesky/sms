@@ -5,7 +5,7 @@ import 'package:v1/controllers/user.controller.dart';
 import 'package:get/get.dart';
 import 'package:v1/services/global_variables.dart';
 import 'package:v1/services/spaces.dart';
-import 'package:v1/services/route-names.dart';
+import 'package:v1/services/route_names.dart';
 
 enum Mode { create, update, delete }
 

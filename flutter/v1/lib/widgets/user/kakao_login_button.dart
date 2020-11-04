@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:kakao_flutter_sdk/all.dart';
 import 'package:kakao_flutter_sdk/auth.dart';
 import 'package:v1/services/global_variables.dart';
-import 'package:v1/services/route-names.dart';
+import 'package:v1/services/route_names.dart';
 import 'package:v1/services/service.dart';
 import 'package:v1/widgets/miscellaneous/icon_text_button.dart';
 

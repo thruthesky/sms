@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:get/route_manager.dart';
-import 'package:v1/services/route-names.dart';
+import 'package:v1/services/route_names.dart';
 
 class AppRouter {
   /// this will hold the navigation history of the whole app.

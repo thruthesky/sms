@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:v1/services/global_variables.dart';
-import 'package:v1/services/route-names.dart';
+import 'package:v1/services/route_names.dart';
 import 'package:v1/services/service.dart';
 import 'package:v1/widgets/miscellaneous/icon_text_button.dart';
 import 'package:v1/widgets/user/kakao_login_button.dart';
