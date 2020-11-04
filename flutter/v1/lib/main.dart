@@ -33,7 +33,7 @@ void main() async {
       enableNotification: true,
       pushNotificationOption: {
         "android": {
-          "sound": "caralarm.wav", // it works without the ext.
+          "sound": "caralarm", // it works without the ext.
         },
         "ios": {
           "sound": "caralarm.caf",
