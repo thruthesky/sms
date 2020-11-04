@@ -18,10 +18,6 @@ class AppRouter {
   ///   - `routing.removed` will only have a value when `Get.removeRoute` is called.
   ///   - even if `routing.isBack` returns `true`, `routing.removed` won't have a value.
   static observer(Routing routing) {
-    print('arguments');
-    print(Get.arguments);
-    print(routing.args);
-
     /// ignore non-screen overlays.
     if (routing.isBottomSheet || routing.isDialog || routing.isSnackbar) return;
 
