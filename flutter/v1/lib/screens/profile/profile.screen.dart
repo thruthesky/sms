@@ -6,8 +6,8 @@ import 'package:get/get.dart';
 import 'package:v1/services/global_variables.dart';
 import 'package:v1/services/service.dart';
 import 'package:v1/services/spaces.dart';
-import 'package:v1/widgets/commons/app-drawer.dart';
-import 'package:v1/widgets/commons/photo-picker-bottom-sheet.dart';
+import 'package:v1/widgets/commons/app_drawer.dart';
+import 'package:v1/widgets/commons/photo_picker_bottomsheet.dart';
 import 'package:v1/widgets/user/birthday_picker.dart';
 import 'package:v1/widgets/user/profile_image.dart';
 
@@ -40,11 +40,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
       endDrawer: CommonAppDrawer(),
       body: SingleChildScrollView(
         child: Container(
-          padding: EdgeInsets.all(Space.pageWrap),
+          padding: EdgeInsets.all(Space.xl),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('app_title'.tr),
+              Text(
+                'Touch and update your information'.tr,
+                style: TextStyle(
+                  fontSize: Space.sm,
+                  color: Color(0xFF707070),
+                ),
+              ),
+              SizedBox(height: Space.xxl),
+
+              /// Profile image
               Center(
                 child: Column(
                   children: [

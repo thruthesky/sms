@@ -2,9 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:v1/services/global_variables.dart';
-import 'package:v1/services/route-names.dart';
+import 'package:v1/services/route_names.dart';
 import 'package:v1/services/service.dart';
-import 'package:v1/widgets/commons/app-drawer.dart';
+import 'package:v1/widgets/commons/app_drawer.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -94,6 +94,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     'test body message, from test notification button.',
                     // token: ff.firebaseMessagingToken,
                     // tokens: tokens,
+                    id: '0X1upoaLklWc2Z07dsbn',
+                    screen: '/forumView',
                     topic: ff.allTopic,
                   );
                 });
@@ -105,8 +107,10 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Text('Admin Screen'),
             ),
             RaisedButton(
-              onPressed: () =>
-                  Get.toNamed(RouteNames.forum, arguments: {'category': 'qna'}),
+              onPressed: () => Get.toNamed(
+                RouteNames.forum,
+                arguments: {'category': 'qna'},
+              ),
               child: Text('QnA'),
             ),
             RaisedButton(
