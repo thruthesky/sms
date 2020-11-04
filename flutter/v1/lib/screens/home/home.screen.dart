@@ -94,6 +94,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     'test body message, from test notification button.',
                     // token: ff.firebaseMessagingToken,
                     // tokens: tokens,
+                    id: '0X1upoaLklWc2Z07dsbn',
+                    screen: '/forumView',
                     topic: ff.allTopic,
                   );
                 });
