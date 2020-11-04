@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:v1/controllers/user.controller.dart';
 import 'package:v1/services/global_variables.dart';
-import 'package:v1/services/route-names.dart';
+import 'package:v1/services/route_names.dart';
 import 'package:v1/services/service.dart';
 import 'package:v1/services/spaces.dart';
-import 'package:v1/widgets/commons/confirm-dialog.dart';
+import 'package:v1/widgets/commons/confirm_dialog.dart';
 import 'package:v1/widgets/forum/comment.edit.form.dart';
 import 'package:v1/widgets/forum/comment_list.dart';
 import 'package:v1/widgets/forum/file.display.dart';
@@ -46,13 +46,13 @@ class _PostState extends State<Post> {
           GestureDetector(
             child: Row(
               children: [
-                IconButton(
+                if(ff.isAdmin) ...[IconButton(
                   icon: Icon(Icons.online_prediction),
                   onPressed: () {
                     Get.toNamed(RouteNames.adminPushNotification,
                         arguments: {'id': widget.post['id']});
                   },
-                ),
+                )],
                 Expanded(
                   child: Text(
                     widget.post['title'],

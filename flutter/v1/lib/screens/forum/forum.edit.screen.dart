@@ -6,7 +6,7 @@ import 'package:v1/controllers/user.controller.dart';
 import 'package:v1/services/global_variables.dart';
 import 'package:v1/services/service.dart';
 import 'package:v1/services/spaces.dart';
-import 'package:v1/widgets/commons/photo-picker-bottom-sheet.dart';
+import 'package:v1/widgets/commons/photo_picker_bottomsheet.dart';
 import 'package:v1/widgets/forum/file.display.dart';
 
 class ForumEditScreen extends StatefulWidget {

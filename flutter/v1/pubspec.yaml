@@ -21,6 +21,8 @@ dependencies:
 
   country_code_picker: ^1.6.2
 
+  font_awesome_flutter: ^8.10.0
+
   kakao_flutter_sdk: ^0.6.0-beta.1
   fireflutter:
     path: packages/fireflutter
@@ -31,3 +33,6 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  
+  assets:
+    - assets/images/

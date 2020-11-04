@@ -3,8 +3,9 @@ import 'package:get/get.dart';
 import 'package:kakao_flutter_sdk/all.dart';
 import 'package:kakao_flutter_sdk/auth.dart';
 import 'package:v1/services/global_variables.dart';
-import 'package:v1/services/route-names.dart';
+import 'package:v1/services/route_names.dart';
 import 'package:v1/services/service.dart';
+import 'package:v1/widgets/miscellaneous/icon_text_button.dart';
 
 class KakaoLoginButton extends StatelessWidget {
   const KakaoLoginButton({
@@ -13,8 +14,8 @@ class KakaoLoginButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return RaisedButton(
-      onPressed: () async {
+    return IconTextButton(
+      onTap: () async {
         /// 카카오톡 로그인을 경우, 상황에 따라 메일 주소가 없을 수 있다. 메일 주소가 필수 항목이 아닌 경우,
         /// 따라서, id 로 메일 주소를 만들어서, 자동 회원 가입을 한다.
         ///
@@ -83,7 +84,11 @@ class KakaoLoginButton extends StatelessWidget {
           throw e;
         }
       },
-      child: Text('Kakao Login'),
+      icon: Image.asset(
+        'assets/images/kakaotalk.png',
+        width: 52,
+      ),
+      text: 'Kakao',
     );
   }
 }

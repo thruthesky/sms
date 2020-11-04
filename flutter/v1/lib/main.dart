@@ -6,15 +6,15 @@ import 'package:v1/screens/admin/admin.category.screen.dart';
 import 'package:v1/screens/admin/admin.push-notification.dart';
 import 'package:v1/screens/admin/admin.screen.dart';
 import 'package:v1/screens/forum/forum.view.screen.dart';
-import 'package:v1/screens/mobile-auth/mobile-auth.screen.dart';
-import 'package:v1/screens/mobile-auth/mobile-code-verification.screen.dart';
+import 'package:v1/screens/mobile-auth/mobile_auth.screen.dart';
+import 'package:v1/screens/mobile-auth/mobile_code_verification.screen.dart';
 import 'package:v1/screens/search/search.screen.dart';
 
 import 'package:v1/screens/settings/settings.screen.dart';
 
 import 'package:v1/screens/forum/forum.edit.screen.dart';
 import 'package:v1/screens/forum/forum.screen.dart';
-import 'package:v1/services/app-router.dart';
+import 'package:v1/services/app_router.dart';
 import 'package:v1/services/global_variables.dart';
 import 'package:v1/services/service.dart';
 import 'package:v1/services/translations.dart';
@@ -22,7 +22,7 @@ import 'package:v1/screens/home/home.screen.dart';
 import 'package:v1/screens/login/login.screen.dart';
 import 'package:v1/screens/profile/profile.screen.dart';
 import 'package:v1/screens/register/register.screen.dart';
-import 'package:v1/services/route-names.dart';
+import 'package:v1/services/route_names.dart';
 
 import 'package:get/route_manager.dart';
 import 'package:get/get.dart';
@@ -71,6 +71,8 @@ class MainApp extends StatefulWidget {
 
 class _MainAppState extends State<MainApp> {
   final c = Get.put(UserController());
+
+  Map<String, Map<String, dynamic>> stack = {};
 
   @override
   void initState() {
@@ -136,29 +138,28 @@ class _MainAppState extends State<MainApp> {
       locale: Locale('ko'),
       translations: AppTranslations(),
       initialRoute: RouteNames.home,
-      // getPages: [
-      //   GetPage(name: RouteNames.home, page: () => HomeScreen()),
-      //   GetPage(name: RouteNames.login, page: () => LoginScreen()),
-      //   GetPage(name: RouteNames.register, page: () => RegisterScreen()),
-      //   GetPage(name: RouteNames.profile, page: () => ProfileScreen()),
-      //   GetPage(name: RouteNames.settings, page: () => SettingsScreen()),
-      //   GetPage(name: RouteNames.admin, page: () => AdminScreen()),
-      //   GetPage(
-      //       name: RouteNames.adminCategory, page: () => AdminCategoryScreen()),
-      //   GetPage(
-      //       name: RouteNames.adminPushNotification,
-      //       page: () => AdminPushNotificationScreen()),
-      //   GetPage(name: RouteNames.forum, page: () => ForumScreen()),
-      //   GetPage(name: RouteNames.forumEdit, page: () => ForumEditScreen()),
-      //   GetPage(name: RouteNames.forumView, page: () => ForumViewScreen()),
-      //   GetPage(name: RouteNames.mobileAuth, page: () => MobileAuthScreen()),
-      //   GetPage(
-      //       name: RouteNames.mobileCodeVerification,
-      //       page: () => MobileCodeVerificationScreen()),
-      //   GetPage(name: RouteNames.search, page: () => SearchScreen())
-      // ],
-      navigatorObservers: [AppRouter()],
-      onGenerateRoute: AppRouter.generate,
+      routingCallback: AppRouter.observer,
+      getPages: [
+        GetPage(name: RouteNames.home, page: () => HomeScreen()),
+        GetPage(name: RouteNames.login, page: () => LoginScreen()),
+        GetPage(name: RouteNames.register, page: () => RegisterScreen()),
+        GetPage(name: RouteNames.profile, page: () => ProfileScreen()),
+        GetPage(name: RouteNames.settings, page: () => SettingsScreen()),
+        GetPage(name: RouteNames.admin, page: () => AdminScreen()),
+        GetPage(
+            name: RouteNames.adminCategory, page: () => AdminCategoryScreen()),
+        GetPage(
+            name: RouteNames.adminPushNotification,
+            page: () => AdminPushNotificationScreen()),
+        GetPage(name: RouteNames.forum, page: () => ForumScreen()),
+        GetPage(name: RouteNames.forumEdit, page: () => ForumEditScreen()),
+        GetPage(name: RouteNames.forumView, page: () => ForumViewScreen()),
+        GetPage(name: RouteNames.mobileAuth, page: () => MobileAuthScreen()),
+        GetPage(
+            name: RouteNames.mobileCodeVerification,
+            page: () => MobileCodeVerificationScreen()),
+        GetPage(name: RouteNames.search, page: () => SearchScreen())
+      ],
     );
   }
 }
