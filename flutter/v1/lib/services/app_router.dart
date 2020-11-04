@@ -18,10 +18,10 @@ class AppRouter {
   ///   - `navStack` must also be reset whenever the app remove screens by batch (ex. by calling `Get.offAllNamed(routeName)`).
   static observer(Routing routing) {
 
-    /// same page navigation is ignored since `Get` preventDuplicate property.
-    /// it is only possible when navigating to `forum` screen.
+    /// same page navigation is prevented since [preventDuplicate] property of `Get` route management is set to `true`.
+    /// it is only possible when navigating to `forum` screen because [preventDuplicate] is set to `false`.
     /// 
-    /// @SEE `service.dart:openScreen()` and `service.dart:openForumScreen()` for reference.
+    /// @SEE `Service.dart:openScreen()` and `Service.dart:openForumScreen()` for reference.
     if (routing.current == routing.previous &&
         routing.current != RouteNames.forum) return;
     if (routing.isBottomSheet || routing.isDialog || routing.isSnackbar) return;
@@ -68,6 +68,7 @@ class AppRouter {
 
   /// if `previous` is set to true, it will use the `previous` route.
   /// if `removed` is set to true, it will use the `removed` route.
+  /// if bost `previous` and `removed` are in default value or `false`, it will use the `current` route.
   static String getRouteName(
     Routing routing, {
     bool previous = false,
