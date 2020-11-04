@@ -1,7 +1,6 @@
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk/link.dart';
-import 'package:v1/controllers/user.controller.dart';
 import 'package:v1/screens/admin/admin.category.screen.dart';
 import 'package:v1/screens/admin/admin.push-notification.dart';
 import 'package:v1/screens/admin/admin.screen.dart';
@@ -14,7 +13,6 @@ import 'package:v1/screens/settings/settings.screen.dart';
 
 import 'package:v1/screens/forum/forum.edit.screen.dart';
 import 'package:v1/screens/forum/forum.screen.dart';
-import 'package:v1/services/app_router.dart';
 import 'package:v1/services/global_variables.dart';
 import 'package:v1/services/service.dart';
 import 'package:v1/services/translations.dart';
@@ -63,8 +61,6 @@ class MainApp extends StatefulWidget {
 }
 
 class _MainAppState extends State<MainApp> {
-  final c = Get.put(UserController());
-
   Map<String, Map<String, dynamic>> stack = {};
 
   @override

@@ -2,7 +2,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:v1/controllers/user.controller.dart';
 import 'package:v1/services/global_variables.dart';
 import 'package:v1/services/service.dart';
 import 'package:v1/services/spaces.dart';
@@ -15,7 +14,6 @@ class ForumEditScreen extends StatefulWidget {
 }
 
 class _ForumEditScreenState extends State<ForumEditScreen> {
-  final UserController userController = Get.find<UserController>();
   final titleController = TextEditingController();
   final contentController = TextEditingController();
 
@@ -117,7 +115,7 @@ class _ForumEditScreenState extends State<ForumEditScreen> {
                           'category': category,
                           'title': titleController.text,
                           'content': contentController.text,
-                          'uid': userController.uid,
+                          'uid': ff.user.uid,
                           'files': files
                         });
                         Get.back();

@@ -80,7 +80,7 @@ class _HomeScreenState extends State<HomeScreen> {
             RaisedButton(
               onPressed: () async {
                 users
-                    .doc(Service.userController.user.uid)
+                    .doc(ff.user.uid)
                     .collection('meta')
                     .doc('tokens')
                     .snapshots()

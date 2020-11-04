@@ -1,7 +1,6 @@
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:v1/controllers/user.controller.dart';
 import 'package:v1/services/global_variables.dart';
 import 'package:v1/services/route_names.dart';
 import 'package:v1/services/service.dart';
@@ -25,8 +24,6 @@ class Post extends StatefulWidget {
 }
 
 class _PostState extends State<Post> {
-  final UserController userController = Get.find();
-
   bool showContent = true;
 
   @override
@@ -46,13 +43,15 @@ class _PostState extends State<Post> {
           GestureDetector(
             child: Row(
               children: [
-                if(ff.isAdmin) ...[IconButton(
-                  icon: Icon(Icons.online_prediction),
-                  onPressed: () {
-                    Get.toNamed(RouteNames.adminPushNotification,
-                        arguments: {'id': widget.post['id']});
-                  },
-                )],
+                if (ff.isAdmin) ...[
+                  IconButton(
+                    icon: Icon(Icons.online_prediction),
+                    onPressed: () {
+                      Get.toNamed(RouteNames.adminPushNotification,
+                          arguments: {'id': widget.post['id']});
+                    },
+                  )
+                ],
                 Expanded(
                   child: Text(
                     widget.post['title'],
