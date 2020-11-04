@@ -175,12 +175,12 @@ class _ForumScreenState extends State<ForumScreen> {
                     padding: EdgeInsets.all(Space.md),
                     child: CommonSpinner(),
                   ),
-                if (forum.noPostsYet)
+                if (forum.status == ForumStatus.noPosts)
                   Padding(
                     padding: EdgeInsets.all(Space.md),
                     child: Text('No posts yet..'),
                   ),
-                if (forum.noMorePosts && !forum.noPostsYet)
+                if (forum.status == ForumStatus.noMorePosts)
                   Padding(
                     padding: EdgeInsets.all(Space.md),
                     child: Text('No more posts..'),
