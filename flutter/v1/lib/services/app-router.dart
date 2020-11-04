@@ -15,6 +15,12 @@ class AppRouter {
   static observer(Routing routing) {
     print('Previous route : ${routing.previous}');
     print('Current route : ${routing.current}');
+    print('Route is Bottom sheet ${routing.isBottomSheet}');
+    print('Route is Dialog ${routing.isDialog}');
+    print('Route is Snackbar ${routing.isSnackbar}');
+
+    if (routing.current == routing.previous) return;
+    if (routing.isBottomSheet || routing.isDialog || routing.isSnackbar) return;
 
     /// if `routing.removed` is not empty, remove also from `navStack`.
     if (routing.removed.isNotEmpty) {
