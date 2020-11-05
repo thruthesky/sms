@@ -28,7 +28,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   final nicknameNode = FocusNode();
 
-  String gender = ff.data['gender'];
+  String gender = ff.userData['gender'];
   DateTime birthday = DateTime.now();
 
   bool loading = false;
