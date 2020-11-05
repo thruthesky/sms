@@ -25,9 +25,23 @@ import 'package:v1/services/route_names.dart';
 import 'package:get/route_manager.dart';
 import 'package:get/get.dart';
 
-void main() async {
-  try {
-    await ff.init(
+void main() {
+  runApp(MainApp());
+}
+
+class MainApp extends StatefulWidget {
+  @override
+  _MainAppState createState() => _MainAppState();
+}
+
+class _MainAppState extends State<MainApp> {
+  Map<String, Map<String, dynamic>> stack = {};
+
+  @override
+  void initState() {
+    super.initState();
+
+    ff.init(
       enableNotification: true,
       pushNotificationSound: "caralarm",
       firebaseServerToken:
@@ -45,27 +59,9 @@ void main() async {
       },
       translations: translations,
     );
-  } catch (e) {
-    print('===========> $e');
-  }
 
-  KakaoContext.clientId = 'f2ab9c07815d4cf099a5e8b4d82398d4';
-  KakaoContext.javascriptClientId = '2cdb6b324434311d304ab3f367f9edf3';
-
-  runApp(MainApp());
-}
-
-class MainApp extends StatefulWidget {
-  @override
-  _MainAppState createState() => _MainAppState();
-}
-
-class _MainAppState extends State<MainApp> {
-  Map<String, Map<String, dynamic>> stack = {};
-
-  @override
-  void initState() {
-    super.initState();
+    KakaoContext.clientId = 'f2ab9c07815d4cf099a5e8b4d82398d4';
+    KakaoContext.javascriptClientId = '2cdb6b324434311d304ab3f367f9edf3';
 
     Service.initLocale().then((value) => Get.updateLocale(Locale(value)));
 

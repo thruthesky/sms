@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:v1/services/global_variables.dart';
 import 'package:v1/services/route_names.dart';
-import 'package:v1/services/service.dart';
 import 'package:v1/widgets/commons/app_bar.dart';
 import 'package:v1/widgets/commons/app_drawer.dart';
 
@@ -13,14 +12,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final CollectionReference users =
-      FirebaseFirestore.instance.collection('users');
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -79,6 +70,8 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             RaisedButton(
               onPressed: () async {
+                final CollectionReference users =
+                    FirebaseFirestore.instance.collection('users');
                 users
                     .doc(ff.user.uid)
                     .collection('meta')
