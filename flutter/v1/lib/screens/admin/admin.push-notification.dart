@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/instance_manager.dart';
-import 'package:v1/controllers/user.controller.dart';
 import 'package:get/get.dart';
 import 'package:v1/services/global_variables.dart';
 import 'package:v1/services/spaces.dart';
@@ -17,8 +16,6 @@ class AdminPushNotificationScreen extends StatefulWidget {
 
 class _AdminPushNotificationScreenState
     extends State<AdminPushNotificationScreen> {
-  final user = Get.find<UserController>();
-
   final db = FirebaseFirestore.instance;
   CollectionReference categories;
 
@@ -67,7 +64,7 @@ class _AdminPushNotificationScreenState
       ),
       body: Container(
         padding: EdgeInsets.all(Space.pageWrap),
-        child: user.isAdmin
+        child: ff.isAdmin
             ? SingleChildScrollView(
                 child: Container(
                   child: Column(children: [

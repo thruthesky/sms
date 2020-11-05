@@ -273,7 +273,7 @@ Future readFileAsJson(String path) async {
     // print(text);
     return json.decode(text);
   } else {
-    print('$path does not exists');
+    // print('$path does not exists');
     return null;
   }
 }
@@ -283,7 +283,7 @@ Future readFileAsString(String path) async {
   if (await localfileExist(path)) {
     return await io.File(await localFilePath(path)).readAsString();
   } else {
-    print('$path does not exists');
+    // print('$path does not exists');
     return null;
   }
 }

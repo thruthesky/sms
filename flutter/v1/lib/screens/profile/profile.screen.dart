@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:v1/services/global_variables.dart';
 import 'package:v1/services/service.dart';
 import 'package:v1/services/spaces.dart';
+import 'package:v1/widgets/commons/app_bar.dart';
 import 'package:v1/widgets/commons/app_drawer.dart';
 import 'package:v1/widgets/commons/photo_picker_bottomsheet.dart';
 import 'package:v1/widgets/user/birthday_picker.dart';
@@ -36,7 +37,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Profile')),
+      appBar: CommonAppBar(
+        title: Text('Profile'),
+      ),
       endDrawer: CommonAppDrawer(),
       body: SingleChildScrollView(
         child: Container(

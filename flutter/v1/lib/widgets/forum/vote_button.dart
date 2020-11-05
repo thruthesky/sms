@@ -24,8 +24,8 @@ class VoteButton extends StatefulWidget {
 class _VoteButtonState extends State<VoteButton> {
   @override
   Widget build(BuildContext context) {
-    bool voteOption = ff.isShowForumVote(widget.post['category'], 'like');
-    if (!voteOption) return SizedBox.shrink();
+    bool display = ff.voteSetting(widget.post['category'], 'like');
+    if (!display) return SizedBox.shrink();
 
     /// To show `likes` of post or comment.
     Map obj = widget.comment == null ? widget.post : widget.comment;

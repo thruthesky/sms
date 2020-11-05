@@ -1,7 +1,6 @@
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk/link.dart';
-import 'package:v1/controllers/user.controller.dart';
 import 'package:v1/screens/admin/admin.category.screen.dart';
 import 'package:v1/screens/admin/admin.push-notification.dart';
 import 'package:v1/screens/admin/admin.screen.dart';
@@ -14,7 +13,6 @@ import 'package:v1/screens/settings/settings.screen.dart';
 
 import 'package:v1/screens/forum/forum.edit.screen.dart';
 import 'package:v1/screens/forum/forum.screen.dart';
-import 'package:v1/services/app_router.dart';
 import 'package:v1/services/global_variables.dart';
 import 'package:v1/services/service.dart';
 import 'package:v1/services/translations.dart';
@@ -27,9 +25,23 @@ import 'package:v1/services/route_names.dart';
 import 'package:get/route_manager.dart';
 import 'package:get/get.dart';
 
-void main() async {
-  try {
-    await ff.init(
+void main() {
+  runApp(MainApp());
+}
+
+class MainApp extends StatefulWidget {
+  @override
+  _MainAppState createState() => _MainAppState();
+}
+
+class _MainAppState extends State<MainApp> {
+  Map<String, Map<String, dynamic>> stack = {};
+
+  @override
+  void initState() {
+    super.initState();
+
+    ff.init(
       enableNotification: true,
       pushNotificationSound: "caralarm",
       firebaseServerToken:
@@ -47,29 +59,9 @@ void main() async {
       },
       translations: translations,
     );
-  } catch (e) {
-    print('===========> $e');
-  }
 
-  KakaoContext.clientId = 'f2ab9c07815d4cf099a5e8b4d82398d4';
-  KakaoContext.javascriptClientId = '2cdb6b324434311d304ab3f367f9edf3';
-
-  runApp(MainApp());
-}
-
-class MainApp extends StatefulWidget {
-  @override
-  _MainAppState createState() => _MainAppState();
-}
-
-class _MainAppState extends State<MainApp> {
-  final c = Get.put(UserController());
-
-  Map<String, Map<String, dynamic>> stack = {};
-
-  @override
-  void initState() {
-    super.initState();
+    KakaoContext.clientId = 'f2ab9c07815d4cf099a5e8b4d82398d4';
+    KakaoContext.javascriptClientId = '2cdb6b324434311d304ab3f367f9edf3';
 
     Service.initLocale().then((value) => Get.updateLocale(Locale(value)));
 
@@ -137,7 +129,7 @@ class _MainAppState extends State<MainApp> {
       locale: Locale('ko'),
       translations: AppTranslations(),
       initialRoute: RouteNames.home,
-      routingCallback: AppRouter.observer,
+      // routingCallback: AppRouter.observer,
       getPages: [
         GetPage(name: RouteNames.home, page: () => HomeScreen()),
         GetPage(name: RouteNames.login, page: () => LoginScreen()),

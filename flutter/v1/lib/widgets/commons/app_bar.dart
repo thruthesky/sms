@@ -33,7 +33,7 @@ class _CommonAppBarState extends State<CommonAppBar> {
       title: widget.title,
       centerTitle: widget.centerTitle,
       automaticallyImplyLeading: widget.showBackButton,
-      backgroundColor: widget.backgroundColor ?? Color(0xff0283d0),
+      backgroundColor: widget.backgroundColor ?? Color(0xFF0384D0),
       elevation: widget.elevation,
       actions: [
         if (widget.actions.isNotEmpty) ...widget.actions,
