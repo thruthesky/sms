@@ -1,9 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
-import 'package:get/instance_manager.dart';
-import 'package:v1/controllers/user.controller.dart';
 import 'package:get/get.dart';
+import 'package:v1/services/global_variables.dart';
 import 'package:v1/services/service.dart';
 import 'package:v1/services/spaces.dart';
 
@@ -15,8 +14,6 @@ class AdminCategoryScreen extends StatefulWidget {
 }
 
 class _AdminCategoryScreenState extends State<AdminCategoryScreen> {
-  final user = Get.find<UserController>();
-
   final idController = TextEditingController();
   final titleController = TextEditingController();
   final descriptionController = TextEditingController();
@@ -49,14 +46,10 @@ class _AdminCategoryScreenState extends State<AdminCategoryScreen> {
       ),
       body: Container(
         padding: EdgeInsets.all(Space.pageWrap),
-        child: user.isAdmin
+        child: ff.isAdmin
             ? Container(
                 child: Column(
                   children: [
-                    Text('Are you admin?'),
-                    GetBuilder<UserController>(builder: (_) {
-                      return Text(user.isAdmin ? 'yes' : 'no');
-                    }),
                     TextFormField(
                       controller: idController,
                       decoration: InputDecoration(labelText: "Category ID"),

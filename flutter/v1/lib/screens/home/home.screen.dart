@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:v1/services/global_variables.dart';
 import 'package:v1/services/route_names.dart';
-import 'package:v1/services/service.dart';
+import 'package:v1/widgets/commons/app_bar.dart';
 import 'package:v1/widgets/commons/app_drawer.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -12,20 +12,12 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final CollectionReference users =
-      FirebaseFirestore.instance.collection('users');
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: CommonAppBar(
         title: Text('app name'.tr),
-        automaticallyImplyLeading: false,
+        showBackButton: false,
       ),
       endDrawer: CommonAppDrawer(),
       body: SingleChildScrollView(
@@ -42,7 +34,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Text('Login'),
                       ),
                       RaisedButton(
-                        onPressed: () => Get.toNamed(RouteNames.register),
+                        onPressed: () =>
+                            Get.toNamed(RouteNames.register, id: 2),
                         child: Text('Register'),
                       ),
                     ],
@@ -64,7 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: Text('Profile'),
                     ),
                     RaisedButton(
-                      onPressed: Service.logout,
+                      onPressed: ff.logout,
                       child: Text('Logout'),
                     ),
                     RaisedButton(
@@ -77,8 +70,10 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             RaisedButton(
               onPressed: () async {
+                final CollectionReference users =
+                    FirebaseFirestore.instance.collection('users');
                 users
-                    .doc(Service.userController.user.uid)
+                    .doc(ff.user.uid)
                     .collection('meta')
                     .doc('tokens')
                     .snapshots()

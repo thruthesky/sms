@@ -4,10 +4,6 @@ class RouteNames {
   static const String register = '/register';
   static const String profile = '/profile';
   static const String settings = '/settings';
-  static const String postList = '/postList';
-  static const String postEdit = '/postEdit';
-  static const String phoneAuth = '/phoneAuth';
-  static const String phoneAuthCode = '/phoneAuthCode';
   static const String passwordReset = '/passwordReset';
   static const String admin = '/admin';
   static const String adminCategory = '/adminCategory';
@@ -19,3 +15,20 @@ class RouteNames {
   static const String mobileCodeVerification = '/mobileCodeVerification';
   static const String search = '/search';
 }
+
+List<String> preventRouteDuplication = [
+  RouteNames.login,
+  RouteNames.register,
+  RouteNames.profile,
+  RouteNames.settings,
+  RouteNames.passwordReset,
+  RouteNames.admin,
+  RouteNames.adminCategory,
+  RouteNames.adminPushNotification,
+  RouteNames.forum,
+  RouteNames.forumEdit,
+  RouteNames.forumView,
+  RouteNames.mobileAuth,
+  RouteNames.mobileCodeVerification,
+  RouteNames.search,
+];

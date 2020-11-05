@@ -31,6 +31,7 @@ class _CommonAppDrawerState extends State<CommonAppDrawer> {
                         onPressed: () {
                           Get.back();
                           Service.openScreen(RouteNames.login);
+                          // Get.toNamed('login', id: 1);
                         },
                         child: Text('Login'),
                       ),
@@ -58,7 +59,8 @@ class _CommonAppDrawerState extends State<CommonAppDrawer> {
                     ),
                     RaisedButton(
                       onPressed: () {
-                        Service.logout();
+                        ff.logout();
+                        Get.back();
                       },
                       child: Text('Logout'),
                     ),
@@ -84,6 +86,12 @@ class _CommonAppDrawerState extends State<CommonAppDrawer> {
               onPressed: () {
                 Get.back();
                 Service.openForumScreen('qna');
+
+                // navigator.pushNamedAndRemoveUntil(
+                //     'qna',
+                //     (route) => route.isCurrent && route.settings.name == 'qna'
+                //         ? false
+                //         : true);
               },
               child: Text('QnA'),
             ),
@@ -91,6 +99,8 @@ class _CommonAppDrawerState extends State<CommonAppDrawer> {
               onPressed: () {
                 Get.back();
                 Service.openForumScreen('discussion');
+                // Get.toNamed(RouteNames.forum,
+                //     arguments: {'category': 'discussion'});
               },
               child: Text('Discussion'),
             ),

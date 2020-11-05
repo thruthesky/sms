@@ -4,8 +4,6 @@ import 'package:devicelocale/devicelocale.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:v1/controllers/user.controller.dart';
-import 'package:v1/services/app_router.dart';
 import 'package:v1/services/global_variables.dart';
 import 'package:v1/services/route_names.dart';
 
@@ -16,7 +14,6 @@ class Service {
   /// I18n.locale;
   /// ```
   static String locale;
-  static UserController userController = Get.find<UserController>();
   static final FirebaseMessaging firebaseMessaging = new FirebaseMessaging();
   static final CollectionReference usersRef =
       FirebaseFirestore.instance.collection('users');
@@ -138,8 +135,9 @@ class Service {
   // }
 
   static bool isMine(dynamic data) {
+    if (ff.notLoggedIn) return false;
     if (data == null || data['uid'] == null) return false;
-    return data['uid'] == userController.uid;
+    return data['uid'] == ff.user.uid;
   }
 
   static bool phoneNumberRequired() {
@@ -216,23 +214,20 @@ class Service {
       Get.toNamed(RouteNames.mobileAuth);
     } else {
       /// reset `AppRouter.navStack`
-      AppRouter.resetNavStack();
       Get.offAllNamed(RouteNames.home);
     }
   }
 
-  static logout() {
-    /// logout to firebase intance
-    ff.logout();
+  // static logout() {
+  //   /// logout to firebase intance
+  //   ff.logout();
 
-    /// redirect to home only when not in `HomeScreen`.
-    if (Get.currentRoute != RouteNames.home) {
-      /// reset `AppRouter.navStack`
-      AppRouter.resetNavStack();
+  //   /// redirect to home only when not in `HomeScreen`.
+  //   if (Get.currentRoute != RouteNames.home) {
 
-      /// clear all app screens until `home`,
-      /// after moving to `home` screen, `AppRouter` will add it to it's `navStack`.
-      Get.offAllNamed(RouteNames.home);
-    }
-  }
+  //     /// clear all app screens until `home`,
+  //     /// after moving to `home` screen, `AppRouter` will add it to it's `navStack`.
+  //     Get.offAllNamed(RouteNames.home);
+  //   }
+  // }
 }

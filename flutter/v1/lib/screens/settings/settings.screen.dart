@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:v1/controllers/user.controller.dart';
 import 'package:v1/services/global_variables.dart';
 import 'package:v1/services/service.dart';
 import 'package:v1/services/spaces.dart';
@@ -17,20 +16,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
   final CollectionReference users =
       FirebaseFirestore.instance.collection('users');
 
-  final userController = Get.find<UserController>();
-
   bool notifyPost = false;
   bool notifyComment = false;
 
   @override
   void initState() {
     /// get document with current logged in user's uid.
-    users
-        .doc(userController.user.uid)
-        .collection('meta')
-        .doc('public')
-        .get()
-        .then(
+    users.doc(ff.user.uid).collection('meta').doc('public').get().then(
       (DocumentSnapshot doc) {
         if (!doc.exists) {
           // It's not an error. User may not have documentation. see README
@@ -78,7 +70,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         onChanged: (value) async {
                           try {
                             final userDoc = users
-                                .doc(userController.user.uid)
+                                .doc(ff.user.uid)
                                 .collection('meta')
                                 .doc('public');
                             await userDoc.set({
@@ -100,7 +92,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         onChanged: (value) async {
                           try {
                             final userDoc = users
-                                .doc(userController.user.uid)
+                                .doc(ff.user.uid)
                                 .collection('meta')
                                 .doc('public');
                             await userDoc.set({

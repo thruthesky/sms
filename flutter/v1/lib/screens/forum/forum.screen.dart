@@ -53,9 +53,9 @@ class _ForumScreenState extends State<ForumScreen> {
     /// fetch posts for the first time.
     ff.fetchPosts(forum);
 
-    if (Service.userController.isLoggedIn) {
+    if (ff.loggedIn) {
       Service.usersRef
-          .doc(Service.userController.user.uid)
+          .doc(ff.user.uid)
           .collection('meta')
           .doc('public')
           .get()
@@ -101,7 +101,7 @@ class _ForumScreenState extends State<ForumScreen> {
                   ? Icon(Icons.notifications_active)
                   : Icon(Icons.notifications_off),
               onPressed: () {
-                if (Service.userController.isNotLoggedIn) {
+                if (ff.notLoggedIn) {
                   return Service.alert(
                       'Must Login to subscribe to ' + category);
                 }
@@ -114,8 +114,11 @@ class _ForumScreenState extends State<ForumScreen> {
                 } else {
                   ff.unsubscribeTopic(topic);
                 }
+
+                /// TODO @lancelynyrd
+                // ff.updateProfile({}, meta: {'public': {topic: notificationPost}});
                 Service.usersRef
-                    .doc(Service.userController.user.uid)
+                    .doc(ff.user.uid)
                     .collection('meta')
                     .doc('public')
                     .set({
@@ -127,7 +130,7 @@ class _ForumScreenState extends State<ForumScreen> {
                 ? Icon(Icons.notifications_active)
                 : Icon(Icons.notifications_off),
             onPressed: () {
-              if (Service.userController.isNotLoggedIn) {
+              if (ff.notLoggedIn) {
                 return Service.alert('Must Login to subscribe to $category');
               }
               setState(() {
@@ -140,7 +143,7 @@ class _ForumScreenState extends State<ForumScreen> {
                 ff.unsubscribeTopic(topic);
               }
               Service.usersRef
-                  .doc(Service.userController.user.uid)
+                  .doc(ff.user.uid)
                   .collection('meta')
                   .doc('public')
                   .set({
@@ -172,12 +175,12 @@ class _ForumScreenState extends State<ForumScreen> {
                     padding: EdgeInsets.all(Space.md),
                     child: CommonSpinner(),
                   ),
-                if (forum.noPostsYet)
+                if (forum.status == ForumStatus.noPosts)
                   Padding(
                     padding: EdgeInsets.all(Space.md),
                     child: Text('No posts yet..'),
                   ),
-                if (forum.noMorePosts && !forum.noPostsYet)
+                if (forum.status == ForumStatus.noMorePosts)
                   Padding(
                     padding: EdgeInsets.all(Space.md),
                     child: Text('No more posts..'),
