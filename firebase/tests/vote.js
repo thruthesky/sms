@@ -69,6 +69,18 @@ describe("Vote test on Post", () => {
     const doc = db.doc(postMyVotePath);
     await assertFails(doc.set({ choice: "li" }));
   });
+
+  it("Voting empty string", async () => {
+    const db = await setup(otherAuth, mockData);
+    const doc = db.doc(postOtherVotePath);
+    await assertSucceeds(doc.set({ choice: "" }, { merge: true }));
+  });
+  it("Voting empty string again must failed", async () => {
+    const db = await setup(otherAuth, mockData);
+    const doc = db.doc(postOtherVotePath);
+    await assertSucceeds(doc.set({ choice: "" }, { merge: true }));
+    await assertFails(doc.set({ choice: "" }, { merge: true }));
+  });
 });
 
 const commentPath = "/posts/b/comments/c";

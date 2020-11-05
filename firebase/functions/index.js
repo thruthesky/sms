@@ -23,13 +23,14 @@ function _decrease(n) {
 }
 async function doVotes(change) {
   const parentRef = change.after.ref.parent.parent;
-  const postDoc = await parentRef.get();
-  if (!postDoc.exists) {
+  const snapshot = await parentRef.get();
+  if (!snapshot.exists) {
+    /// Error if post or comment does not exists.
     console.error("Document does not exists: ", parentRef.path);
-    return; // 글이 존재하지 않으면, 에러
+    return;
   }
-  const postData = postDoc.data();
-  // console.log("postDoc", postData);
+  const postData = snapshot.data();
+  // console.log("snapshot", postData);
   if (postData.likes === undefined) postData.likes = 0;
   if (postData.dislikes === undefined) postData.dislikes = 0;
 
