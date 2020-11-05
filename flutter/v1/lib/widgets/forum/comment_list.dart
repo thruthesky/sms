@@ -142,7 +142,7 @@ class _CommentState extends State<Comment> {
                       /// reply box
                       CommentEditForm(
                         post: widget.post,
-                        parentIndex: widget.commentIndex,
+                        // parentIndex: widget.commentIndex,
                       ),
                     ],
             ),

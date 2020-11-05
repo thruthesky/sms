@@ -7,13 +7,13 @@ import 'package:v1/widgets/commons/photo_picker_bottomsheet.dart';
 import 'package:v1/widgets/forum/file.display.dart';
 
 /// [post] is required
-/// [parentIndex] is optional and used only when creating a new comment.
+// / [parentIndex] is optional and used only when creating a new comment.
 /// [comment] is optional and used only when updatedin a comment.
 ///
 class CommentEditForm extends StatefulWidget {
   const CommentEditForm({
     @required this.post,
-    this.parentIndex,
+    // this.parentIndex,
     this.comment,
     this.showCancelButton = false,
     this.onCancel,
@@ -23,7 +23,7 @@ class CommentEditForm extends StatefulWidget {
 
   final dynamic post;
   final dynamic comment;
-  final int parentIndex;
+  // final int parentIndex;
   final bool showCancelButton;
 
   final Function onCancel;
@@ -147,7 +147,10 @@ class _CommentEditFormState extends State<CommentEditForm> {
                     data['depth'] = widget.comment['depth'];
                     data['order'] = widget.comment['order'];
                   } else {
-                    data['parentIndex'] = widget.parentIndex;
+                    data['parentIndex'] = (widget.post['comments'] as List)
+                        .indexWhere(
+                            (element) => element['id'] == widget.comment['id']);
+                    // data['parentIndex'] = widget.parentIndex;
                   }
 
                   try {
