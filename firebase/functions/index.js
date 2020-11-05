@@ -23,13 +23,14 @@ function _decrease(n) {
 }
 async function doVotes(change) {
   const parentRef = change.after.ref.parent.parent;
-  const postDoc = await parentRef.get();
-  if (!postDoc.exists) {
+  const snapshot = await parentRef.get();
+  if (!snapshot.exists) {
+    /// Error if post or comment does not exists.
     console.error("Document does not exists: ", parentRef.path);
-    return; // 글이 존재하지 않으면, 에러
+    return;
   }
-  const postData = postDoc.data();
-  // console.log("postDoc", postData);
+  const postData = snapshot.data();
+  // console.log("snapshot", postData);
   if (postData.likes === undefined) postData.likes = 0;
   if (postData.dislikes === undefined) postData.dislikes = 0;
 
@@ -76,13 +77,13 @@ async function doVotes(change) {
       switch (ch) {
         case "like":
           await parentRef.set(
-            { likes: _decrease(postData.likes) },
+            { likes: admin.firestore.FieldValue.increment(-1) },
             { merge: true }
           );
           break;
         case "dislike":
           await parentRef.set(
-            { dislikes: _decrease(postData.dislikes) },
+            { dislikes: admin.firestore.FieldValue.increment(-1) },
             { merge: true }
           );
           break;
@@ -96,31 +97,32 @@ async function doVotes(change) {
       let likes;
       let dislikes;
       if (afterVoteData.choice === "like") {
-        likes = postData.likes + 1;
+        // likes = postData.likes + 1;
         /// If the previous vote was empty string(''), it means, there was no vote.
         /// So, no need to decrease counterpart.
-        if (beforeVoteData.choice === "") dislikes = postData.dislikes;
-        else dislikes = _decrease(postData.dislikes);
+        var data = {
+          likes: admin.firestore.FieldValue.increment(1)
+        };
+        if (beforeVoteData.choice !== "")
+          data["dislikes"] = admin.firestore.FieldValue.increment(-1);
+        await parentRef.set(data, { merge: true });
       } else if (afterVoteData.choice === "dislike") {
-        dislikes = postData.dislikes + 1;
+        // dislikes = postData.dislikes + 1;
         /// If the previous vote was empty string(''), it means, there was no vote.
         /// So, no need to decrease counterpart.
         if (beforeVoteData.choice === "") likes = postData.likes;
         else likes = _decrease(postData.likes);
 
-        // console.log("==> dislikes: ", dislikes);
+        var data = {
+          dislikes: admin.firestore.FieldValue.increment(1)
+        };
+        if (beforeVoteData.choice !== "")
+          data["likes"] = admin.firestore.FieldValue.increment(-1);
+        await parentRef.set(data, { merge: true });
       } else {
         console.error("Choice mus tbe like or dislike");
         return;
       }
-
-      await parentRef.set(
-        {
-          likes: likes,
-          dislikes: dislikes
-        },
-        { merge: true }
-      );
     }
   }
 }
