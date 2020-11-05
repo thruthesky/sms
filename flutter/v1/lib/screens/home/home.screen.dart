@@ -48,7 +48,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     Text("User Uid: ${ff.user.uid}"),
                     Text("User Email: ${ff.user.email}"),
                     Text("User Nickname: ${ff.user.displayName}"),
-                    Text("User Gender: ${ff.data['gender']}"),
+                    Text("User Gender: ${ff.userData['gender']}"),
                     Text("User Phone number: ${ff.user.phoneNumber}"),
                     Text("User PhotoUrl: ${ff.user.photoURL}"),
                     RaisedButton(
