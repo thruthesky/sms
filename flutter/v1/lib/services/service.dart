@@ -202,9 +202,11 @@ class Service {
     Get.defaultDialog(
       title: 'alert'.tr,
       middleText: "update phone number".tr,
-      textConfirm: "ok".tr,
+      textConfirm: "update".tr,
+      textCancel: "cancel".tr,
       confirmTextColor: Colors.white,
-      onConfirm: () => Get.back(),
+      onConfirm: () => Get.toNamed(RouteNames.mobileAuth),
+      onCancel: () => Get.back()
     );
   }
 
