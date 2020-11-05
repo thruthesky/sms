@@ -131,27 +131,6 @@ class _MainAppState extends State<MainApp> {
       locale: Locale('ko'),
       translations: AppTranslations(),
       initialRoute: RouteNames.home,
-      // getPages: [
-      //   GetPage(name: RouteNames.home, page: () => HomeScreen()),
-      //   GetPage(name: RouteNames.login, page: () => LoginScreen()),
-      //   GetPage(name: RouteNames.register, page: () => RegisterScreen()),
-      //   GetPage(name: RouteNames.profile, page: () => ProfileScreen()),
-      //   GetPage(name: RouteNames.settings, page: () => SettingsScreen()),
-      //   GetPage(name: RouteNames.admin, page: () => AdminScreen()),
-      //   GetPage(
-      //       name: RouteNames.adminCategory, page: () => AdminCategoryScreen()),
-      //   GetPage(
-      //       name: RouteNames.adminPushNotification,
-      //       page: () => AdminPushNotificationScreen()),
-      //   GetPage(name: RouteNames.forum, page: () => ForumScreen()),
-      //   GetPage(name: RouteNames.forumEdit, page: () => ForumEditScreen()),
-      //   GetPage(name: RouteNames.forumView, page: () => ForumViewScreen()),
-      //   GetPage(name: RouteNames.mobileAuth, page: () => MobileAuthScreen()),
-      //   GetPage(
-      //       name: RouteNames.mobileCodeVerification,
-      //       page: () => MobileCodeVerificationScreen()),
-      //   GetPage(name: RouteNames.search, page: () => SearchScreen())
-      // ],
       onGenerateRoute: AppRouter.generate,
       navigatorObservers: [AppRouter()],
     );
