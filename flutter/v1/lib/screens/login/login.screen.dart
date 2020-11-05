@@ -131,11 +131,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       await ff.login(
                         email: emailController.text,
                         password: passwordController.text,
-                        meta: {
-                          'tokens': {
-                            'and-another-token': true,
-                          },
-                        },
                       );
 
                       Service.redirectAfterLoginOrRegister();
