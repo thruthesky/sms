@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:v1/services/spaces.dart';
 
 class BirthdayPicker extends StatelessWidget {
   final DateTime initialValue;
@@ -15,10 +17,14 @@ class BirthdayPicker extends StatelessWidget {
       children: [
         Text(
           '${initialValue.year} - ${initialValue.month} - ${initialValue.day}',
+          style: TextStyle(
+            fontSize: Space.lg,
+            color: Color(0xFF707070)
+          ),
         ),
         Spacer(),
-        RaisedButton(
-          child: Text('Select'),
+        IconButton(
+          icon: FaIcon(FontAwesomeIcons.edit, size: Space.md, color: Color(0xFF909090),),
           onPressed: () async {
             var now = DateTime.now();
 

@@ -1,6 +1,5 @@
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:v1/services/global_variables.dart';
@@ -18,10 +17,6 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  /// users collection referrence
-  final CollectionReference users =
-      FirebaseFirestore.instance.collection('users');
-
   final emailController = TextEditingController(text: ff.user.email);
   final displayNameController =
       TextEditingController(text: ff.user.displayName);
@@ -54,7 +49,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   color: Color(0xFF707070),
                 ),
               ),
-              SizedBox(height: Space.xxl),
+              SizedBox(height: Space.xl),
 
               /// Profile image
               Center(
@@ -106,47 +101,206 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ],
                 ),
               ),
-              SizedBox(height: Space.md),
-              Text('Email: ${ff.user.email}'),
-              SizedBox(height: Space.md),
-              Text('Mobile number: ${ff.user.phoneNumber}'),
-              TextFormField(
-                key: ValueKey('nickname'),
-                controller: displayNameController,
-                focusNode: nicknameNode,
-                textInputAction: TextInputAction.done,
-                keyboardType: TextInputType.text,
-                decoration: InputDecoration(labelText: "Nickname"),
-              ),
-              SizedBox(height: Space.lg),
-              Text('Birthday'),
-              BirthdayPicker(
-                initialValue: birthday,
-                onChange: (date) {
-                  setState(() {
-                    this.birthday = date;
-                  });
-                },
-              ),
-              SizedBox(height: 20),
-              Text('Gender'),
-              RadioListTile(
-                value: 'M',
-                title: Text("Male"),
-                key: ValueKey('genderM'),
-                groupValue: gender,
-                onChanged: (str) {
-                  setState(() => gender = str);
-                },
-              ),
-              RadioListTile(
-                value: 'F',
-                title: Text("Female"),
-                key: ValueKey('genderF'),
-                groupValue: gender,
-                onChanged: (str) {
-                  setState(() => gender = str);
-                },
+              SizedBox(height: Space.xl),
+
+              Container(
+                color: Color(0xFFF5F5F5),
+                padding: EdgeInsets.all(Space.md),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    /// Email
+                    Text(
+                      'Email Address',
+                      style: TextStyle(
+                        color: Color(0xFF707070),
+                        fontSize: Space.sm,
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            ff.user.email,
+                            style: TextStyle(
+                              color: Color(0xFF707070),
+                              fontSize: Space.md,
+                            ),
+                          ),
+                        ),
+                        IconButton(
+                          icon: FaIcon(
+                            FontAwesomeIcons.edit,
+                            size: Space.md,
+                            color: Color(0xFF909090),
+                          ),
+                          onPressed: () {},
+                        )
+                      ],
+                    ),
+                    SizedBox(height: Space.md),
+
+                    /// Nickanme
+                    Text(
+                      'Nickname',
+                      style: TextStyle(
+                        color: Color(0xFF707070),
+                        fontSize: Space.sm,
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: ff.user.displayName.isNullOrBlank
+                              ? Text(
+                                  'Update nickname',
+                                  style: TextStyle(
+                                    color: Colors.red[700],
+                                    fontSize: Space.md,
+                                  ),
+                                )
+                              : Text(
+                                  ff.user.displayName,
+                                  style: TextStyle(
+                                    color: Color(0xFF707070),
+                                    fontSize: Space.lg,
+                                  ),
+                                ),
+                        ),
+                        IconButton(
+                          icon: FaIcon(
+                            FontAwesomeIcons.edit,
+                            size: Space.md,
+                            color: Color(0xFF909090),
+                          ),
+                          onPressed: () {},
+                        )
+                      ],
+                    ),
+                    SizedBox(height: Space.lg),
+                    // TextFormField(
+                    //   key: ValueKey('nickname'),
+                    //   controller: displayNameController,
+                    //   focusNode: nicknameNode,
+                    //   textInputAction: TextInputAction.done,
+                    //   keyboardType: TextInputType.text,
+                    //   decoration: InputDecoration(labelText: "Nickname"),
+                    // ),
+
+                    /// Mobile
+                    Text(
+                      'Mobile No.',
+                      style: TextStyle(
+                        color: Color(0xFF707070),
+                        fontSize: Space.sm,
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: ff.user.phoneNumber.isNullOrBlank
+                              ? Text(
+                                  'Update Mobile Number',
+                                  style: TextStyle(
+                                    color: Colors.red[700],
+                                    fontSize: Space.md,
+                                  ),
+                                )
+                              : Text(
+                                  ff.user.phoneNumber,
+                                  style: TextStyle(
+                                    color: Color(0xFF707070),
+                                    fontSize: Space.lg,
+                                  ),
+                                ),
+                        ),
+                        IconButton(
+                          icon: FaIcon(
+                            FontAwesomeIcons.edit,
+                            size: Space.md,
+                            color: Color(0xFF909090),
+                          ),
+                          onPressed: () {},
+                        )
+                      ],
+                    ),
+                    SizedBox(height: Space.md),
+
+                    /// Birthday
+                    Text(
+                      'Birthday',
+                      style: TextStyle(
+                        color: Color(0xFF707070),
+                        fontSize: Space.sm,
+                      ),
+                    ),
+                    BirthdayPicker(
+                      initialValue: birthday,
+                      onChange: (date) {
+                        setState(() {
+                          this.birthday = date;
+                        });
+                      },
+                    ),
+                    SizedBox(height: Space.md),
+
+                    /// Gender
+                    Text(
+                      'Gender',
+                      style: TextStyle(
+                        color: Color(0xFF707070),
+                        fontSize: Space.sm,
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            gender == 'M' ? 'Male' : 'Female',
+                            style: TextStyle(
+                              color: Color(0xFF707070),
+                              fontSize: Space.md,
+                            ),
+                          ),
+                        ),
+                        IconButton(
+                          icon: FaIcon(
+                            FontAwesomeIcons.edit,
+                            size: Space.md,
+                            color: Color(0xFF909090),
+                          ),
+                          onPressed: () {},
+                        )
+                      ],
+                    ),
+                    // Row(
+                    //   children: [
+                    //     Expanded(
+                    //       child: RadioListTile(
+                    //         value: 'M',
+                    //         title: Text("Male"),
+                    //         key: ValueKey('genderM'),
+                    //         groupValue: gender,
+                    //         onChanged: (str) {
+                    //           setState(() => gender = str);
+                    //         },
+                    //       ),
+                    //     ),
+                    //     Expanded(
+                    //       child: RadioListTile(
+                    //         value: 'F',
+                    //         title: Text("Female"),
+                    //         key: ValueKey('genderF'),
+                    //         groupValue: gender,
+                    //         onChanged: (str) {
+                    //           setState(() => gender = str);
+                    //         },
+                    //       ),
+                    //     ),
+                    //   ],
+                    // ),
+                  ],
+                ),
               ),
               SizedBox(height: 30),
               RaisedButton(
