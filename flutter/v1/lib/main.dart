@@ -78,31 +78,38 @@ class _MainAppState extends State<MainApp> {
 
     ff.notification.listen(
       (x) {
-        Map<String, dynamic> notification = x['notification'];
+        Map<dynamic, dynamic> notification = x['notification'];
         Map<dynamic, dynamic> data = x['data'];
         NotificationType type = x['type'];
         print('NotificationType: $type');
         print('notification: $notification');
         print('data: $data');
+
         if (type == NotificationType.onMessage) {
           Get.snackbar(
             notification['title'].toString(),
             notification['body'].toString(),
             onTap: (_) {
-              Get.toNamed(data['screen'], arguments: {'id': data['id']});
+              if (data != null && data['screen'] != null) {
+                Get.toNamed(data['screen'],
+                    arguments: {'id': data['id'] ?? ''});
+              }
             },
-            mainButton: FlatButton(
-              child: Text('Open'),
-              onPressed: () {
-                Get.toNamed(data['screen'], arguments: {'id': data['id']});
-              },
-            ),
+            mainButton: (data != null && data['screen'] != null)
+                ? FlatButton(
+                    child: Text('Open'),
+                    onPressed: () {
+                      Get.toNamed(data['screen'],
+                          arguments: {'id': data['id'] ?? ''});
+                    },
+                  )
+                : Container(),
           );
         } else {
           /// App will come here when the user open the app by tapping a push notification on the system tray.
           if (data != null && data['screen'] != null) {
             Get.toNamed(data['screen'],
-                arguments: {'id': data['id'], 'data': data});
+                arguments: {'id': data['id'] ?? '', 'data': data});
           }
         }
       },
