@@ -86,12 +86,13 @@ class _MainAppState extends State<MainApp> {
 
     ff.notification.listen(
       (x) {
-        Map<String, dynamic> notification = x['notification'];
+        Map<dynamic, dynamic> notification = x['notification'];
         Map<dynamic, dynamic> data = x['data'];
         NotificationType type = x['type'];
         print('NotificationType: $type');
         print('notification: $notification');
         print('data: $data');
+
         if (type == NotificationType.onMessage) {
           Get.snackbar(
             notification['title'].toString(),
