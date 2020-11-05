@@ -13,8 +13,6 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   /// users collection referrence
-  final CollectionReference users =
-      FirebaseFirestore.instance.collection('users');
 
   bool notifyPost = false;
   bool notifyComment = false;
@@ -22,7 +20,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   void initState() {
     /// get document with current logged in user's uid.
-    users.doc(ff.user.uid).collection('meta').doc('public').get().then(
+    ff.usersCol.doc(ff.user.uid).collection('meta').doc('public').get().then(
       (DocumentSnapshot doc) {
         if (!doc.exists) {
           // It's not an error. User may not have documentation. see README
@@ -30,8 +28,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
           return;
         }
         final data = doc.data();
-        this.notifyPost = data['notifyPost'] ?? false;
-        this.notifyComment = data['notifyComment'] ?? false;
+        this.notifyPost = data['notification_post'] ?? false;
+        this.notifyComment = data['notification_comment'] ?? false;
         setState(() {});
       },
     );
@@ -69,13 +67,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         value: notifyPost,
                         onChanged: (value) async {
                           try {
-                            final userDoc = users
-                                .doc(ff.user.uid)
-                                .collection('meta')
-                                .doc('public');
-                            await userDoc.set({
-                              "notifyPost": value,
-                            }, SetOptions(merge: true));
+                            ff.updateUserMeta({
+                              'public': {
+                                "notification_post": value,
+                              },
+                            });
                             Get.snackbar('Update', 'Settings updated!');
                           } catch (e) {
                             Service.error(e);
@@ -91,20 +87,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         value: notifyComment,
                         onChanged: (value) async {
                           try {
-                            final userDoc = users
-                                .doc(ff.user.uid)
-                                .collection('meta')
-                                .doc('public');
-                            await userDoc.set({
-                              "notifyComment": value,
-                            }, SetOptions(merge: true));
+                            ff.updateUserMeta({
+                              'public': {
+                                "notification_comment": value,
+                              },
+                            });
                             Get.snackbar('Update', 'Settings updated!');
                           } catch (e) {
                             Service.error(e);
                           }
                           setState(() {
                             notifyComment = value;
-                            print(notifyComment);
                           });
                         },
                       ),

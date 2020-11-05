@@ -223,12 +223,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         },
                         meta: {
                           'public': {
-                            "notifyPost": true,
-                            "notifyComment": true,
-                          },
-                          // "tokens": {
-                          //   '${ff.firebaseMessagingToken}': true,
-                          // },
+                            "notification_post": true,
+                            "notification_comment": true,
+                          }
                         },
                       );
                       Service.redirectAfterLoginOrRegister();
