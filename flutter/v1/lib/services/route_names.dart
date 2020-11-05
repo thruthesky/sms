@@ -15,20 +15,3 @@ class RouteNames {
   static const String mobileCodeVerification = '/mobileCodeVerification';
   static const String search = '/search';
 }
-
-List<String> preventRouteDuplication = [
-  RouteNames.login,
-  RouteNames.register,
-  RouteNames.profile,
-  RouteNames.settings,
-  RouteNames.passwordReset,
-  RouteNames.admin,
-  RouteNames.adminCategory,
-  RouteNames.adminPushNotification,
-  RouteNames.forum,
-  RouteNames.forumEdit,
-  RouteNames.forumView,
-  RouteNames.mobileAuth,
-  RouteNames.mobileCodeVerification,
-  RouteNames.search,
-];
