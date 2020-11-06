@@ -137,21 +137,17 @@ class _CommentEditFormState extends State<CommentEditForm> {
                       files.length == 0) return;
 
                   final data = {
-                    'post': widget.post,
                     'content': contentController.text,
                     'files': files
                   };
 
                   if (widget.comment != null) {
                     data['id'] = widget.comment['id'];
-                    data['depth'] = widget.comment['depth'];
-                    data['order'] = widget.comment['order'];
-                  } else {
-                    data['parentIndex'] = widget.parentIndex;
                   }
 
                   try {
-                    await ff.editComment(data);
+                    await ff.editComment(data, widget.post,
+                        parentIndex: widget.parentIndex);
                     if (widget.onSuccess != null) widget.onSuccess();
                     contentController.text = '';
                     files = [];
