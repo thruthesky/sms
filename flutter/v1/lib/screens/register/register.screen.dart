@@ -49,12 +49,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // RaisedButton(
-              //   child: Text(
-              //     'Social Login.\nYou can login with your SNS Accounts.',
-              //   ),
-              //   onPressed: () => Get.toNamed(RouteNames.login),
-              // ),
               Text(
                 'Fill in the form'.tr,
                 style: TextStyle(fontSize: 20),

@@ -1,5 +1,4 @@
 import 'package:image_picker/image_picker.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:v1/services/global_variables.dart';
@@ -17,14 +16,11 @@ class _ForumEditScreenState extends State<ForumEditScreen> {
   final titleController = TextEditingController();
   final contentController = TextEditingController();
 
-  final CollectionReference colPosts =
-      FirebaseFirestore.instance.collection('posts');
-
   String category;
   dynamic post;
 
   List<dynamic> files = [];
-  double uploadProgress = 0;
+  double uploadProgress;
 
   @override
   void initState() {
@@ -80,18 +76,19 @@ class _ForumEditScreenState extends State<ForumEditScreen> {
                         final url = await ff.uploadFile(
                           folder: 'forum-photos',
                           source: source,
-                          progress: (p) => setState(() => uploadProgress = p),
+                          progress: (double p) =>
+                              setState(() => uploadProgress = p),
                         );
 
                         files.add(url);
-                        setState(() => uploadProgress = 0);
+                        setState(() => uploadProgress = null);
                       } catch (e) {
                         Service.error(e);
                       }
                     },
                   ),
                   Expanded(
-                    child: uploadProgress != 0
+                    child: uploadProgress != null
                         ? LinearProgressIndicator(
                             value: uploadProgress,
                           )
@@ -100,7 +97,7 @@ class _ForumEditScreenState extends State<ForumEditScreen> {
                   SizedBox(width: Space.md),
                   RaisedButton(
                     onPressed: () async {
-                      /// remove focus
+                      // remove focus
                       FocusScope.of(context).requestFocus(FocusNode());
 
                       try {

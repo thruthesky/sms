@@ -69,7 +69,7 @@ class _MobileCodeVerificationScreenState
               ),
               SizedBox(height: Space.xxl),
 
-              /// Code Input
+              // Code Input
               Text(
                 'Input Code',
                 style: TextStyle(
@@ -99,7 +99,7 @@ class _MobileCodeVerificationScreenState
                   child: CircularProgressIndicator(),
                 ),
 
-              /// Verify button
+              // Verify button
               if (!loading)
                 FlatButton(
                   color: Color(0xff0098E1),
@@ -136,7 +136,7 @@ class _MobileCodeVerificationScreenState
               OrDivider(),
               SizedBox(height: Space.md),
 
-              /// change number & resend code button.
+              // change number & resend code button.
               Row(
                 children: [
                   FlatButton(

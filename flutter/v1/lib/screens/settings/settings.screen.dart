@@ -12,14 +12,12 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  /// users collection referrence
-
   bool notifyPost = false;
   bool notifyComment = false;
 
   @override
   void initState() {
-    /// get document with current logged in user's uid.
+    // get document with current logged in user's uid.
     ff.usersCol.doc(ff.user.uid).collection('meta').doc('public').get().then(
       (DocumentSnapshot doc) {
         if (!doc.exists) {

@@ -27,9 +27,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   DateTime birthday = DateTime.now();
 
   bool loading = false;
-  double uploadProgress = 0;
-
-  
+  double uploadProgress;
 
   @override
   Widget build(BuildContext context) {
@@ -53,34 +51,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               SizedBox(height: Space.xl),
 
-              /// Profile image
+              // Profile image
               Center(
                 child: Column(
                   children: [
                     ProfileImage(
                       size: Space.xxl,
                       onTap: () async {
-                        /// choose upload option.
+                        // choose upload option.
                         ImageSource source = await Get.bottomSheet(
                           PhotoPickerBottomSheet(),
                           backgroundColor: Colors.white,
                         );
 
-                        /// do nothing when user cancel option selection.
+                        // do nothing when user cancel option selection.
                         if (source == null) return null;
 
                         try {
-                          /// delete previous file to prevent having unused files in storage.
+                          // delete previous file to prevent having unused files in storage.
                           if (!ff.user.photoURL.isNullOrBlank) {
                             await ff.deleteFile(ff.user.photoURL);
                           }
 
-                          /// upload picked file,
+                          // upload picked file,
                           final url = await ff.uploadFile(
                             folder: 'user-profile-photos',
                             source: source,
 
-                            /// upload progress
+                            // upload progress
                             progress: (p) => setState(
                               () {
                                 this.uploadProgress = p;
@@ -90,7 +88,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                           // update image url of current user.
                           await ff.updatePhoto(url);
-                          setState(() => uploadProgress = 0);
+                          setState(() => uploadProgress = null);
                           // print('url: $url');
                         } catch (e) {
                           // print('error on file pick: ');
@@ -99,7 +97,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         }
                       },
                     ),
-                    if (uploadProgress != 0) Text('$uploadProgress%')
+                    if (!uploadProgress.isNullOrBlank)
+                      Center(
+                        child: Container(
+                          width: 200,
+                          margin: EdgeInsets.only(top: Space.md),
+                          child: LinearProgressIndicator(
+                            value: uploadProgress,
+                          ),
+                        ),
+                      )
                   ],
                 ),
               ),

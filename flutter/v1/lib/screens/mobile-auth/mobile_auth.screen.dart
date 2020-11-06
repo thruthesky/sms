@@ -123,12 +123,14 @@ class _MobileAuthScreenState extends State<MobileAuthScreen> {
                       internationalNo,
                       onCodeSent: (verificationID, codeResendToken) {
                         setState(() => loading = false);
-                        Get.toNamed(RouteNames.mobileCodeVerification,
-                            arguments: {
-                              'verificationID': verificationID,
-                              'internationalNo': internationalNo,
-                              'codeResendToken': codeResendToken
-                            });
+                        Get.toNamed(
+                          RouteNames.mobileCodeVerification,
+                          arguments: {
+                            'verificationID': verificationID,
+                            'internationalNo': internationalNo,
+                            'codeResendToken': codeResendToken
+                          },
+                        );
                       },
                       onError: (e) {
                         setState(() => loading = false);
