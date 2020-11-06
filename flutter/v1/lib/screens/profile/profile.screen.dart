@@ -18,9 +18,9 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   final emailController = TextEditingController(text: ff.user.email);
-  final displayNameController =
-      TextEditingController(text: ff.user.displayName);
-
+  final displayNameController = TextEditingController(
+    text: ff.user.displayName,
+  );
   final nicknameNode = FocusNode();
 
   String gender = ff.data['gender'];
@@ -28,6 +28,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   bool loading = false;
   double uploadProgress = 0;
+
+  
 
   @override
   Widget build(BuildContext context) {
@@ -259,15 +261,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             gender == 'M' ? 'Male' : 'Female',
                             style: TextStyle(
                               color: Color(0xFF707070),
-                              fontSize: Space.md,
+                              fontSize: Space.lg,
                             ),
                           ),
                         ),
                         IconButton(
                           icon: FaIcon(
                             FontAwesomeIcons.edit,
-                            size: Space.md,
                             color: Color(0xFF909090),
+                            size: Space.md,
                           ),
                           onPressed: () {},
                         )
