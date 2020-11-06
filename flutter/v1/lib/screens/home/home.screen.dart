@@ -69,9 +69,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             RaisedButton(
               onPressed: () async {
-                final CollectionReference users =
-                    FirebaseFirestore.instance.collection('users');
-                users
+                ff.usersCol
                     .doc(ff.user.uid)
                     .collection('meta')
                     .doc('tokens')

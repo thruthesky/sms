@@ -221,12 +221,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           'gender': gender,
                           'birthday': birthday,
                         },
-                        meta: {
-                          'public': {
-                            "notification_post": true,
-                            "notification_comment": true,
-                          }
-                        },
                       );
                       Service.redirectAfterLoginOrRegister();
                     } catch (e) {
