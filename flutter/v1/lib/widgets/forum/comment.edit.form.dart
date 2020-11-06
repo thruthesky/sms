@@ -37,7 +37,7 @@ class _CommentEditFormState extends State<CommentEditForm> {
   final contentController = TextEditingController();
 
   List<dynamic> files = [];
-  double uploadProgress = 0;
+  double uploadProgress;
 
   @override
   initState() {
@@ -88,7 +88,7 @@ class _CommentEditFormState extends State<CommentEditForm> {
                   );
 
                   files.add(url);
-                  setState(() => uploadProgress = 0);
+                  setState(() => uploadProgress = null);
                 } catch (e) {
                   Service.error(e);
                 }
@@ -110,7 +110,8 @@ class _CommentEditFormState extends State<CommentEditForm> {
             ),
           ],
         ),
-        if (uploadProgress != 0) LinearProgressIndicator(value: uploadProgress),
+        if (uploadProgress != null)
+          LinearProgressIndicator(value: uploadProgress),
         if (changed)
           Row(
             children: [
@@ -146,8 +147,11 @@ class _CommentEditFormState extends State<CommentEditForm> {
                   }
 
                   try {
-                    await ff.editComment(data, widget.post,
-                        parentIndex: widget.parentIndex);
+                    await ff.editComment(
+                      data,
+                      widget.post,
+                      parentIndex: widget.parentIndex,
+                    );
                     if (widget.onSuccess != null) widget.onSuccess();
                     contentController.text = '';
                     files = [];

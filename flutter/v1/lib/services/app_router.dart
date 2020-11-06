@@ -38,16 +38,16 @@ class AppRouter extends NavigatorObserver {
   };
 
   static GetPageRoute generate(RouteSettings routeSettings) {
-    /// This will be different especially for `forum` route.
+    // This will be different especially for `forum` route.
     final routeName = _getRouteName(routeSettings);
 
-    /// check if the route already exists on `navStack`.
+    // check if the route already exists on `navStack`.
     if (navStack[routeName] != null) {
       /// remove if it exists.
       navigator.removeRoute(navStack[routeName]);
     }
 
-    /// add to `navStack`
+    // add to `navStack`
     navStack[routeName] = GetPageRoute(
       settings: routeSettings,
       routeName: routeSettings.name,
@@ -65,7 +65,7 @@ class AppRouter extends NavigatorObserver {
 
   /// get route name.
   ///
-  /// for `forum` route, we add the `category` from the arguments to make it unique.
+  /// For `forum` route, we add the `category` from the arguments to make it unique.
   static String _getRouteName(RouteSettings settings) {
     var routeName = settings.name;
     if (routeName == RouteNames.forum) {
