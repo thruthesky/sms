@@ -28,7 +28,6 @@ class _MainAppState extends State<MainApp> {
 
     ff.init(
       enableNotification: true,
-      pushNotificationSound: "caralarm",
       firebaseServerToken:
           'AAAAjdyAvbM:APA91bGist2NNTrrKTZElMzrNV0rpBLV7Nn674NRow-uyjG1-Uhh5wGQWyQEmy85Rcs0wlEpYT2uFJrSnlZywLzP1hkdx32FKiPJMI38evdRZO0x1vBJLc-cukMqZBKytzb3mzRfmrgL',
       settings: {
