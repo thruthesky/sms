@@ -20,6 +20,9 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  final displayNameController = TextEditingController(
+    text: ff.user.displayName,
+  );
   final emailController = TextEditingController(text: ff.user.email);
   final nicknameNode = FocusNode();
 
@@ -42,44 +45,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       birthday = DateTime(bday.year, bday.month, bday.day);
     }
     super.initState();
-  }
-
-  editNickname() async {
-    final displayNameController = TextEditingController(
-      text: ff.user.displayName,
-    );
-
-    await Get.dialog(NickNameFormDialog(displayNameController));
-
-    String newNickName = displayNameController.text.trim();
-    if (newNickName.isNullOrBlank) return;
-    if (ff.user.displayName.trim() == newNickName) return;
-
-    try {
-      await ff.updateProfile({'displayName': newNickName});
-      onProfileUpdated('Nickname Updated!');
-    } catch (e) {
-      Service.error(e);
-    }
-  }
-
-  editGender() async {
-    String newGender;
-
-    await Get.dialog(GenderSelectDialog(
-      defaultValue: gender,
-      onChanged: (value) => newGender = value,
-    ));
-
-    if (newGender.isNullOrBlank) return;
-
-    try {
-      await ff.updateProfile({'gender': newGender});
-      gender = newGender;
-      onProfileUpdated('Gender is updated');
-    } catch (e) {
-      Service.error(e);
-    }
   }
 
   onProfileUpdated(String message) {
@@ -245,7 +210,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             size: Space.md,
                             color: Color(0xFF909090),
                           ),
-                          onPressed: editNickname,
+                          onPressed: () async {
+                            await Get.dialog(
+                              NickNameFormDialog(displayNameController),
+                            );
+
+                            String newNickName =
+                                displayNameController.text.trim();
+                            if (newNickName.isNullOrBlank) return;
+                            if (ff.user.displayName.trim() == newNickName)
+                              return;
+
+                            try {
+                              await ff.updateProfile({
+                                'displayName': newNickName,
+                              });
+                              onProfileUpdated('Nickname Updated!');
+                            } catch (e) {
+                              Service.error(e);
+                            }
+                          },
                         )
                       ],
                     ),
@@ -312,7 +296,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                         try {
                           await ff.updateProfile({'birthday': date});
-                          setState(() => birthday = date);
+                          birthday = date;
                           onProfileUpdated('Birthday Updated!');
                         } catch (e) {
                           Service.error(e);
@@ -346,7 +330,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             color: Color(0xFF909090),
                             size: Space.md,
                           ),
-                          onPressed: editGender,
+                          onPressed: () async {
+                            String newGender;
+
+                            await Get.dialog(GenderSelectDialog(
+                              defaultValue: gender,
+                              onChanged: (value) => newGender = value,
+                            ));
+
+                            if (newGender.isNullOrBlank) return;
+
+                            try {
+                              await ff.updateProfile({'gender': newGender});
+                              gender = newGender;
+                              onProfileUpdated('Gender is updated');
+                            } catch (e) {
+                              Service.error(e);
+                            }
+                          },
                         )
                       ],
                     ),
