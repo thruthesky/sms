@@ -3,12 +3,15 @@ import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:v1/services/global_variables.dart';
+import 'package:v1/services/route_names.dart';
 import 'package:v1/services/service.dart';
 import 'package:v1/services/spaces.dart';
 import 'package:v1/widgets/commons/app_bar.dart';
 import 'package:v1/widgets/commons/app_drawer.dart';
 import 'package:v1/widgets/commons/photo_picker_bottomsheet.dart';
 import 'package:v1/widgets/user/birthday_picker.dart';
+import 'package:v1/widgets/user/gender_select_dialog.dart';
+import 'package:v1/widgets/user/nickname_form_dialog.dart';
 import 'package:v1/widgets/user/profile_image.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -18,9 +21,6 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   final emailController = TextEditingController(text: ff.user.email);
-  final displayNameController = TextEditingController(
-    text: ff.user.displayName,
-  );
   final nicknameNode = FocusNode();
 
   String gender = ff.userData['gender'];
@@ -28,6 +28,69 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   bool loading = false;
   double uploadProgress;
+
+  @override
+  initState() {
+    // Timestamp from firebase.
+    dynamic timestamp = ff.userData['birthday'];
+    if (timestamp == null) {
+      birthday = DateTime.now();
+    } else {
+      // convert timestamp seconds to DateTime by multiplying timestamp second to a 1000
+      DateTime bday =
+          DateTime.fromMillisecondsSinceEpoch(timestamp.seconds * 1000);
+      birthday = DateTime(bday.year, bday.month, bday.day);
+    }
+    super.initState();
+  }
+
+  editNickname() async {
+    final displayNameController = TextEditingController(
+      text: ff.user.displayName,
+    );
+
+    await Get.dialog(NickNameFormDialog(displayNameController));
+
+    String newNickName = displayNameController.text.trim();
+    if (newNickName.isNullOrBlank) return;
+    if (ff.user.displayName.trim() == newNickName) return;
+
+    try {
+      await ff.updateProfile({'displayName': newNickName});
+      onProfileUpdated('Nickname Updated!');
+    } catch (e) {
+      Service.error(e);
+    }
+  }
+
+  editGender() async {
+    String newGender;
+
+    await Get.dialog(GenderSelectDialog(
+      defaultValue: gender,
+      onChanged: (value) => newGender = value,
+    ));
+
+    if (newGender.isNullOrBlank) return;
+
+    try {
+      await ff.updateProfile({'gender': newGender});
+      gender = newGender;
+      onProfileUpdated('Gender is updated');
+    } catch (e) {
+      Service.error(e);
+    }
+  }
+
+  onProfileUpdated(String message) {
+    ff.user.reload();
+    setState(() {});
+    Get.showSnackbar(GetBar(
+      title: 'Profile Update',
+      message: message,
+      duration: Duration(seconds: 2),
+    ));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -182,19 +245,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             size: Space.md,
                             color: Color(0xFF909090),
                           ),
-                          onPressed: () {},
+                          onPressed: editNickname,
                         )
                       ],
                     ),
                     SizedBox(height: Space.lg),
-                    // TextFormField(
-                    //   key: ValueKey('nickname'),
-                    //   controller: displayNameController,
-                    //   focusNode: nicknameNode,
-                    //   textInputAction: TextInputAction.done,
-                    //   keyboardType: TextInputType.text,
-                    //   decoration: InputDecoration(labelText: "Nickname"),
-                    // ),
 
                     /// Mobile
                     Text(
@@ -229,7 +284,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             size: Space.md,
                             color: Color(0xFF909090),
                           ),
-                          onPressed: () {},
+                          onPressed: () => Get.toNamed(
+                            RouteNames.mobileAuth,
+                            arguments: {'canNavigateBack': true},
+                          ),
                         )
                       ],
                     ),
@@ -245,10 +303,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     BirthdayPicker(
                       initialValue: birthday,
-                      onChange: (date) {
-                        setState(() {
-                          this.birthday = date;
-                        });
+                      onChange: (DateTime date) async {
+                        // If date and formatted date is equal, user submitted but without changing date selection.
+                        if (date.microsecondsSinceEpoch ==
+                            birthday.microsecondsSinceEpoch) {
+                          return;
+                        }
+
+                        try {
+                          await ff.updateProfile({'birthday': date});
+                          setState(() => birthday = date);
+                          onProfileUpdated('Birthday Updated!');
+                        } catch (e) {
+                          Service.error(e);
+                        }
                       },
                     ),
                     SizedBox(height: Space.md),
@@ -278,61 +346,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             color: Color(0xFF909090),
                             size: Space.md,
                           ),
-                          onPressed: () {},
+                          onPressed: editGender,
                         )
                       ],
                     ),
-                    // Row(
-                    //   children: [
-                    //     Expanded(
-                    //       child: RadioListTile(
-                    //         value: 'M',
-                    //         title: Text("Male"),
-                    //         key: ValueKey('genderM'),
-                    //         groupValue: gender,
-                    //         onChanged: (str) {
-                    //           setState(() => gender = str);
-                    //         },
-                    //       ),
-                    //     ),
-                    //     Expanded(
-                    //       child: RadioListTile(
-                    //         value: 'F',
-                    //         title: Text("Female"),
-                    //         key: ValueKey('genderF'),
-                    //         groupValue: gender,
-                    //         onChanged: (str) {
-                    //           setState(() => gender = str);
-                    //         },
-                    //       ),
-                    //     ),
-                    //   ],
-                    // ),
                   ],
                 ),
               ),
-              SizedBox(height: 30),
-              RaisedButton(
-                child: loading ? CircularProgressIndicator() : Text("Submit"),
-                onPressed: () async {
-                  /// remove any input focus.
-                  FocusScope.of(context).requestFocus(new FocusNode());
-                  setState(() => loading = true);
-
-                  try {
-                    await ff.updateProfile({
-                      'displayName': displayNameController.text,
-                      'gender': gender,
-                      'birthday': birthday,
-                    });
-                    Get.snackbar('Update', 'Profile updated!');
-                  } catch (e) {
-                    Service.error(e);
-                  } finally {
-                    setState(() => loading = false);
-                  }
-                },
-              )
             ],
           ),
         ),
