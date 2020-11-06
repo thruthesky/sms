@@ -39,145 +39,147 @@ class _MobileCodeVerificationScreenState
         title: Text('Code Verification'),
         showBackButton: false,
       ),
-      body: Container(
-        padding: EdgeInsets.all(Space.xl),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            SizedBox(height: Space.xl),
-            Text(
-              'Input Verification Code',
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            Text(
-              'Verify',
-              style: TextStyle(
-                fontSize: 40,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            Text(
-              'Verification Code sent to: $internationalNo',
-              style: TextStyle(
-                fontSize: 12,
-                color: Color(0xff5F5F5F),
-              ),
-            ),
-            SizedBox(height: Space.xxl),
-
-            /// Code Input
-            Text(
-              'Input Code',
-              style: TextStyle(
-                color: Color(0xff5f5f5f),
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            TextFormField(
-              controller: codeController,
-              keyboardType: TextInputType.number,
-              style: TextStyle(
-                fontSize: 43,
-                fontWeight: FontWeight.w500,
-              ),
-              decoration: InputDecoration(
-                hintText: 'XXXXXX',
-                hintStyle: TextStyle(
-                    fontSize: 43,
-                    fontWeight: FontWeight.w500,
-                    color: Color(0xFFB7B7B7)),
-              ),
-            ),
-            SizedBox(height: Space.xxl),
-
-            if (loading)
-              Center(
-                child: CircularProgressIndicator(),
-              ),
-
-            /// Verify button
-            if (!loading)
-              FlatButton(
-                color: Color(0xff0098E1),
-                padding: EdgeInsets.all(Space.md),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(5),
+      body: SingleChildScrollView(
+        child: Container(
+          padding: EdgeInsets.all(Space.xl),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              SizedBox(height: Space.xl),
+              Text(
+                'Input Verification Code',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
                 ),
-                child: Text(
-                  "VERIFY",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                  ),
-                ),
-                onPressed: () async {
-                  FocusScope.of(context).requestFocus(new FocusNode());
-                  if (loading) return;
-                  setState(() => loading = true);
-                  try {
-                    await ff.mobileAuthVerifyCode(
-                      code: codeController.text,
-                      verificationId: verificationID,
-                    );
-                    setState(() => loading = false);
-                    Get.toNamed(RouteNames.home);
-                  } catch (e) {
-                    setState(() => loading = false);
-                    Service.error(e);
-                  }
-                },
               ),
+              Text(
+                'Verify',
+                style: TextStyle(
+                  fontSize: 40,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Text(
+                'Verification Code sent to: $internationalNo',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Color(0xff5F5F5F),
+                ),
+              ),
+              SizedBox(height: Space.xxl),
 
-            SizedBox(height: Space.xxl),
-            OrDivider(),
-            SizedBox(height: Space.md),
+              /// Code Input
+              Text(
+                'Input Code',
+                style: TextStyle(
+                  color: Color(0xff5f5f5f),
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              TextFormField(
+                controller: codeController,
+                keyboardType: TextInputType.number,
+                style: TextStyle(
+                  fontSize: 43,
+                  fontWeight: FontWeight.w500,
+                ),
+                decoration: InputDecoration(
+                  hintText: 'XXXXXX',
+                  hintStyle: TextStyle(
+                      fontSize: 43,
+                      fontWeight: FontWeight.w500,
+                      color: Color(0xFFB7B7B7)),
+                ),
+              ),
+              SizedBox(height: Space.xxl),
 
-            /// change number & resend code button.
-            Row(
-              children: [
+              if (loading)
+                Center(
+                  child: CircularProgressIndicator(),
+                ),
+
+              /// Verify button
+              if (!loading)
                 FlatButton(
-                  padding: EdgeInsets.all(0),
+                  color: Color(0xff0098E1),
+                  padding: EdgeInsets.all(Space.md),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5),
+                  ),
                   child: Text(
-                    'Resend Code'.tr,
+                    "VERIFY",
                     style: TextStyle(
-                      color: Color(0xFF032674),
-                      fontWeight: FontWeight.w400,
+                      color: Colors.white,
+                      fontSize: 20,
                     ),
                   ),
-                  onPressed: () {
-                    ff.mobileAuthSendCode(
-                      internationalNo,
-                      resendToken: codeResendToken,
-                      onCodeSent: (verID, resendToken) {
-                        setState(() {
-                          verificationID = verID;
-                          codeResendToken = resendToken;
-                        });
-                      },
-                      onError: (e) => Service.error(e),
-                    );
+                  onPressed: () async {
+                    FocusScope.of(context).requestFocus(new FocusNode());
+                    if (loading) return;
+                    setState(() => loading = true);
+                    try {
+                      await ff.mobileAuthVerifyCode(
+                        code: codeController.text,
+                        verificationId: verificationID,
+                      );
+                      setState(() => loading = false);
+                      Get.toNamed(RouteNames.home);
+                    } catch (e) {
+                      setState(() => loading = false);
+                      Service.error(e);
+                    }
                   },
                 ),
-                Spacer(),
-                FlatButton(
-                  padding: EdgeInsets.all(0),
-                  child: Text(
-                    'Change Number'.tr,
-                    style: TextStyle(
-                      color: Color(0xFF032674),
-                      fontWeight: FontWeight.w400,
+
+              SizedBox(height: Space.xxl),
+              OrDivider(),
+              SizedBox(height: Space.md),
+
+              /// change number & resend code button.
+              Row(
+                children: [
+                  FlatButton(
+                    padding: EdgeInsets.all(0),
+                    child: Text(
+                      'Resend Code'.tr,
+                      style: TextStyle(
+                        color: Color(0xFF032674),
+                        fontWeight: FontWeight.w400,
+                      ),
                     ),
+                    onPressed: () {
+                      ff.mobileAuthSendCode(
+                        internationalNo,
+                        resendToken: codeResendToken,
+                        onCodeSent: (verID, resendToken) {
+                          setState(() {
+                            verificationID = verID;
+                            codeResendToken = resendToken;
+                          });
+                        },
+                        onError: (e) => Service.error(e),
+                      );
+                    },
                   ),
-                  onPressed: () {
-                    Get.back();
-                  },
-                ),
-              ],
-            ),
-          ],
+                  Spacer(),
+                  FlatButton(
+                    padding: EdgeInsets.all(0),
+                    child: Text(
+                      'Change Number'.tr,
+                      style: TextStyle(
+                        color: Color(0xFF032674),
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                    onPressed: () {
+                      Get.back();
+                    },
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

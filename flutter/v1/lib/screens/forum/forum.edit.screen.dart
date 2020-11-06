@@ -115,7 +115,6 @@ class _ForumEditScreenState extends State<ForumEditScreen> {
                           'category': category,
                           'title': titleController.text,
                           'content': contentController.text,
-                          'uid': ff.user.uid,
                           'files': files
                         });
                         Get.back();
