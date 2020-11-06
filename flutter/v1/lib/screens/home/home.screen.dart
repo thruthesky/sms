@@ -34,8 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Text('Login'),
                       ),
                       RaisedButton(
-                        onPressed: () =>
-                            Get.toNamed(RouteNames.register, id: 2),
+                        onPressed: () => Get.toNamed(RouteNames.register),
                         child: Text('Register'),
                       ),
                     ],
@@ -49,7 +48,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     Text("User Uid: ${ff.user.uid}"),
                     Text("User Email: ${ff.user.email}"),
                     Text("User Nickname: ${ff.user.displayName}"),
-                    Text("User Gender: ${ff.data['gender']}"),
+                    Text("User Gender: ${ff.userData['gender']}"),
                     Text("User Phone number: ${ff.user.phoneNumber}"),
                     Text("User PhotoUrl: ${ff.user.photoURL}"),
                     RaisedButton(
@@ -70,9 +69,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             RaisedButton(
               onPressed: () async {
-                final CollectionReference users =
-                    FirebaseFirestore.instance.collection('users');
-                users
+                ff.usersCol
                     .doc(ff.user.uid)
                     .collection('meta')
                     .doc('tokens')

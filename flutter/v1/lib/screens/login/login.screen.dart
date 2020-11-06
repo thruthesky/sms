@@ -107,7 +107,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: CircularProgressIndicator(),
                 ),
 
-              /// Submit button
+              // Submit button
               if (!loading)
                 FlatButton(
                   color: Color(0xff0098E1),
@@ -123,7 +123,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   onPressed: () async {
-                    /// remove any input focus.
+                    // remove any input focus.
                     FocusScope.of(context).requestFocus(new FocusNode());
                     setState(() => loading = true);
 
@@ -131,11 +131,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       await ff.login(
                         email: emailController.text,
                         password: passwordController.text,
-                        meta: {
-                          'tokens': {
-                            'and-another-token': true,
-                          },
-                        },
                       );
 
                       Service.redirectAfterLoginOrRegister();
@@ -146,7 +141,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   },
                 ),
 
-              /// forgot password & Register Redirect buttons
+              // forgot password & Register Redirect buttons
               Row(
                 children: [
                   FlatButton(
@@ -182,7 +177,7 @@ class _LoginScreenState extends State<LoginScreen> {
               OrDivider(),
               SizedBox(height: Space.md),
 
-              /// Social buttons
+              // Social buttons
               SocialLoginButtons(),
             ],
           ),

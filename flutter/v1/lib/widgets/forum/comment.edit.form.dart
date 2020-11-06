@@ -7,7 +7,7 @@ import 'package:v1/widgets/commons/photo_picker_bottomsheet.dart';
 import 'package:v1/widgets/forum/file.display.dart';
 
 /// [post] is required
-/// [parentIndex] is optional and used only when creating a new comment.
+// / [parentIndex] is optional and used only when creating a new comment.
 /// [comment] is optional and used only when updatedin a comment.
 ///
 class CommentEditForm extends StatefulWidget {
@@ -37,7 +37,7 @@ class _CommentEditFormState extends State<CommentEditForm> {
   final contentController = TextEditingController();
 
   List<dynamic> files = [];
-  double uploadProgress = 0;
+  double uploadProgress;
 
   @override
   initState() {
@@ -88,7 +88,7 @@ class _CommentEditFormState extends State<CommentEditForm> {
                   );
 
                   files.add(url);
-                  setState(() => uploadProgress = 0);
+                  setState(() => uploadProgress = null);
                 } catch (e) {
                   Service.error(e);
                 }
@@ -110,7 +110,8 @@ class _CommentEditFormState extends State<CommentEditForm> {
             ),
           ],
         ),
-        if (uploadProgress != 0) LinearProgressIndicator(value: uploadProgress),
+        if (uploadProgress != null)
+          LinearProgressIndicator(value: uploadProgress),
         if (changed)
           Row(
             children: [
@@ -137,21 +138,20 @@ class _CommentEditFormState extends State<CommentEditForm> {
                       files.length == 0) return;
 
                   final data = {
-                    'post': widget.post,
                     'content': contentController.text,
                     'files': files
                   };
 
                   if (widget.comment != null) {
                     data['id'] = widget.comment['id'];
-                    data['depth'] = widget.comment['depth'];
-                    data['order'] = widget.comment['order'];
-                  } else {
-                    data['parentIndex'] = widget.parentIndex;
                   }
 
                   try {
-                    await ff.editComment(data);
+                    await ff.editComment(
+                      data,
+                      widget.post,
+                      parentIndex: widget.parentIndex,
+                    );
                     if (widget.onSuccess != null) widget.onSuccess();
                     contentController.text = '';
                     files = [];

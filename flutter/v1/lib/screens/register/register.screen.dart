@@ -8,6 +8,7 @@ import 'package:v1/widgets/commons/app_bar.dart';
 import 'package:v1/widgets/commons/app_drawer.dart';
 import 'package:v1/widgets/miscellaneous/or_divider.dart';
 import 'package:v1/widgets/user/birthday_picker.dart';
+import 'package:v1/widgets/user/gender_select.dart';
 import 'package:v1/widgets/user/social_login_buttons.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -49,12 +50,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // RaisedButton(
-              //   child: Text(
-              //     'Social Login.\nYou can login with your SNS Accounts.',
-              //   ),
-              //   onPressed: () => Get.toNamed(RouteNames.login),
-              // ),
               Text(
                 'Fill in the form'.tr,
                 style: TextStyle(fontSize: 20),
@@ -152,35 +147,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 'Gender'.tr,
                 style: TextStyle(color: Color(0xff717171)),
               ),
-              Row(
-                children: [
-                  Expanded(
-                    child: RadioListTile(
-                      value: 'M',
-                      title: Text("Male".tr),
-                      key: ValueKey('genderM'),
-                      groupValue: gender,
-                      onChanged: (str) {
-                        setState(
-                          () => gender = str,
-                        );
-                      },
-                    ),
-                  ),
-                  Expanded(
-                    child: RadioListTile(
-                      value: 'F',
-                      title: Text("Female".tr),
-                      key: ValueKey('genderF'),
-                      groupValue: gender,
-                      onChanged: (str) {
-                        setState(
-                          () => gender = str,
-                        );
-                      },
-                    ),
-                  ),
-                ],
+              GenderSelect(
+                defaultValue: gender,
+                onChanged: (String selected) => setState(
+                  () => gender = selected,
+                ),
               ),
               SizedBox(height: Space.xl),
 
@@ -220,15 +191,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           'displayName': displayNameController.text,
                           'gender': gender,
                           'birthday': birthday,
-                        },
-                        meta: {
-                          'public': {
-                            "notifyPost": true,
-                            "notifyComment": true,
-                          },
-                          // "tokens": {
-                          //   '${ff.firebaseMessagingToken}': true,
-                          // },
                         },
                       );
                       Service.redirectAfterLoginOrRegister();

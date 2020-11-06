@@ -188,6 +188,8 @@ class Service {
     );
   }
 
+  /// Alerts user if they need to login first to make any further actions.
+  /// 
   static alertLoginFirst() {
     Get.defaultDialog(
       title: 'alert'.tr,
@@ -198,36 +200,33 @@ class Service {
     );
   }
 
+  /// Alerts user if they need to update their phone number.
+  /// 
   static alertUpdatePhoneNumber() {
     Get.defaultDialog(
       title: 'alert'.tr,
       middleText: "update phone number".tr,
-      textConfirm: "ok".tr,
+      textConfirm: "update".tr,
+      textCancel: "cancel".tr,
       confirmTextColor: Colors.white,
-      onConfirm: () => Get.back(),
+      onConfirm: () => Get.toNamed(RouteNames.mobileAuth),
+      onCancel: () => Get.back()
     );
   }
 
+  /// redirects the user after logging in or registering.
+  /// 
+  /// If the app setting [show-phone-verification-after-login] is set to true,
+  /// the user will be redirected to phone authentication screen,
+  /// otherwise it will redirect to home screen.
+  /// 
   static redirectAfterLoginOrRegister() {
     if (ff.appSetting('show-phone-verification-after-login') == true &&
         ff.user.phoneNumber.isNullOrBlank) {
       Get.toNamed(RouteNames.mobileAuth);
     } else {
-      /// reset `AppRouter.navStack`
+      // reset `AppRouter.navStack`
       Get.offAllNamed(RouteNames.home);
     }
   }
-
-  // static logout() {
-  //   /// logout to firebase intance
-  //   ff.logout();
-
-  //   /// redirect to home only when not in `HomeScreen`.
-  //   if (Get.currentRoute != RouteNames.home) {
-
-  //     /// clear all app screens until `home`,
-  //     /// after moving to `home` screen, `AppRouter` will add it to it's `navStack`.
-  //     Get.offAllNamed(RouteNames.home);
-  //   }
-  // }
 }

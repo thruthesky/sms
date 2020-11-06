@@ -5,6 +5,7 @@ import 'package:v1/services/global_variables.dart';
 import 'package:v1/services/service.dart';
 import 'package:v1/services/spaces.dart';
 import 'package:fireflutter/fireflutter.dart';
+import 'package:v1/widgets/commons/app_bar.dart';
 import 'package:v1/widgets/commons/app_drawer.dart';
 import 'package:v1/widgets/commons/spinner.dart';
 import 'package:v1/widgets/forum/post.dart';
@@ -23,8 +24,10 @@ class _ForumScreenState extends State<ForumScreen> {
 
   // 무제한 스크롤은 ScrollController 로 감지하고
   // 스크롤이 맨 밑으로 될 때, Listener 핸들러를 실행한다.
-  ScrollController scrollController =
-      ScrollController(initialScrollOffset: 0.0, keepScrollOffset: true);
+  ScrollController scrollController = ScrollController(
+    initialScrollOffset: 0.0,
+    keepScrollOffset: true,
+  );
 
   @override
   void initState() {
@@ -68,7 +71,6 @@ class _ForumScreenState extends State<ForumScreen> {
           }
           final data = doc.data();
 
-          print(data);
           this.notificationPost =
               data['notification_post_' + category] ?? false;
           this.notificationComment =
@@ -81,7 +83,7 @@ class _ForumScreenState extends State<ForumScreen> {
 
   @override
   dispose() {
-    /// unsubscribe from the stream to avoid having memory leak..
+    // unsubscribe from the stream subscription to avoid having memory leak..
     forum.leave();
     super.dispose();
   }
@@ -89,7 +91,7 @@ class _ForumScreenState extends State<ForumScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: CommonAppBar(
         title: Text(category.tr),
         actions: [
           IconButton(
@@ -97,34 +99,36 @@ class _ForumScreenState extends State<ForumScreen> {
             onPressed: () => Service.openForumEditScreen(category),
           ),
           IconButton(
-              icon: notificationPost == true
-                  ? Icon(Icons.notifications_active)
-                  : Icon(Icons.notifications_off),
-              onPressed: () {
-                if (ff.notLoggedIn) {
-                  return Service.alert(
-                      'Must Login to subscribe to ' + category);
-                }
-                setState(() {
-                  notificationPost = !notificationPost;
-                });
-                final topic = "notification_post_" + category;
-                if (notificationPost) {
-                  ff.subscribeTopic(topic);
-                } else {
-                  ff.unsubscribeTopic(topic);
-                }
+            icon: notificationPost == true
+                ? Icon(Icons.notifications_active)
+                : Icon(Icons.notifications_off),
+            onPressed: () {
+              if (ff.notLoggedIn) {
+                return Service.alert(
+                  'Must Login to subscribe to ' + category,
+                );
+              }
+              setState(() {
+                notificationPost = !notificationPost;
+              });
+              final topic = "notification_post_" + category;
+              if (notificationPost) {
+                ff.subscribeTopic(topic);
+              } else {
+                ff.unsubscribeTopic(topic);
+              }
 
-                /// TODO @lancelynyrd
-                // ff.updateProfile({}, meta: {'public': {topic: notificationPost}});
-                Service.usersRef
-                    .doc(ff.user.uid)
-                    .collection('meta')
-                    .doc('public')
-                    .set({
-                  "$topic": notificationPost,
-                }, SetOptions(merge: true));
-              }),
+              // TODO @lancelynyrd
+              // ff.updateProfile({}, meta: {'public': {topic: notificationPost}});
+              Service.usersRef
+                  .doc(ff.user.uid)
+                  .collection('meta')
+                  .doc('public')
+                  .set({
+                "$topic": notificationPost,
+              }, SetOptions(merge: true));
+            },
+          ),
           IconButton(
             icon: notificationComment == true
                 ? Icon(Icons.notifications_active)
@@ -151,12 +155,6 @@ class _ForumScreenState extends State<ForumScreen> {
               }, SetOptions(merge: true));
             },
           ),
-          Builder(
-            builder: (context) => IconButton(
-              icon: Icon(Icons.menu),
-              onPressed: () => Scaffold.of(context).openEndDrawer(),
-            ),
-          )
         ],
       ),
       endDrawer: CommonAppDrawer(),
@@ -166,10 +164,10 @@ class _ForumScreenState extends State<ForumScreen> {
           child: Container(
             child: Column(
               children: [
-                /// post list
+                // post list
                 PostList(posts: forum.posts),
 
-                /// loader
+                // loader
                 if (forum.inLoading)
                   Padding(
                     padding: EdgeInsets.all(Space.md),
