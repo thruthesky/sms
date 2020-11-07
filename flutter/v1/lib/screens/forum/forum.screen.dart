@@ -72,9 +72,9 @@ class _ForumScreenState extends State<ForumScreen> {
           final data = doc.data();
 
           this.notificationPost =
-              data['notification_post_' + category] ?? false;
+              data[NotificationOptions.post(category)] ?? false;
           this.notificationComment =
-              data['notification_comment_' + category] ?? false;
+              data[NotificationOptions.comment(category)] ?? false;
           setState(() {});
         },
       );
@@ -111,7 +111,7 @@ class _ForumScreenState extends State<ForumScreen> {
               setState(() {
                 notificationPost = !notificationPost;
               });
-              final topic = "notification_post_" + category;
+              final topic = NotificationOptions.post(category);
               if (notificationPost) {
                 ff.subscribeTopic(topic);
               } else {
@@ -140,7 +140,7 @@ class _ForumScreenState extends State<ForumScreen> {
               setState(() {
                 notificationComment = !notificationComment;
               });
-              final topic = "notification_comment_$category";
+              final topic = NotificationOptions.comment(category);
               if (notificationComment) {
                 ff.subscribeTopic(topic);
               } else {

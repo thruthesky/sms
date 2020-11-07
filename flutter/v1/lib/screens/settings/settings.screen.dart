@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:v1/services/global_variables.dart';
@@ -26,8 +27,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
           return;
         }
         final data = doc.data();
-        this.notifyPost = data['notification_post'] ?? false;
-        this.notifyComment = data['notification_comment'] ?? false;
+        this.notifyPost = data[notifyCommentsUnderMyPost] ?? false;
+        this.notifyComment = data[notifyCommentsUnderMyComment] ?? false;
         setState(() {});
       },
     );
@@ -67,7 +68,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           try {
                             ff.updateUserMeta({
                               'public': {
-                                "notification_post": value,
+                                notifyCommentsUnderMyPost: value,
                               },
                             });
                             Get.snackbar('Update', 'Settings updated!');
@@ -87,7 +88,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           try {
                             ff.updateUserMeta({
                               'public': {
-                                "notification_comment": value,
+                                NotificationOptions
+                                    .notifyCommentsUnderMyComment: value,
                               },
                             });
                             Get.snackbar('Update', 'Settings updated!');
