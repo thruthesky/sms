@@ -17,10 +17,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Map<String, dynamic> public;
 
   StreamSubscription firebaseSubscription;
+  bool loading = true;
   @override
   void initState() {
     firebaseSubscription = ff.firebaseInitialized.listen((value) async {
       public = await ff.userPublicData();
+      setState(() => loading = false);
     });
     super.initState();
   }
@@ -38,67 +40,69 @@ class _SettingsScreenState extends State<SettingsScreen> {
         title: Text('Settings'.tr),
       ),
       endDrawer: CommonAppDrawer(),
-      body: Column(
-        children: [
-          Container(
-            child: Text('menu'.tr),
-          ),
-          Text('submit'.tr),
-          StreamBuilder(
-            stream: ff.authStateChanges,
-            builder: (context, snapshot) {
-              return Column(
-                children: [
-                  Text("User Uid: ${ff.user?.uid}"),
-                  Text("User Nickname: ${ff.user?.displayName}"),
-                  if (ff.user.isNull) ...[],
-                  if (!ff.user.isNull) ...[
-                    Text(
-                      'Post Notification',
-                      style: TextStyle(fontSize: Space.lg),
-                    ),
-                    Text('Comment Notification under my post'),
-                    Switch(
-                      value: public[notifyPost] ?? false,
-                      onChanged: (value) async {
-                        setState(() => public[notifyPost] = value);
-                        try {
-                          ff.updateUserMeta({
-                            'public': {
-                              notifyPost: value,
+      body: loading
+          ? CircularProgressIndicator()
+          : Column(
+              children: [
+                Container(
+                  child: Text('menu'.tr),
+                ),
+                Text('submit'.tr),
+                StreamBuilder(
+                  stream: ff.authStateChanges,
+                  builder: (context, snapshot) {
+                    return Column(
+                      children: [
+                        Text("User Uid: ${ff.user?.uid}"),
+                        Text("User Nickname: ${ff.user?.displayName}"),
+                        if (ff.user.isNull) ...[],
+                        if (!ff.user.isNull) ...[
+                          Text(
+                            'Post Notification',
+                            style: TextStyle(fontSize: Space.lg),
+                          ),
+                          Text('Comment Notification under my post'),
+                          Switch(
+                            value: public[notifyPost] ?? false,
+                            onChanged: (value) async {
+                              setState(() => public[notifyPost] = value);
+                              try {
+                                ff.updateUserMeta({
+                                  'public': {
+                                    notifyPost: value,
+                                  },
+                                });
+                                Get.snackbar('Update', 'Settings updated!');
+                              } catch (e) {
+                                Service.error(e);
+                              }
                             },
-                          });
-                          Get.snackbar('Update', 'Settings updated!');
-                        } catch (e) {
-                          Service.error(e);
-                        }
-                      },
-                    ),
-                    Text('Comment Notification under my comment'),
-                    Switch(
-                      value: public[notifyComment] ?? false,
-                      onChanged: (value) async {
-                        setState(() => public[notifyComment] = value);
-                        try {
-                          ff.updateUserMeta({
-                            'public': {
-                              notifyComment: value,
+                          ),
+                          Text('Comment Notification under my comment'),
+                          Switch(
+                            value: public[notifyComment] ?? false,
+                            onChanged: (value) async {
+                              setState(() => public[notifyComment] = value);
+                              try {
+                                ff.updateUserMeta({
+                                  'public': {
+                                    notifyComment: value,
+                                  },
+                                });
+                                Get.snackbar('Update', 'Settings updated!');
+                              } catch (e) {
+                                Service.error(e);
+                              }
                             },
-                          });
-                          Get.snackbar('Update', 'Settings updated!');
-                        } catch (e) {
-                          Service.error(e);
-                        }
-                      },
-                    ),
-                    Text(ff.firebaseMessagingToken.substring(0, 20)),
-                  ],
-                ],
-              );
-            },
-          ),
-        ],
-      ),
+                          ),
+                          Text(ff.firebaseMessagingToken.substring(0, 20)),
+                        ],
+                      ],
+                    );
+                  },
+                ),
+              ],
+            ),
     );
   }
 }
