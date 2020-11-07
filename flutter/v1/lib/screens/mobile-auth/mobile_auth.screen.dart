@@ -19,6 +19,17 @@ class _MobileAuthScreenState extends State<MobileAuthScreen> {
   String countryCode = '+82';
   String get internationalNo => '$countryCode${mobileNumberController.text}';
 
+  bool canNavigateBack = false;
+
+  @override
+  void initState() {
+    dynamic args = Get.arguments;
+    if (args != null) {
+      canNavigateBack = args['canNavigateBack'] ?? false;
+    }
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -142,7 +153,7 @@ class _MobileAuthScreenState extends State<MobileAuthScreen> {
               SizedBox(height: Space.lg),
               FlatButton(
                 child: Text(
-                  'SKIP'.tr,
+                  canNavigateBack ? 'cancel'.tr : 'skip'.tr,
                   style: TextStyle(
                     fontSize: Space.md,
                   ),
@@ -154,7 +165,11 @@ class _MobileAuthScreenState extends State<MobileAuthScreen> {
                 ),
                 onPressed: () {
                   FocusScope.of(context).requestFocus(new FocusNode());
-                  Get.toNamed(RouteNames.home);
+                  if (canNavigateBack) {
+                    Get.back();
+                  } else {
+                    Get.toNamed(RouteNames.home);
+                  }
                 },
               )
             ],
