@@ -184,15 +184,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       loading = true;
                     });
                     try {
-                      await ff.register(
-                        {
-                          'email': emailController.text,
-                          'password': passwordController.text,
-                          'displayName': displayNameController.text,
-                          'gender': gender,
-                          'birthday': birthday,
-                        },
-                      );
+                      await ff.register({
+                        'email': emailController.text,
+                        'password': passwordController.text,
+                        'displayName': displayNameController.text,
+                        'gender': gender,
+                        'birthday': birthday,
+                      });
                       Service.redirectAfterLoginOrRegister();
                     } catch (e) {
                       setState(() => loading = false);
