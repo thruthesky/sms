@@ -7,7 +7,6 @@
 import 'dart:convert';
 import 'dart:io' as io;
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 
@@ -18,96 +17,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:flutter/services.dart' show rootBundle;
-import 'package:v1/services/models.dart';
-
-/// Returns order of the new comment(to be created).
-///
-/// [order] is;
-///   - is the last comment's order when the created comment is the first depth comment of the post.
-///   - the order of last comment of the sibiling.
-/// [depth] is the depth of newly created comment.
-getCommentOrder({
-  String order,
-  int depth: 0,
-}) {
-  if (order == null) {
-    return '999999.999.999.999.999.999.999.999.999.999.999.999';
-  }
-  List<String> parts = order.split('.');
-  int n = int.parse(parts[depth]);
-  parts[depth] = (n - 1).toString();
-  for (int i = (depth + 1); i < parts.length; i++) {
-    parts[i] = '999';
-  }
-  return parts.join('.');
-}
-
-/// Returns the ancestor comments of a comment.
-///
-/// To get the ancestor comments based on the [order], it splits the parts of
-/// order and compare it to the comments in the middle of the comment thread.
-///
-/// Use this method to get the parent comments of a comemnt.
-///
-/// [order] is the comment to know its parent comemnts.
-///
-/// If the comment is the first depth comment(comment right under post), then
-/// it will return empty array.
-///
-/// The comment itself is not included in return array since it is itself. Not
-/// one of ancestor.
-///
-List<CommentModel> getAncestors(List<CommentModel> comments, String order) {
-  List<CommentModel> ancestors = [];
-  if (isEmpty(comments)) return ancestors;
-  List<String> parts = order.split('.');
-  int len = parts.length;
-  int depth = parts.indexWhere((element) => element == '999');
-  if (depth == -1) depth = 11;
-
-  List<String> orderOfAncestors = [];
-  //// if [depth] is 0, then there is no ancestors.
-  for (int i = 1; i < depth; i++) {
-    List<String> newParts = List.from(parts);
-    for (int j = i; j < len; j++) newParts[j] = '999';
-    orderOfAncestors.add(newParts.join('.'));
-  }
-
-  for (String findOrder in orderOfAncestors) {
-    for (CommentModel comment in comments) {
-      if (comment.order == findOrder) {
-        ancestors.add(comment);
-      }
-    }
-  }
-  return ancestors;
-
-  // print('orderOfAncestors: $orderOfAncestors');
-
-  // for (CommentModel comment in comments) {
-  //   // List<String> commentParts = comment.order.split('.');
-  //   for (int i = 0; i < parts.length; i++) {
-  //     String compareOrder = parts[i];
-  //   }
-  // }
-  // print(parts);
-}
-
-CollectionReference postsCollection() {
-  return FirebaseFirestore.instance.collection('posts');
-}
-
-DocumentReference postDocument(String id) {
-  return postsCollection().doc(id);
-}
-
-CollectionReference commentsCollection(String postId) {
-  return postDocument(postId).collection('comments');
-}
-
-DocumentReference commentDocument(String postId, String commentId) {
-  return commentsCollection(postId).doc(commentId);
-}
 
 /// Returns a random string
 ///
@@ -298,16 +207,16 @@ Future<String> loadAsset(String path) async {
   return await rootBundle.loadString(path);
 }
 
-/// Returns filename without extension.
-///
-/// @example
-///   `/root/users/.../abc.jpg` returns `abc`
-///
-/// 파일 경로로 부터, 파일 명(확장자 제외)을 리턴한다.
-/// 예) /root/users/.../abc.jpg 로 부터 abc 를 리턴한다.
-String filenameFromPath(String path) {
-  return path.split('/').last.split('.').first;
-}
+// /// Returns filename without extension.
+// ///
+// /// @example
+// ///   `/root/users/.../abc.jpg` returns `abc`
+// ///
+// /// 파일 경로로 부터, 파일 명(확장자 제외)을 리턴한다.
+// /// 예) /root/users/.../abc.jpg 로 부터 abc 를 리턴한다.
+// String filenameFromPath(String path) {
+//   return path.split('/').last.split('.').first;
+// }
 
 /// 핸드폰의 temporary 폴더에서 그 하위 경로로 파일 전체 경로를 리턴한다.
 /// [path] must include the file extension.
@@ -364,7 +273,7 @@ Future readFileAsJson(String path) async {
     // print(text);
     return json.decode(text);
   } else {
-    print('$path does not exists');
+    // print('$path does not exists');
     return null;
   }
 }
@@ -374,7 +283,7 @@ Future readFileAsString(String path) async {
   if (await localfileExist(path)) {
     return await io.File(await localFilePath(path)).readAsString();
   } else {
-    print('$path does not exists');
+    // print('$path does not exists');
     return null;
   }
 }

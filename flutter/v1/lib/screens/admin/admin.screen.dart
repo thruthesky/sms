@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:v1/services/route-names.dart';
+import 'package:v1/services/route_names.dart';
 
 class AdminScreen extends StatefulWidget {
   @override

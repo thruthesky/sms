@@ -63,8 +63,6 @@ describe("Post", () => {
       postsCol.add({
         uid: myAuth.uid,
         category: category,
-        like: 0,
-        dislike: 0,
         updatedAt: 0
       })
     );
@@ -77,8 +75,6 @@ describe("Post", () => {
       postsCol.add({
         uid: myAuth.uid,
         category: category,
-        like: 0,
-        dislike: 0,
         createdAt: 0
       })
     );
@@ -87,7 +83,7 @@ describe("Post", () => {
   it("Creating success", async () => {
     const db = await setup(myAuth, mockMyPost);
     const postsCol = db.collection("posts");
-    console.log(data());
+    // console.log(data());
     await assertSucceeds(postsCol.add(data()));
   });
 
@@ -202,5 +198,31 @@ describe("Post", () => {
     const db = await setup(myAuth, mockMyPost);
     const postsDoc = db.collection("posts").doc("post-id-1");
     await assertSucceeds(postsDoc.delete());
+  });
+  it("Cannot update likes and dislikes", async () => {
+    const db = await setup(myAuth, mockMyPost);
+    const postsDoc = db.collection("posts").doc(postId);
+    await assertFails(
+      postsDoc.update({
+        category: "apple",
+        likes: 123456789,
+        updatedAt: 20
+      })
+    );
+    await assertFails(
+      postsDoc.update({
+        category: "apple",
+        dislikes: 123456789,
+        updatedAt: 20
+      })
+    );
+    await assertFails(
+      postsDoc.update({
+        category: "apple",
+        likes: 0,
+        dislikes: 0,
+        updatedAt: 20
+      })
+    );
   });
 });

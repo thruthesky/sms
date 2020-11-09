@@ -1,40 +1,38 @@
-import 'package:after_layout/after_layout.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:v1/controllers/user.controller.dart';
-import 'package:v1/services/functions.dart';
-import 'package:v1/services/models.dart';
+import 'package:v1/services/global_variables.dart';
 import 'package:v1/services/service.dart';
+import 'package:v1/services/spaces.dart';
+import 'package:v1/widgets/commons/photo_picker_bottomsheet.dart';
+import 'package:v1/widgets/forum/file.display.dart';
 
 class ForumEditScreen extends StatefulWidget {
   @override
   _ForumEditScreenState createState() => _ForumEditScreenState();
 }
 
-class _ForumEditScreenState extends State<ForumEditScreen>
-    with AfterLayoutMixin {
-  final UserController userController = Get.find<UserController>();
+class _ForumEditScreenState extends State<ForumEditScreen> {
   final titleController = TextEditingController();
   final contentController = TextEditingController();
 
-  final CollectionReference colPosts =
-      FirebaseFirestore.instance.collection('posts');
-
   String category;
-  PostModel post;
+  dynamic post;
+
+  List<dynamic> files = [];
+  double uploadProgress;
 
   @override
-  void afterFirstLayout(BuildContext context) {
-    final args = routerArguments(context);
-    category = args['category'];
-    post = args['post'];
-    print('post');
-    print(post);
+  void initState() {
+    super.initState();
+    category = Get.arguments['category'];
+    post = Get.arguments['post'];
 
     if (post != null) {
-      titleController.text = post.title;
-      contentController.text = post.content;
+      titleController.text = post['title'];
+      contentController.text = post['content'];
+      category = post['category'];
+      files = post['files'] ?? [];
     }
   }
 
@@ -51,56 +49,83 @@ class _ForumEditScreenState extends State<ForumEditScreen>
       appBar: AppBar(
         title: Text('Edit'),
       ),
-      body: Container(
-        child: Column(
-          children: [
-            TextFormField(
+      body: SingleChildScrollView(
+        child: Container(
+          padding: EdgeInsets.all(Space.pageWrap),
+          child: Column(
+            children: [
+              TextFormField(
                 controller: titleController,
-                decoration: InputDecoration(hintText: 'title'.tr)),
-            TextFormField(
+                decoration: InputDecoration(hintText: 'title'.tr),
+              ),
+              TextFormField(
                 controller: contentController,
-                decoration: InputDecoration(hintText: 'content'.tr)),
-            RaisedButton(
-              onPressed: () async {
-                final Map<String, dynamic> data = {
-                  'category': category,
-                  'title': titleController.text,
-                  'content': contentController.text,
-                  'uid': userController.uid
-                };
-                // print('data: ');
-                // print(data);
-
-                try {
-                  if (post != null) {
-                    print('updating post');
-                    data['category'] = post.category;
-                    data['updatedAt'] = FieldValue.serverTimestamp();
-                    await colPosts.doc(post.id).set(
-                          data,
-                          SetOptions(merge: true),
+                decoration: InputDecoration(hintText: 'content'.tr),
+              ),
+              Row(
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.camera_alt),
+                    onPressed: () async {
+                      ImageSource source = await Get.bottomSheet(
+                        PhotoPickerBottomSheet(),
+                        backgroundColor: Colors.white,
+                      );
+                      if (source == null) return null;
+                      try {
+                        final url = await ff.uploadFile(
+                          folder: 'forum-photos',
+                          source: source,
+                          progress: (double p) =>
+                              setState(() => uploadProgress = p),
                         );
-                  } else {
-                    print('creating post');
-                    // TODO: Let user can change category by giving 'more popmenu option'.
-                    data['createdAt'] = FieldValue.serverTimestamp();
-                    data['updatedAt'] = FieldValue.serverTimestamp();
-                    await colPosts.add(data);
-                    Service().sendNotification(
-                      titleController.text,
-                      contentController.text,
-                      route: category,
-                      topic: "notification_post_" + category,
-                    );
-                  }
-                  Get.back();
-                } catch (e) {
-                  Service.error(e);
-                }
-              },
-              child: Text('submit'.tr),
-            ),
-          ],
+
+                        files.add(url);
+                        setState(() => uploadProgress = null);
+                      } catch (e) {
+                        Service.error(e);
+                      }
+                    },
+                  ),
+                  Expanded(
+                    child: uploadProgress != null
+                        ? LinearProgressIndicator(
+                            value: uploadProgress,
+                          )
+                        : SizedBox.shrink(),
+                  ),
+                  SizedBox(width: Space.md),
+                  RaisedButton(
+                    onPressed: () async {
+                      // remove focus
+                      FocusScope.of(context).requestFocus(FocusNode());
+
+                      try {
+                        if (titleController.text.isNullOrBlank &&
+                            contentController.text.isNullOrBlank &&
+                            files.isEmpty) {
+                          throw "Please input something";
+                        }
+
+                        await ff.editPost({
+                          'id': post == null ? null : post['id'],
+                          'category': category,
+                          'title': titleController.text,
+                          'content': contentController.text,
+                          'files': files
+                        });
+                        Get.back();
+                      } catch (e) {
+                        Service.error(e);
+                      }
+                    },
+                    child: Text('submit'.tr),
+                  ),
+                ],
+              ),
+              FileDisplay(files, inEdit: true)
+            ],
+          ),
         ),
       ),
     );

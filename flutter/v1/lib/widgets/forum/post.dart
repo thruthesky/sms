@@ -1,98 +1,34 @@
-import 'dart:async';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:v1/controllers/user.controller.dart';
-import 'package:v1/services/models.dart';
-import 'package:v1/services/route-names.dart';
+import 'package:v1/services/global_variables.dart';
+import 'package:v1/services/route_names.dart';
 import 'package:v1/services/service.dart';
 import 'package:v1/services/spaces.dart';
-import 'package:v1/widgets/commons/confirm-dialog.dart';
+import 'package:v1/widgets/commons/confirm_dialog.dart';
+import 'package:v1/widgets/forum/comment.edit.form.dart';
+import 'package:v1/widgets/forum/comment_list.dart';
+import 'package:v1/widgets/forum/file.display.dart';
+import 'package:v1/widgets/forum/vote_button.dart';
 
 class Post extends StatefulWidget {
-  final PostModel post;
+  final dynamic post;
 
-  Post({this.post});
+  Post({
+    this.post,
+    Key key,
+  }) : super(key: key);
 
   @override
   _PostState createState() => _PostState();
 }
 
 class _PostState extends State<Post> {
-  final UserController userController = Get.find();
-  final firestoreInstance = FirebaseFirestore.instance;
-
-  StreamSubscription voteRefSubscription;
+  bool showContent = true;
 
   @override
   dispose() {
-    voteRefSubscription.cancel();
     super.dispose();
-  }
-
-  onVoteTap(String choice) async {
-    print('onVoteTap::choice => $choice');
-    String docID = widget.post.id + '-' + userController.uid;
-
-    /// vote document reference from the `likes` collection
-    DocumentReference voteRef = firestoreInstance.doc('likes/$docID');
-    DocumentSnapshot docSnapshot = await voteRef.get();
-    Map<String, dynamic> docData = docSnapshot.data();
-
-    /// TODO: Vote document set/update/delete
-    ///
-    /// Scenario:
-    /// 3. CREATE if the document DO NOT exists.
-    /// 2. UPDATE if the document exists but the choice is NOT the same.
-    /// 1. DELETE if the document exists and the choice is the same, .
-    if (!docData.isNull && docData['vote'] == choice) {
-      print('delete');
-      voteRef.delete();
-    } else {
-      print('create/update');
-      voteRef.set({
-        'uid': userController.uid,
-        'id': widget.post.id,
-        'vote': choice,
-      });
-    }
-
-    /// TODO: updating like and dislike property of post document.
-    voteRefSubscription =
-        voteRef.snapshots().listen((DocumentSnapshot snapshot) {
-      Map<String, dynamic> data = {
-        'uid': widget.post.uid,
-        'like': widget.post.like,
-        'dislike': widget.post.dislike,
-      };
-
-      /// if not null, then the user may have just voted or changed their choice.
-      ///
-      /// TODO: determine if the user just voted or they changed their choice.
-      if (!snapshot.isNull) {
-        data[choice]++;
-
-        /// if docData is not null, it contains the previous choice of the user's vote.
-        /// meaning the user is changing their vote choice.
-        if (!docData.isNull) {
-          data[docData['vote']]--;
-        }
-      }
-
-      /// if null then the user have chosen a vote already and then remove their choice.
-      else {
-        data[choice]--;
-      }
-
-      /// TODO: make sure to update have permission to update the post's data.
-      ///
-      /// Firestore security rules must be considered.
-      firestoreInstance.doc('posts/${widget.post.id}').set(
-            data,
-            SetOptions(merge: true),
-          );
-    });
   }
 
   @override
@@ -100,54 +36,96 @@ class _PostState extends State<Post> {
     return Container(
       color: Colors.grey[300],
       margin: EdgeInsets.all(Space.pageWrap),
+      padding: EdgeInsets.all(Space.md),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ListTile(
-            contentPadding: EdgeInsets.all(Space.md),
-            title: Text(
-              widget.post.title,
-              style: TextStyle(fontSize: Space.xl),
-            ),
-            subtitle: Text(
-              widget.post.content,
-              style: TextStyle(fontSize: Space.lg),
-            ),
-          ),
-          Row(
-            children: [
-              IconButton(
-                icon: Icon(Icons.thumb_up),
-                onPressed: () => onVoteTap('like'),
-              ),
-              Text(widget.post.like.toString()),
-              IconButton(
-                icon: Icon(Icons.thumb_down),
-                onPressed: () => onVoteTap('dislike'),
-              ),
-              Text(widget.post.dislike.toString()),
-              if (Service.isMyPost(widget.post)) ...[
-                IconButton(
-                  icon: Icon(Icons.edit),
-                  onPressed: () => Get.toNamed(
-                    RouteNames.forumEdit,
-                    arguments: {'post': widget.post},
+          GestureDetector(
+            child: Row(
+              children: [
+                if (ff.isAdmin) ...[
+                  IconButton(
+                    icon: Icon(Icons.online_prediction),
+                    onPressed: () {
+                      Get.toNamed(RouteNames.adminPushNotification,
+                          arguments: {'id': widget.post['id']});
+                    },
+                  )
+                ],
+                Expanded(
+                  child: Text(
+                    widget.post['title'],
+                    style: TextStyle(fontSize: Space.xl),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                IconButton(
-                  icon: Icon(Icons.delete),
-                  onPressed: () async {
-                    bool confirm = await Get.dialog(
-                      ConfirmDialog(title: 'Delete Post?'.tr),
-                    );
-
-                    if (confirm != null && confirm) {
-                      firestoreInstance.doc('posts/${widget.post.id}').delete();
-                    }
-                  },
+              ],
+            ),
+            onTap: () => setState(() {
+              showContent = !showContent;
+            }),
+          ),
+          if (showContent) ...[
+            /// content
+            if (widget.post['content'] != null)
+              Padding(
+                child: Text(
+                  widget.post['content'],
+                  style: TextStyle(fontSize: Space.lg),
                 ),
-              ]
-            ],
-          )
+                padding: EdgeInsets.only(top: Space.md),
+              ),
+
+            /// Files display
+            FileDisplay(widget.post['files']),
+
+            /// buttons
+            Row(
+              children: [
+                /// TODO when `setState` is being called, it will redraw post and its comments.
+                /// If the two `VoteButton` goes into a separate widget, it won't draw its whole post.
+                VoteButton(
+                    post: widget.post,
+                    choice: VoteChoice.like,
+                    state: setState),
+                VoteButton(
+                    post: widget.post,
+                    choice: VoteChoice.dislike,
+                    padding: EdgeInsets.only(left: 2),
+                    state: setState),
+                if (Service.isMine(widget.post)) ...[
+                  IconButton(
+                    icon: Icon(Icons.edit),
+                    onPressed: () => Get.toNamed(
+                      RouteNames.forumEdit,
+                      arguments: {'post': widget.post},
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.delete),
+                    onPressed: () async {
+                      bool confirm = await Get.dialog(
+                        ConfirmDialog(title: 'Delete Post?'.tr),
+                      );
+
+                      if (confirm == null || !confirm) return;
+                      try {
+                        await ff.deletePost(widget.post['id']);
+                      } catch (e) {
+                        Service.error(e);
+                      }
+                    },
+                  ),
+                ],
+              ],
+            ),
+
+            /// comment box
+            CommentEditForm(post: widget.post),
+
+            /// comment list
+            CommentsList(post: widget.post),
+          ],
         ],
       ),
     );

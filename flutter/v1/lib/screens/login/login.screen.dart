@@ -1,9 +1,15 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+import 'package:v1/services/global_variables.dart';
+import 'package:v1/services/route_names.dart';
 import 'package:v1/services/service.dart';
-import 'package:v1/services/route-names.dart';
 import 'package:v1/services/spaces.dart';
+import 'package:v1/widgets/commons/app_bar.dart';
+import 'package:v1/widgets/commons/app_drawer.dart';
+import 'package:v1/widgets/miscellaneous/or_divider.dart';
+import 'package:v1/widgets/user/social_login_buttons.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -17,65 +23,162 @@ class _LoginScreenState extends State<LoginScreen> {
   final passNode = FocusNode();
 
   bool loading = false;
+  bool hidePassword = true;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Login')),
+      appBar: CommonAppBar(
+        title: Text('login'.tr),
+      ),
+      endDrawer: CommonAppDrawer(),
       body: SingleChildScrollView(
         child: Container(
-          padding: EdgeInsets.all(Space.md),
+          padding: EdgeInsets.all(Space.xl),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              RaisedButton(
-                child: Text('Google Sign-in'),
-                onPressed: Service.signInWithGoogle,
-              ),
-              RaisedButton(
-                child: Text('Facebook Sign-in'),
-                onPressed: Service.signInWithFacebook,
-              ),
               SizedBox(height: Space.xl),
+              Text(
+                'Proceed with your',
+                style: TextStyle(fontSize: 20),
+              ),
+              Text(
+                'Login',
+                style: TextStyle(
+                  fontSize: 40,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: Space.xxl),
+
+              /// Email Input
+              Text(
+                'Email Address',
+                style: TextStyle(color: Color(0xff717171)),
+              ),
               TextFormField(
                 key: ValueKey('email'),
                 controller: emailController,
                 onEditingComplete: passNode.requestFocus,
                 keyboardType: TextInputType.emailAddress,
-                decoration: InputDecoration(labelText: "Email Address"),
+                decoration: InputDecoration(
+                  suffixIcon: Icon(
+                    FontAwesomeIcons.userAlt,
+                  ),
+                ),
+              ),
+              SizedBox(height: Space.xl),
+
+              /// Password Input
+              Text(
+                'Password',
+                style: TextStyle(color: Color(0xff717171)),
               ),
               TextFormField(
                 key: ValueKey('password'),
                 controller: passwordController,
                 focusNode: passNode,
-                obscureText: true,
+                obscureText: hidePassword,
                 textInputAction: TextInputAction.done,
                 keyboardType: TextInputType.text,
-                decoration: InputDecoration(labelText: "Password"),
+                decoration: InputDecoration(
+                  suffixIcon: IconButton(
+                    padding: EdgeInsets.all(0),
+                    icon: FaIcon(
+                      hidePassword
+                          ? FontAwesomeIcons.eye
+                          : FontAwesomeIcons.eyeSlash,
+                      size: 25,
+                      textDirection: TextDirection.rtl,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        hidePassword = !hidePassword;
+                      });
+                    },
+                  ),
+                ),
               ),
-              SizedBox(height: 32),
-              RaisedButton(
-                child: Text("Submit"),
-                onPressed: () async {
-                  /// remove any input focus.
-                  FocusScope.of(context).requestFocus(new FocusNode());
-                  setState(() => loading = true);
+              SizedBox(height: Space.xxl),
 
-                  try {
-                    /// Sign in with registered Firebase credentials.
-                    UserCredential user =
-                        await FirebaseAuth.instance.signInWithEmailAndPassword(
-                      email: emailController.text,
-                      password: passwordController.text,
-                    );
-                    Service.onLogin(user);
-                    Get.toNamed(RouteNames.home);
-                  } catch (e) {
-                    setState(() => loading = false);
-                    Service.error(e);
-                  }
-                },
-              )
+              if (loading)
+                Center(
+                  child: CircularProgressIndicator(),
+                ),
+
+              // Submit button
+              if (!loading)
+                FlatButton(
+                  color: Color(0xff0098E1),
+                  padding: EdgeInsets.all(Space.md),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  child: Text(
+                    "LOGIN",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                    ),
+                  ),
+                  onPressed: () async {
+                    // remove any input focus.
+                    FocusScope.of(context).requestFocus(new FocusNode());
+                    setState(() => loading = true);
+
+                    try {
+                      await ff.login(
+                        email: emailController.text,
+                        password: passwordController.text,
+                      );
+
+                      Service.redirectAfterLoginOrRegister();
+                    } catch (e) {
+                      setState(() => loading = false);
+                      Service.error(e);
+                    }
+                  },
+                ),
+
+              // forgot password & Register Redirect buttons
+              Row(
+                children: [
+                  FlatButton(
+                    onPressed: () {},
+                    child: Text(
+                      'Forgot password?',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                    padding: EdgeInsets.all(0),
+                  ),
+                  Spacer(),
+                  FlatButton(
+                    minWidth: 0,
+                    onPressed: () {
+                      Service.openScreen(RouteNames.register);
+                    },
+                    child: Text(
+                      'Register',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                    padding: EdgeInsets.all(0),
+                  )
+                ],
+              ),
+
+              SizedBox(height: Space.md),
+              OrDivider(),
+              SizedBox(height: Space.md),
+
+              // Social buttons
+              SocialLoginButtons(),
             ],
           ),
         ),

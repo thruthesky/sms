@@ -1,34 +1,43 @@
 import 'package:get/get.dart';
 
+/// Default texts.
+///
+/// This will be overwritten by the translations from Remote Config.
+/// This may be useful When app boots for the first time and the translations
+/// has not arrived from Remote Config.
 Map<String, Map<String, String>> translations = {
-  'home': {'en': 'Home', 'ko': '홈'},
-  'menu': {'en': 'Menu', 'ko': '메뉴'}
+  "en": {
+    "app_title": "App Title",
+    "home": "Home",
+    "menu": "Menu",
+    "qna": "QnA",
+    "likes": "Likes",
+    "dislikes": "Dislikes",
+  },
+  "ko": {
+    "app_title": "앱 제목",
+    "home": "홈",
+    "menu": "메뉴",
+    "qna": "질문게시판",
+    "likes": "찬성",
+    "dislikes": "반대",
+  }
 };
 
-Map<String, Map<String, String>> _keys = {};
-
-/// Convert `translations` json text into `GetX locale format`.
-convertJsonToTranslationFormat() {
-  translations.forEach((code, value) {
-    for (var ln in value.keys) {
-      if (_keys[ln] == null) _keys[ln] = {};
-      _keys[ln][code] = value[ln];
+/// Update `translations` from Firestore into `GetX local format`.
+updateTranslations(Map<dynamic, dynamic> data) {
+  if (data == null) return;
+  data.forEach((ln, texts) {
+    for (var name in texts.keys) {
+      translations[ln][name] = texts[name];
     }
   });
-}
-
-/// Update `translations` from Firestore into `GetX local format`.
-updateTranslation(String code, Map<String, dynamic> texts) {
-  for (var ln in texts.keys) {
-    if (_keys[ln] == null) _keys[ln] = {};
-    _keys[ln][code] = texts[ln].toString();
-  }
+  // print('updated: translations');
+  // print(translations);
 }
 
 /// GetX locale text translations.
 class AppTranslations extends Translations {
-  AppTranslations() {
-    convertJsonToTranslationFormat();
-  }
-  Map<String, Map<String, String>> get keys => _keys;
+  @override
+  Map<String, Map<String, String>> get keys => translations;
 }
