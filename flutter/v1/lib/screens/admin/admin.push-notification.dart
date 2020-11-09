@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:get/instance_manager.dart';
 import 'package:get/get.dart';
@@ -49,7 +50,7 @@ class _AdminPushNotificationScreenState
       snapshot.docs.forEach((DocumentSnapshot document) {
         final data = document.data();
         categoryName.add(
-            {'name': data['id'], 'code': 'notification_post_' + data['id']});
+            {'name': data['id'], 'code': NotificationOptions.post(data['id'])});
       });
       setState(() {});
     });
