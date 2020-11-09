@@ -4,8 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:v1/services/functions.dart';
-import 'package:geoflutterfire/geoflutterfire.dart';
-// import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:v1/services/global_variables.dart';
 import 'package:v1/services/service.dart';
@@ -39,7 +37,7 @@ class _MapWidgetState extends State<MapWidget> {
   bool locationServiceEnabled;
   PermissionStatus permissionStatus;
 
-  CameraPosition _myLocation;
+  CameraPosition initialLocation;
 
   StreamSubscription subscription;
 
@@ -47,35 +45,50 @@ class _MapWidgetState extends State<MapWidget> {
   // TODO: fill with markers of "near me"
   Map<String, Marker> markers = {};
 
-  _getMyLocation() async {
+  _getCurrentLocation() async {
+    // check if service is enabled
     locationServiceEnabled = await location.serviceEnabled();
     if (!locationServiceEnabled) {
+      // request if not enabled
       locationServiceEnabled = await location.requestService();
       if (!locationServiceEnabled) {
         return;
       }
     }
 
+    // check if have permission to use location service
     permissionStatus = await location.hasPermission();
     if (permissionStatus == PermissionStatus.denied) {
+      // request if permission is not granted.
       permissionStatus = await location.requestPermission();
       if (permissionStatus != PermissionStatus.granted) {
         return;
       }
     }
 
+    // get current location of the user. base on device's location.
     LocationData loc = await location.getLocation();
     final LatLng position = LatLng(
       loc.latitude,
       loc.longitude,
     );
 
-    _myLocation = CameraPosition(
+    // set current location as the initial position for the map.
+    initialLocation = CameraPosition(
       target: position,
       zoom: 14.4746,
     );
+
+    /// add "My location" marker
     _addMarker(position);
+
+    /// get other locations near me.
     _getLocationsNearMe(position);
+
+    // ff.updateUserLocation(
+    //   latitude: position.latitude,
+    //   longitude: position.longitude,
+    // );
 
     setState(() {
       gettingLocation = false;
@@ -93,21 +106,21 @@ class _MapWidgetState extends State<MapWidget> {
 
   /// TODO: make it work...
   _getLocationsNearMe(LatLng position) {
-    final geo = Geoflutterfire();
-    GeoFirePoint center = geo.point(latitude: 12.960632, longitude: 77.641603);
-
-    Query q = FirebaseFirestore.instance.collectionGroup('meta');
+    print('TODO: "Near Me"');
+    Query q = FirebaseFirestore.instance
+        .collectionGroup('metas')
+        .where('public.geohash', isEqualTo: "wdty0n7tc");
 
     q.snapshots().listen((event) {
       event.docs.forEach((doc) {
-        print(doc.data());
+        print(doc);
       });
-    }, onError: (err) => Service.error(err));
+    });
   }
 
   @override
   void initState() {
-    _getMyLocation();
+    _getCurrentLocation();
     super.initState();
   }
 
@@ -135,7 +148,7 @@ class _MapWidgetState extends State<MapWidget> {
       );
 
     return GoogleMap(
-      initialCameraPosition: _myLocation,
+      initialCameraPosition: initialLocation,
       onMapCreated: (controller) {
         setState(() {
           mapController = controller;
