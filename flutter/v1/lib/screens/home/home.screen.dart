@@ -124,6 +124,10 @@ class _HomeScreenState extends State<HomeScreen> {
               onPressed: () => Get.toNamed(RouteNames.search),
               child: Text('Search'),
             ),
+            RaisedButton(
+              onPressed: () => Get.toNamed(RouteNames.map),
+              child: Text('Map'),
+            ),
           ],
         ),
       ),

@@ -65,6 +65,8 @@
 	<string>1195118290859166</string>
 	<key>FacebookDisplayName</key>
 	<string>SMS APP</string>
+	<key>FirebaseAppDelegateProxyEnabled</key>
+	<false/>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>fbapi</string>
@@ -76,6 +78,12 @@
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>$(EXECUTABLE_NAME) need access to Camera.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>$(EXECUTABLE_NAME) needs access to Location</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>$(EXECUTABLE_NAME) needs access to Location</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>$(EXECUTABLE_NAME) needs access to Location</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>$(EXECUTABLE_NAME) need access to Microphone.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
@@ -83,6 +91,7 @@
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>
+		<string>location</string>
 		<string>remote-notification</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
@@ -104,14 +113,7 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	<key>FirebaseAppDelegateProxyEnabled</key>
-	<false/>
-
 	<key>io.flutter.embedded_views_preview</key>
-	<true />
-	<key>NSLocationWhenInUsageDescription</key>
-	<string>$(EXECUTABLE_NAME) needs access to location</string>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>$(EXECUTABLE_NAME) needs access to location</string>
+	<true/>
 </dict>
 </plist>

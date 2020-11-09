@@ -339,11 +339,19 @@ PODS:
   - FMDB (2.7.5):
     - FMDB/standard (= 2.7.5)
   - FMDB/standard (2.7.5)
+  - google_maps_flutter (0.0.1):
+    - Flutter
+    - GoogleMaps (< 3.10)
   - google_sign_in (0.0.1):
     - Flutter
     - GoogleSignIn (~> 5.0)
   - GoogleDataTransport (7.2.0):
     - nanopb (~> 1.30905.0)
+  - GoogleMaps (3.9.0):
+    - GoogleMaps/Maps (= 3.9.0)
+  - GoogleMaps/Base (3.9.0)
+  - GoogleMaps/Maps (3.9.0):
+    - GoogleMaps/Base
   - GoogleSignIn (5.0.2):
     - AppAuth (~> 1.2)
     - GTMAppAuth (~> 1.0)
@@ -411,6 +419,8 @@ PODS:
   - libwebp/mux (1.1.0):
     - libwebp/demux
   - libwebp/webp (1.1.0)
+  - location (0.0.1):
+    - Flutter
   - Mantle (2.1.6):
     - Mantle/extobjc (= 2.1.6)
   - Mantle/extobjc (2.1.6)
@@ -449,9 +459,11 @@ DEPENDENCIES:
   - Flutter (from `Flutter`)
   - flutter_facebook_auth (from `.symlinks/plugins/flutter_facebook_auth/ios`)
   - flutter_image_compress (from `.symlinks/plugins/flutter_image_compress/ios`)
+  - google_maps_flutter (from `.symlinks/plugins/google_maps_flutter/ios`)
   - google_sign_in (from `.symlinks/plugins/google_sign_in/ios`)
   - image_picker (from `.symlinks/plugins/image_picker/ios`)
   - kakao_flutter_sdk (from `.symlinks/plugins/kakao_flutter_sdk/ios`)
+  - location (from `.symlinks/plugins/location/ios`)
   - package_info (from `.symlinks/plugins/package_info/ios`)
   - path_provider (from `.symlinks/plugins/path_provider/ios`)
   - permission_handler (from `.symlinks/plugins/permission_handler/ios`)
@@ -480,6 +492,7 @@ SPEC REPOS:
     - FirebaseStorage
     - FMDB
     - GoogleDataTransport
+    - GoogleMaps
     - GoogleSignIn
     - GoogleUtilities
     - "gRPC-C++"
@@ -514,12 +527,16 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/flutter_facebook_auth/ios"
   flutter_image_compress:
     :path: ".symlinks/plugins/flutter_image_compress/ios"
+  google_maps_flutter:
+    :path: ".symlinks/plugins/google_maps_flutter/ios"
   google_sign_in:
     :path: ".symlinks/plugins/google_sign_in/ios"
   image_picker:
     :path: ".symlinks/plugins/image_picker/ios"
   kakao_flutter_sdk:
     :path: ".symlinks/plugins/kakao_flutter_sdk/ios"
+  location:
+    :path: ".symlinks/plugins/location/ios"
   package_info:
     :path: ".symlinks/plugins/package_info/ios"
   path_provider:
@@ -561,8 +578,10 @@ SPEC CHECKSUMS:
   flutter_facebook_auth: 85c86b1f574faa5eaacd6de0db6b416fa94b326c
   flutter_image_compress: 082f8daaf6c1b0c9fe798251c750ef0ecd98d7ae
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
+  google_maps_flutter: c7f9c73576de1fbe152a227bfd6e6c4ae8088619
   google_sign_in: 6bd214b9c154f881422f5fe27b66aaa7bbd580cc
   GoogleDataTransport: 672fb0ce96fe7f7f31d43672fca62ad2c9c86f7b
+  GoogleMaps: 4b5346bddfe6911bb89155d43c903020170523ac
   GoogleSignIn: 7137d297ddc022a7e0aa4619c86d72c909fa7213
   GoogleUtilities: 7f2f5a07f888cdb145101d6042bc4422f57e70b3
   "gRPC-C++": 13d8ccef97d5c3c441b7e3c529ef28ebee86fad2
@@ -573,6 +592,7 @@ SPEC CHECKSUMS:
   kakao_flutter_sdk: 2c6a51e7c262aaa4ca2591266e273980f7d3e01c
   leveldb-library: 55d93ee664b4007aac644a782d11da33fba316f7
   libwebp: 946cb3063cea9236285f7e9a8505d806d30e07f3
+  location: 3a2eed4dd2fab25e7b7baf2a9efefe82b512d740
   Mantle: 4c0ed6ce47c96eccc4dc3bb071deb3def0e2c3be
   nanopb: c43f40fadfe79e8b8db116583945847910cbabc9
   package_info: 873975fc26034f0b863a300ad47e7f1ac6c7ec62
@@ -588,4 +608,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 1d02c8037e7cb204cd47840213bb6b8dd18e3a3f
 
-COCOAPODS: 1.9.3
+COCOAPODS: 1.8.4
