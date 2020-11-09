@@ -106,5 +106,12 @@
 	<false/>
 	<key>FirebaseAppDelegateProxyEnabled</key>
 	<false/>
+
+	<key>io.flutter.embedded_views_preview</key>
+	<true />
+	<key>NSLocationWhenInUsageDescription</key>
+	<string>$(EXECUTABLE_NAME) needs access to location</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>$(EXECUTABLE_NAME) needs access to location</string>
 </dict>
 </plist>
