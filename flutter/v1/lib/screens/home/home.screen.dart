@@ -69,28 +69,35 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             RaisedButton(
               onPressed: () async {
-                ff.usersCol
-                    .doc(ff.user.uid)
-                    .collection('meta')
-                    .doc('tokens')
-                    .snapshots()
-                    .listen((DocumentSnapshot document) {
-                  List<String> tokens = [];
-                  print(document.id);
-                  tokens.add(document.id);
+                // ff.usersCol
+                //     .doc(ff.user.uid)
+                //     .collection('meta')
+                //     .doc('tokens')
+                //     .snapshots()
+                //     .listen((DocumentSnapshot document) {
+                //   List<String> tokens = [];
+                //   print(document.id);
+                //   tokens.add(document.id);
+                // print(tokens);
 
-                  print(tokens);
+                ff.sendNotification(
+                  'Sample push notification to topic',
+                  'This is the content of this sample push notification',
+                  screen: '/home',
+                  topic: ff.allTopic,
+                  test: true,
+                );
 
-                  ff.sendNotification(
-                    'test title message only',
-                    'test body message, from test notification button.',
-                    // token: ff.firebaseMessagingToken,
-                    // tokens: tokens,
-                    id: '0X1upoaLklWc2Z07dsbn',
-                    screen: '/forumView',
-                    topic: ff.allTopic,
-                  );
-                });
+                // ff.sendNotification(
+                //   'test title message only',
+                //   'test body message, from test notification button.',
+                //   // token: ff.firebaseMessagingToken,
+                //   // tokens: tokens,
+                //   id: '0X1upoaLklWc2Z07dsbn',
+                //   screen: '/forumView',
+                //   topic: ff.allTopic,
+                // );
+                // });
               },
               child: Text('Send Test Notification'),
             ),
