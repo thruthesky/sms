@@ -20,7 +20,7 @@ class Service {
       FirebaseFirestore.instance.collection('users');
   static String firebaseMessagingToken;
 
-  ///
+  /// TODO: move to fireflutter
   static Geoflutterfire geo = Geoflutterfire();
 
   /// Display translation text in the device language.
