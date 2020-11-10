@@ -65,9 +65,9 @@ class _MainAppState extends State<MainApp> {
         Map<dynamic, dynamic> notification = x['notification'];
         Map<dynamic, dynamic> data = x['data'];
         NotificationType type = x['type'];
-        print('NotificationType: $type');
-        print('notification: $notification');
-        print('data: $data');
+        // print('NotificationType: $type');
+        // print('notification: $notification');
+        // print('data: $data');
 
         if (type == NotificationType.onMessage) {
           Get.snackbar(
