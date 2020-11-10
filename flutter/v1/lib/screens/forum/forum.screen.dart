@@ -118,15 +118,17 @@ class _ForumScreenState extends State<ForumScreen> {
                 ff.unsubscribeTopic(topic);
               }
 
-              // TODO @lancelynyrd
-              // ff.updateProfile({}, meta: {'public': {topic: notificationPost}});
-              Service.usersRef
-                  .doc(ff.user.uid)
-                  .collection('meta')
-                  .doc('public')
-                  .set({
-                "$topic": notificationPost,
-              }, SetOptions(merge: true));
+              // TODO @lancelynyrd double check if no errors
+              ff.updateProfile({}, meta: {
+                'public': {"$topic": notificationPost}
+              });
+              // Service.usersRef
+              //     .doc(ff.user.uid)
+              //     .collection('meta')
+              //     .doc('public')
+              //     .set({
+              //   "$topic": notificationPost,
+              // }, SetOptions(merge: true));
             },
           ),
           IconButton(

@@ -14,6 +14,7 @@ import 'package:v1/screens/profile/profile.screen.dart';
 import 'package:v1/screens/register/register.screen.dart';
 import 'package:v1/screens/search/search.screen.dart';
 import 'package:v1/screens/settings/settings.screen.dart';
+import 'package:v1/screens/in-app-purchase/in-app-purchase.screen.dart';
 import 'package:v1/services/route_names.dart';
 
 class AppRouter extends NavigatorObserver {
@@ -35,6 +36,7 @@ class AppRouter extends NavigatorObserver {
     RouteNames.forum: ForumScreen(),
     RouteNames.forumEdit: ForumEditScreen(),
     RouteNames.forumView: ForumViewScreen(),
+    RouteNames.inAppPurchase: InAppPurchase(),
   };
 
   static GetPageRoute generate(RouteSettings routeSettings) {

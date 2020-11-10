@@ -1,5 +1,6 @@
 import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
+import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:kakao_flutter_sdk/link.dart';
 import 'package:v1/services/app_router.dart';
 import 'package:v1/services/global_variables.dart';
@@ -12,6 +13,7 @@ import 'package:get/get.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 void main() {
+  InAppPurchaseConnection.enablePendingPurchases();
   runApp(MainApp());
 }
 
