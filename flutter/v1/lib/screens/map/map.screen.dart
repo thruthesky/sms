@@ -42,9 +42,9 @@ class _MapWidgetState extends State<MapWidget> {
 
   StreamSubscription subscription;
 
-  // "Near Me" search radius
+  // "Near Me" search radius by kilometers
   // TODO: this can be added as part of app settings
-  double searchRadius = 50;
+  double searchRadius = 2;
 
   // markers
   // TODO: fill with markers of "near me"
@@ -114,6 +114,7 @@ class _MapWidgetState extends State<MapWidget> {
     );
 
     // query for "nearby me"
+    // [radius] is by kilometers
     // cancel subscription later.
     subscription = ff.geo
         .collection(collectionRef: ref)
