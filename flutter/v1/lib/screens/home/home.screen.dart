@@ -63,6 +63,10 @@ class _HomeScreenState extends State<HomeScreen> {
                           onPressed: () => Get.toNamed(RouteNames.settings),
                           child: Text('Settings'),
                         ),
+                        RaisedButton(
+                          onPressed: () => Get.toNamed(RouteNames.map),
+                          child: Text('Who\'s Near Me?'),
+                        ),
                       ],
                     );
                   }),
@@ -110,12 +114,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   arguments: {'category': 'qna'},
                 ),
                 child: Text('QNA'),
-              ),
-              RaisedButton(
-                onPressed: () => Get.toNamed(
-                  RouteNames.map
-                ),
-                child: Text('Who\'s Near Me?'),
               ),
             ],
           ),
