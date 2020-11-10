@@ -11,6 +11,8 @@ import 'package:v1/widgets/commons/app_bar.dart';
 import 'package:v1/widgets/commons/app_drawer.dart';
 import 'package:v1/widgets/commons/spinner.dart';
 
+import 'package:geoflutterfire/geoflutterfire.dart';
+
 class MapScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -95,7 +97,7 @@ class _MapWidgetState extends State<MapWidget> {
     });
   }
 
-  /// TODO: add info window
+  // TODO: add info window
   _addMarker(LatLng position) {
     String markerID = randomString();
     markers[markerID] = Marker(
@@ -104,17 +106,26 @@ class _MapWidgetState extends State<MapWidget> {
     );
   }
 
-  /// TODO: make it work...
+  // TODO: make it work...
   _getLocationsNearMe(LatLng position) {
     print('TODO: "Near Me"');
+
+    GeoFirePoint point = ff.getGeoFirePoint(latitude: position.latitude, longitude: position.longitude);
+
     Query q = FirebaseFirestore.instance
-        .collectionGroup('metas')
-        .where('public.geohash', isEqualTo: "wdty0n7tc");
+        .collectionGroup('meta')
+        .where('public.location.geohash', isGreaterThanOrEqualTo: point.hash)
+        .where('public.location.geohash', isLessThanOrEqualTo: point.hash);
 
     q.snapshots().listen((event) {
+      print('event.size');
+      print(event.size);
+
       event.docs.forEach((doc) {
-        print(doc);
+        print(doc.data());
       });
+    }).onError((e) {
+      Service.error(e);
     });
   }
 

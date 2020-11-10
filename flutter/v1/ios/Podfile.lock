@@ -339,6 +339,8 @@ PODS:
   - FMDB (2.7.5):
     - FMDB/standard (= 2.7.5)
   - FMDB/standard (2.7.5)
+  - geoflutterfire (0.0.1):
+    - Flutter
   - google_maps_flutter (0.0.1):
     - Flutter
     - GoogleMaps (< 3.10)
@@ -459,6 +461,7 @@ DEPENDENCIES:
   - Flutter (from `Flutter`)
   - flutter_facebook_auth (from `.symlinks/plugins/flutter_facebook_auth/ios`)
   - flutter_image_compress (from `.symlinks/plugins/flutter_image_compress/ios`)
+  - geoflutterfire (from `.symlinks/plugins/geoflutterfire/ios`)
   - google_maps_flutter (from `.symlinks/plugins/google_maps_flutter/ios`)
   - google_sign_in (from `.symlinks/plugins/google_sign_in/ios`)
   - image_picker (from `.symlinks/plugins/image_picker/ios`)
@@ -527,6 +530,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/flutter_facebook_auth/ios"
   flutter_image_compress:
     :path: ".symlinks/plugins/flutter_image_compress/ios"
+  geoflutterfire:
+    :path: ".symlinks/plugins/geoflutterfire/ios"
   google_maps_flutter:
     :path: ".symlinks/plugins/google_maps_flutter/ios"
   google_sign_in:
@@ -578,6 +583,7 @@ SPEC CHECKSUMS:
   flutter_facebook_auth: 85c86b1f574faa5eaacd6de0db6b416fa94b326c
   flutter_image_compress: 082f8daaf6c1b0c9fe798251c750ef0ecd98d7ae
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
+  geoflutterfire: 2a6493e01fb6eef1a6c9046b1baf9a943d0c5ffe
   google_maps_flutter: c7f9c73576de1fbe152a227bfd6e6c4ae8088619
   google_sign_in: 6bd214b9c154f881422f5fe27b66aaa7bbd580cc
   GoogleDataTransport: 672fb0ce96fe7f7f31d43672fca62ad2c9c86f7b
