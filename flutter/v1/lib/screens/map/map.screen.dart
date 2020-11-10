@@ -42,10 +42,6 @@ class _MapWidgetState extends State<MapWidget> {
 
   StreamSubscription subscription;
 
-  // "Near Me" search radius by kilometers
-  // TODO: this can be added as part of app settings
-  double searchRadius = 2;
-
   // markers
   // TODO: fill with markers of "near me" locations
   Map<String, Marker> markers = {};
@@ -89,7 +85,7 @@ class _MapWidgetState extends State<MapWidget> {
     // set current location as the initial position for the map.
     initialLocation = CameraPosition(
       target: position,
-      zoom: 14.4746,
+      zoom: 15,
     );
 
     // get other locations "near me".
