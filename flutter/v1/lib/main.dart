@@ -9,6 +9,7 @@ import 'package:v1/services/route_names.dart';
 
 import 'package:get/route_manager.dart';
 import 'package:get/get.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 void main() {
   runApp(MainApp());
@@ -101,6 +102,14 @@ class _MainAppState extends State<MainApp> {
 
     // Timer(Duration(milliseconds: 300),
     //     () => Get.toNamed('forum', arguments: {'category': 'qna'}));
+
+    ff.firebaseInitialized.listen((value) async {
+      if (value == false) return;
+      ff.db
+          .collection('users-public')
+          .doc(ff.user.uid)
+          .set({'geopoint': 'abcd'}, SetOptions(merge: true));
+    });
   }
 
   @override
