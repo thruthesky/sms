@@ -115,7 +115,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 onPressed: () => Get.toNamed(
                   RouteNames.map
                 ),
-                child: Text('Map'),
+                child: Text('Who\'s Near Me?'),
               ),
             ],
           ),

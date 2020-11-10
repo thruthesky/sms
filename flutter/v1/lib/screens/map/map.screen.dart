@@ -3,10 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
-import 'package:v1/services/functions.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:v1/services/global_variables.dart';
-import 'package:v1/services/service.dart';
 import 'package:v1/widgets/commons/app_bar.dart';
 import 'package:v1/widgets/commons/app_drawer.dart';
 import 'package:v1/widgets/commons/spinner.dart';
@@ -33,15 +31,20 @@ class MapWidget extends StatefulWidget {
 
 class _MapWidgetState extends State<MapWidget> {
   Location location = new Location();
+
   GoogleMapController mapController;
+  CameraPosition initialLocation;
 
   bool gettingLocation = true;
+
   bool locationServiceEnabled;
   PermissionStatus permissionStatus;
 
-  CameraPosition initialLocation;
-
   StreamSubscription subscription;
+
+  // "Near Me" search radius
+  // TODO: this can be added as part of app settings
+  double searchRadius = 50;
 
   // markers
   // TODO: fill with markers of "near me"
@@ -69,10 +72,20 @@ class _MapWidgetState extends State<MapWidget> {
     }
 
     // get current location of the user. base on device's location.
-    LocationData loc = await location.getLocation();
+    LocationData currentLoccation = await location.getLocation();
+    // print(currentLoccation.latitude);
+    // print(currentLoccation.longitude);
+
+    // update user's new location
+    ff.updateUserLocation(
+      latitude: currentLoccation.latitude,
+      longitude: currentLoccation.longitude,
+    );
+
+    // create position for the initi
     final LatLng position = LatLng(
-      loc.latitude,
-      loc.longitude,
+      currentLoccation.latitude,
+      currentLoccation.longitude,
     );
 
     // set current location as the initial position for the map.
@@ -81,51 +94,55 @@ class _MapWidgetState extends State<MapWidget> {
       zoom: 14.4746,
     );
 
-    /// add "My location" marker
-    _addMarker(position);
-
-    /// get other locations near me.
+    // get other locations near me.
     _getLocationsNearMe(position);
-
-    ff.updateUserLocation(
-      latitude: position.latitude,
-      longitude: position.longitude,
-    );
 
     setState(() {
       gettingLocation = false;
     });
   }
 
-  // TODO: add info window
-  _addMarker(LatLng position) {
-    String markerID = randomString();
-    markers[markerID] = Marker(
-      markerId: MarkerId(randomString()),
-      position: position,
+  _getLocationsNearMe(LatLng position) {
+    GeoFirePoint point = ff.getGeoFirePoint(
+      latitude: position.latitude,
+      longitude: position.longitude,
     );
+
+    // collection reference
+    CollectionReference ref = FirebaseFirestore.instance.collection(
+      'users-public',
+    );
+
+    // query for "nearby me"
+    // cancel subscription later.
+    subscription = ff.geo
+        .collection(collectionRef: ref)
+        .within(
+          center: point,
+          radius: searchRadius,
+          field: 'location',
+          strictMode: true,
+        )
+        .listen(_addMarkers);
   }
 
-  // TODO: make it work...
-  _getLocationsNearMe(LatLng position) {
-    print('TODO: "Near Me"');
+  // TODO: add info window
+  _addMarkers(List<DocumentSnapshot> documents) {
+    print('Locations near me:');
+    documents.forEach((document) {
+      Map<String, dynamic> data = document.data();
+      GeoPoint pos = data['location']['geopoint'];
+      String markerID = document.id;
+      print(data);
 
-    GeoFirePoint point = ff.getGeoFirePoint(latitude: position.latitude, longitude: position.longitude);
-
-    Query q = FirebaseFirestore.instance
-        .collection('users-public')
-        .where('geohash', isGreaterThanOrEqualTo: point.hash)
-        .where('geohash', isLessThanOrEqualTo: point.hash);
-
-    q.snapshots().listen((event) {
-      print('event.size');
-      print(event.size);
-
-      event.docs.forEach((doc) {
-        print(doc.data());
-      });
-    }).onError((e) {
-      Service.error(e);
+      if (markerID != ff.user.uid) {
+        setState(() {
+          markers[markerID] = Marker(
+            markerId: MarkerId(markerID),
+            position: LatLng(pos.latitude, pos.longitude),
+          );
+        });
+      }
     });
   }
 
@@ -165,8 +182,9 @@ class _MapWidgetState extends State<MapWidget> {
           mapController = controller;
         });
       },
+      // toSet() removes duplicates if there's any.
       markers: markers.values.toSet(),
-      // myLocationEnabled: true,
+      myLocationEnabled: true,
     );
   }
 }
