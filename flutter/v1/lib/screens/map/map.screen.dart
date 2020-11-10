@@ -5,11 +5,10 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:v1/services/global_variables.dart';
+import 'package:v1/services/service.dart';
 import 'package:v1/widgets/commons/app_bar.dart';
 import 'package:v1/widgets/commons/app_drawer.dart';
 import 'package:v1/widgets/commons/spinner.dart';
-
-import 'package:geoflutterfire/geoflutterfire.dart';
 
 class MapScreen extends StatelessWidget {
   @override
@@ -47,7 +46,7 @@ class _MapWidgetState extends State<MapWidget> {
   double searchRadius = 2;
 
   // markers
-  // TODO: fill with markers of "near me"
+  // TODO: fill with markers of "near me" locations
   Map<String, Marker> markers = {};
 
   _getCurrentLocation() async {
@@ -73,8 +72,6 @@ class _MapWidgetState extends State<MapWidget> {
 
     // get current location of the user. base on device's location.
     LocationData currentLoccation = await location.getLocation();
-    // print(currentLoccation.latitude);
-    // print(currentLoccation.longitude);
 
     // update user's new location
     ff.updateUserLocation(
@@ -82,7 +79,7 @@ class _MapWidgetState extends State<MapWidget> {
       longitude: currentLoccation.longitude,
     );
 
-    // create position for the initi
+    // create position for the initial map location.
     final LatLng position = LatLng(
       currentLoccation.latitude,
       currentLoccation.longitude,
@@ -94,7 +91,7 @@ class _MapWidgetState extends State<MapWidget> {
       zoom: 14.4746,
     );
 
-    // get other locations near me.
+    // get other locations "near me".
     _getLocationsNearMe(position);
 
     setState(() {
@@ -102,39 +99,27 @@ class _MapWidgetState extends State<MapWidget> {
     });
   }
 
-  _getLocationsNearMe(LatLng position) {
-    GeoFirePoint point = ff.getGeoFirePoint(
-      latitude: position.latitude,
-      longitude: position.longitude,
-    );
-
-    // collection reference
-    CollectionReference ref = FirebaseFirestore.instance.collection(
-      'users-public',
-    );
-
-    // query for "nearby me"
-    // [radius] is by kilometers
-    // cancel subscription later.
-    subscription = ff.geo
-        .collection(collectionRef: ref)
-        .within(
-          center: point,
-          radius: searchRadius,
-          field: 'location',
-          strictMode: true,
+  _getLocationsNearMe(LatLng position) async {
+    try {
+     subscription = ff
+        .findLocationsNearMe(
+          latitude: position.latitude,
+          longitude: position.longitude,
         )
-        .listen(_addMarkers);
+        .listen(_updateMapMarkers);
+    } catch(e) {
+      Service.error(e);
+    }
   }
 
   // TODO: add info window
-  _addMarkers(List<DocumentSnapshot> documents) {
-    print('Locations near me:');
+  _updateMapMarkers(List<DocumentSnapshot> documents) {
+    // print('Locations near me:');
     documents.forEach((document) {
       Map<String, dynamic> data = document.data();
       GeoPoint pos = data['location']['geopoint'];
       String markerID = document.id;
-      print(data);
+      // print(data);
 
       if (markerID != ff.user.uid) {
         setState(() {
