@@ -6,6 +6,7 @@ import 'package:location/location.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:v1/services/global_variables.dart';
 import 'package:v1/services/service.dart';
+import 'package:v1/services/spaces.dart';
 import 'package:v1/widgets/commons/app_bar.dart';
 import 'package:v1/widgets/commons/app_drawer.dart';
 import 'package:v1/widgets/commons/spinner.dart';
@@ -101,13 +102,13 @@ class _MapWidgetState extends State<MapWidget> {
 
   _getLocationsNearMe(LatLng position) async {
     try {
-     subscription = ff
-        .findLocationsNearMe(
-          latitude: position.latitude,
-          longitude: position.longitude,
-        )
-        .listen(_updateMapMarkers);
-    } catch(e) {
+      subscription = ff
+          .findLocationsNearMe(
+            latitude: position.latitude,
+            longitude: position.longitude,
+          )
+          .listen(_updateMapMarkers);
+    } catch (e) {
       Service.error(e);
     }
   }
@@ -161,16 +162,29 @@ class _MapWidgetState extends State<MapWidget> {
         child: Text('This app doesn\'t have permission to access Location'),
       );
 
-    return GoogleMap(
-      initialCameraPosition: initialLocation,
-      onMapCreated: (controller) {
-        setState(() {
-          mapController = controller;
-        });
-      },
-      // toSet() removes duplicates if there's any.
-      markers: markers.values.toSet(),
-      myLocationEnabled: true,
+    return Stack(
+      children: [
+        GoogleMap(
+          initialCameraPosition: initialLocation,
+          onMapCreated: (controller) {
+            setState(() {
+              mapController = controller;
+            });
+          },
+          // toSet() removes duplicates if there's any.
+          markers: markers.values.toSet(),
+          myLocationEnabled: true,
+        ),
+        Positioned(
+          child: Container(
+            color: Colors.white,
+            padding: EdgeInsets.all(Space.sm),
+            child: Text('${markers.values.toSet().length} person near you'),
+          ),
+          top: Space.md,
+          left: Space.md,
+        ),
+      ],
     );
   }
 }
