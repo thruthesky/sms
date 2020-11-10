@@ -116,12 +116,13 @@ class _MapWidgetState extends State<MapWidget> {
 
   // TODO: add info window
   _updateMapMarkers(List<DocumentSnapshot> documents) {
-    // print('Locations near me:');
+    print('Locations near me:');
+    print(documents);
     documents.forEach((document) {
       Map<String, dynamic> data = document.data();
       GeoPoint pos = data['location']['geopoint'];
       String markerID = document.id;
-      // print(data);
+      print(data);
 
       if (markerID != ff.user.uid) {
         setState(() {

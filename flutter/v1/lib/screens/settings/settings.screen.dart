@@ -66,16 +66,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             value: public[notifyPost] ?? false,
                             onChanged: (value) async {
                               setState(() => public[notifyPost] = value);
-                              try {
-                                ff.updateUserMeta({
-                                  'public': {
-                                    notifyPost: value,
-                                  },
-                                });
-                                Get.snackbar('Update', 'Settings updated!');
-                              } catch (e) {
-                                Service.error(e);
-                              }
+                              // try {
+                              //   ff.updateUserMeta({
+                              //     'public': {
+                              //       notifyPost: value,
+                              //     },
+                              //   });
+                              //   Get.snackbar('Update', 'Settings updated!');
+                              // } catch (e) {
+                              //   Service.error(e);
+                              // }
                             },
                           ),
                           Text('Comment Notification under my comment'),
@@ -83,16 +83,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             value: public[notifyComment] ?? false,
                             onChanged: (value) async {
                               setState(() => public[notifyComment] = value);
-                              try {
-                                ff.updateUserMeta({
-                                  'public': {
-                                    notifyComment: value,
-                                  },
-                                });
-                                Get.snackbar('Update', 'Settings updated!');
-                              } catch (e) {
-                                Service.error(e);
-                              }
+                              // try {
+                              //   ff.updateUserMeta({
+                              //     'public': {
+                              //       notifyComment: value,
+                              //     },
+                              //   });
+                              //   Get.snackbar('Update', 'Settings updated!');
+                              // } catch (e) {
+                              //   Service.error(e);
+                              // }
                             },
                           ),
                           Text(ff.firebaseMessagingToken.substring(0, 20)),

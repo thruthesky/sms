@@ -20,7 +20,7 @@ class Service {
       FirebaseFirestore.instance.collection('users');
   static String firebaseMessagingToken;
 
-  /// 
+  ///
   static Geoflutterfire geo = Geoflutterfire();
 
   /// Display translation text in the device language.
@@ -193,7 +193,7 @@ class Service {
   }
 
   /// Alerts user if they need to login first to make any further actions.
-  /// 
+  ///
   static alertLoginFirst() {
     Get.defaultDialog(
       title: 'alert'.tr,
@@ -205,25 +205,24 @@ class Service {
   }
 
   /// Alerts user if they need to update their phone number.
-  /// 
+  ///
   static alertUpdatePhoneNumber() {
     Get.defaultDialog(
-      title: 'alert'.tr,
-      middleText: "update phone number".tr,
-      textConfirm: "update".tr,
-      textCancel: "cancel".tr,
-      confirmTextColor: Colors.white,
-      onConfirm: () => Get.toNamed(RouteNames.mobileAuth),
-      onCancel: () => Get.back()
-    );
+        title: 'alert'.tr,
+        middleText: "update phone number".tr,
+        textConfirm: "update".tr,
+        textCancel: "cancel".tr,
+        confirmTextColor: Colors.white,
+        onConfirm: () => Get.toNamed(RouteNames.mobileAuth),
+        onCancel: () => Get.back());
   }
 
   /// redirects the user after logging in or registering.
-  /// 
+  ///
   /// If the app setting [show-phone-verification-after-login] is set to true,
   /// the user will be redirected to phone authentication screen,
   /// otherwise it will redirect to home screen.
-  /// 
+  ///
   static redirectAfterLoginOrRegister() {
     if (ff.appSetting('show-phone-verification-after-login') == true &&
         ff.user.phoneNumber.isNullOrBlank) {
@@ -233,7 +232,6 @@ class Service {
       Get.offAllNamed(RouteNames.home);
     }
   }
-
 
   /// Updates user location
   ///
@@ -250,6 +248,8 @@ class Service {
   ///   fieldName: "this is optional, default value is 'location'"
   /// );
   /// ```
+  /// 
+  /// TODO: move to fireflutter package
   static Future<void> updateUserLocation({
     @required double latitude,
     @required double longitude,
@@ -260,8 +260,11 @@ class Service {
       longitude: longitude,
     );
 
-    /// TODO: refactor to new conform with the new structure
-    return await ff.db.collection('meta').doc('user.public.${ff.user.uid}').set(
+    // TODO: refactor to new conform with the new structure
+    CollectionReference colRef =
+        ff.db.collection('meta').doc('user').collection('public');
+
+    return await colRef.doc(ff.user.uid).set(
       {fieldName: point.data},
       SetOptions(merge: true),
     );
@@ -270,7 +273,7 @@ class Service {
   /// returns list of locations near the given [latitude] and [longitude] within the [searchRadius].
   ///
   /// [searchRadius] is by kilometers, default value is set to `2`
-  /// 
+  ///
   /// ```dart
   /// FireFlutter.findLocationsNearMe(
   ///   latitude: position.latitude,
@@ -278,6 +281,8 @@ class Service {
   ///   searchRadius: ...                // optional, default value is `2`.
   /// )
   /// ```
+  /// 
+  /// TODO: move to fireflutter package
   static Stream<List<DocumentSnapshot>> findLocationsNearMe({
     @required double latitude,
     @required double longitude,
@@ -290,11 +295,13 @@ class Service {
 
     // query for "nearby me"
     // [radius] is by kilometers
-    /// TODO: refactor to new conform with the new structure
-    return geo.collection(collectionRef: ff.db.collection('meta')).within(
+    // TODO: refactor to new conform with the new structure
+    CollectionReference colRef =
+        ff.db.collection('meta').doc('user').collection('public');
+    return geo.collection(collectionRef: colRef).within(
           center: point,
           radius: searchRadius,
-          field: 'user.public.${ff.user.uid}.location',
+          field: 'location',
           strictMode: true,
         );
   }
