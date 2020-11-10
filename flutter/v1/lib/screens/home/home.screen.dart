@@ -109,6 +109,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   RouteNames.forum,
                   arguments: {'category': 'qna'},
                 ),
+                child: Text('QNA'),
+              ),
+              RaisedButton(
+                onPressed: () => Get.toNamed(
+                  RouteNames.map
+                ),
+                child: Text('Map'),
               ),
             ],
           ),

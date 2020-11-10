@@ -288,8 +288,7 @@ packages:
       name: get
       url: "https://pub.dartlang.org"
     source: hosted
-<<<<<<< HEAD
-    version: "3.13.2"
+    version: "3.16.0"
   google_maps_flutter:
     dependency: "direct main"
     description:
@@ -304,9 +303,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.4"
-=======
-    version: "3.15.0"
->>>>>>> main
   google_sign_in:
     dependency: transitive
     description:
@@ -348,7 +344,7 @@ packages:
       name: image_picker
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.6.7+12"
+    version: "0.6.7+14"
   image_picker_platform_interface:
     dependency: transitive
     description:
@@ -705,10 +701,5 @@ packages:
     source: hosted
     version: "0.1.2"
 sdks:
-<<<<<<< HEAD
-  dart: ">=2.10.0-110 <2.11.0"
-  flutter: ">=1.22.0 <2.0.0"
-=======
   dart: ">=2.10.2 <2.11.0"
   flutter: ">=1.22.2 <2.0.0"
->>>>>>> main

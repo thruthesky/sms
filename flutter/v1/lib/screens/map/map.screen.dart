@@ -87,10 +87,10 @@ class _MapWidgetState extends State<MapWidget> {
     /// get other locations near me.
     _getLocationsNearMe(position);
 
-    // ff.updateUserLocation(
-    //   latitude: position.latitude,
-    //   longitude: position.longitude,
-    // );
+    ff.updateUserLocation(
+      latitude: position.latitude,
+      longitude: position.longitude,
+    );
 
     setState(() {
       gettingLocation = false;
@@ -113,9 +113,9 @@ class _MapWidgetState extends State<MapWidget> {
     GeoFirePoint point = ff.getGeoFirePoint(latitude: position.latitude, longitude: position.longitude);
 
     Query q = FirebaseFirestore.instance
-        .collectionGroup('meta')
-        .where('public.location.geohash', isGreaterThanOrEqualTo: point.hash)
-        .where('public.location.geohash', isLessThanOrEqualTo: point.hash);
+        .collection('users-public')
+        .where('geohash', isGreaterThanOrEqualTo: point.hash)
+        .where('geohash', isLessThanOrEqualTo: point.hash);
 
     q.snapshots().listen((event) {
       print('event.size');
