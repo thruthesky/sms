@@ -52,10 +52,10 @@
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLName</key>
-			<string>KAKAO_APP_KEY</string>
+			<string></string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>f2ab9c07815d4cf099a5e8b4d82398d4</string>
+				<string>kakaof2ab9c07815d4cf099a5e8b4d82398d4</string>
 			</array>
 		</dict>
 	</array>
@@ -65,13 +65,20 @@
 	<string>1195118290859166</string>
 	<key>FacebookDisplayName</key>
 	<string>SMS APP</string>
-	<key>LSApplicationQueriesSchemes</key>
-	<array>
-		<string>fbapi</string>
-		<string>fb-messenger-share-api</string>
-		<string>fbauth2</string>
-		<string>fbshareextension</string>
-	</array>
+	<key>FirebaseAppDelegateProxyEnabled</key>
+	<false/>
+<key>LSApplicationQueriesSchemes</key>
+<array>
+	<string>fbapi</string>
+	<string>fb-messenger-share-api</string>
+	<string>fbauth2</string>
+	<string>fbshareextension</string>
+	<string>kakaof2ab9c07815d4cf099a5e8b4d82398d4</string>
+	<string>kakaokompassauth</string>
+	<string>storykompassauth</string>
+	<string>kakaolink</string>
+	<string>kakaotalk-5.9.7</string>
+</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
@@ -106,10 +113,9 @@
 	<false/>
 	<key>FirebaseAppDelegateProxyEnabled</key>
 	<false/>
-
 	<key>io.flutter.embedded_views_preview</key>
 	<true />
-	<key>NSLocationWhenInUsageDescription</key>
+	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>$(EXECUTABLE_NAME) needs access to location</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>$(EXECUTABLE_NAME) needs access to location</string>
