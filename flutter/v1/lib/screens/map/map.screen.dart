@@ -46,67 +46,72 @@ class _MapWidgetState extends State<MapWidget> {
   // TODO: fill with markers of "near me" locations
   Map<String, Marker> markers = {};
 
-  _getCurrentLocation() async {
+  _initLocation() async {
     // check if service is enabled
     locationServiceEnabled = await location.serviceEnabled();
     if (!locationServiceEnabled) {
       // request if not enabled
       locationServiceEnabled = await location.requestService();
       if (!locationServiceEnabled) {
+        setState(() => gettingLocation = false);
         return;
       }
     }
 
     // check if have permission to use location service
     permissionStatus = await location.hasPermission();
+    if (permissionStatus == PermissionStatus.deniedForever) {
+      setState(() => gettingLocation = false);
+      return;
+    }
     if (permissionStatus == PermissionStatus.denied) {
       // request if permission is not granted.
       permissionStatus = await location.requestPermission();
       if (permissionStatus != PermissionStatus.granted) {
+        setState(() => gettingLocation = false);
         return;
       }
     }
 
-    // get current location of the user. base on device's location.
-    LocationData currentLoccation = await location.getLocation();
+    try {
+      // get current location of the user. base on device's location.
+      LocationData currentLocation = await location.getLocation();
+      // update user's new location
+      Service.updateUserLocation(
+        latitude: currentLocation.latitude,
+        longitude: currentLocation.longitude,
+      );
 
-    // update user's new location
-    ff.updateUserLocation(
-      latitude: currentLoccation.latitude,
-      longitude: currentLoccation.longitude,
-    );
+      // create position for the initial map location.
+      final LatLng position = LatLng(
+        currentLocation.latitude,
+        currentLocation.longitude,
+      );
 
-    // create position for the initial map location.
-    final LatLng position = LatLng(
-      currentLoccation.latitude,
-      currentLoccation.longitude,
-    );
+      // set current location as the initial position for the map.
+      initialLocation = CameraPosition(
+        target: position,
+        zoom: 15,
+      );
 
-    // set current location as the initial position for the map.
-    initialLocation = CameraPosition(
-      target: position,
-      zoom: 15,
-    );
+      // get other locations "near me".
+      _getLocationsNearMe(position);
 
-    // get other locations "near me".
-    _getLocationsNearMe(position);
-
-    setState(() {
-      gettingLocation = false;
-    });
+      setState(() {
+        gettingLocation = false;
+      });
+    } catch (e) {
+      return Service.error(e);
+    }
   }
 
   _getLocationsNearMe(LatLng position) async {
-    try {
-      subscription = ff
-          .findLocationsNearMe(
-            latitude: position.latitude,
-            longitude: position.longitude,
-          )
-          .listen(_updateMapMarkers);
-    } catch (e) {
-      Service.error(e);
-    }
+    subscription = Service
+        .findLocationsNearMe(
+          latitude: position.latitude,
+          longitude: position.longitude,
+        )
+        .listen(_updateMapMarkers);
   }
 
   // TODO: add info window
@@ -131,7 +136,7 @@ class _MapWidgetState extends State<MapWidget> {
 
   @override
   void initState() {
-    _getCurrentLocation();
+    _initLocation();
     super.initState();
   }
 
@@ -149,7 +154,18 @@ class _MapWidgetState extends State<MapWidget> {
 
     if (!locationServiceEnabled)
       return Center(
-        child: Text('Enable Location Service'),
+        child: Column(
+          children: [
+            Text('Enable Location Service'),
+            SizedBox(height: Space.md),
+            RaisedButton(
+              onPressed: () {
+                _initLocation();
+              },
+              child: Text('Retry'),
+            )
+          ],
+        ),
       );
 
     if (permissionStatus == PermissionStatus.deniedForever ||

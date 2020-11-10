@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:devicelocale/devicelocale.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:geoflutterfire/geoflutterfire.dart';
 import 'package:get/get.dart';
 import 'package:v1/services/global_variables.dart';
 import 'package:v1/services/route_names.dart';
@@ -18,6 +19,9 @@ class Service {
   static final CollectionReference usersRef =
       FirebaseFirestore.instance.collection('users');
   static String firebaseMessagingToken;
+
+
+  static Geoflutterfire geo = Geoflutterfire();
 
   /// Display translation text in the device language.
   ///
@@ -228,5 +232,68 @@ class Service {
       // reset `AppRouter.navStack`
       Get.offAllNamed(RouteNames.home);
     }
+  }
+
+
+  /// Updates user location
+  ///
+  /// This will add a document under firebase storage [users-public] collection,
+  /// with a document id the same as the value the current user's uid.
+  ///
+  /// [fieldName] is where the user's location data will be saved on the document.
+  /// - it is optional, the default value is `location`
+  ///
+  /// ```dart
+  /// FireFlutter.updateUserLocation(
+  ///   latitude: _latitude,
+  ///   longitude: _longitude,
+  ///   fieldName: "this is optional, default value is 'location'"
+  /// );
+  /// ```
+  static updateUserLocation({
+    @required double latitude,
+    @required double longitude,
+    String fieldName = 'location',
+  }) async {
+    final GeoFirePoint point = geo.point(
+      latitude: latitude,
+      longitude: longitude,
+    );
+
+    return await ff.usersPublicCol.doc(ff.user.uid).set(
+      {fieldName: point.data},
+      SetOptions(merge: true),
+    );
+  }
+
+  /// returns list of locations near the given [latitude] and [longitude] within the [searchRadius].
+  ///
+  /// [searchRadius] is by kilometers, default value is set to `2`
+  /// 
+  /// ```dart
+  /// FireFlutter.findLocationsNearMe(
+  ///   latitude: position.latitude,
+  ///   longitude: position.longitude,
+  ///   searchRadius: ...                // optional, default value is `2`.
+  /// )
+  /// ```
+  static Stream<List<DocumentSnapshot>> findLocationsNearMe({
+    @required double latitude,
+    @required double longitude,
+    double searchRadius = 2,
+  }) {
+    final GeoFirePoint point = geo.point(
+      latitude: latitude,
+      longitude: longitude,
+    );
+
+    // query for "nearby me"
+    // [radius] is by kilometers
+    return geo.collection(collectionRef: ff.usersPublicCol).within(
+          center: point,
+          radius: searchRadius,
+          field: 'location',
+          strictMode: true,
+        );
   }
 }
