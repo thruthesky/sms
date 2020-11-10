@@ -77,7 +77,7 @@ class _MapWidgetState extends State<MapWidget> {
       // get current location of the user. base on device's location.
       LocationData currentLocation = await location.getLocation();
       // update user's new location
-      Service.updateUserLocation(
+      await Service.updateUserLocation(
         latitude: currentLocation.latitude,
         longitude: currentLocation.longitude,
       );

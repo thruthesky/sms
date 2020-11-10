@@ -20,7 +20,7 @@ class Service {
       FirebaseFirestore.instance.collection('users');
   static String firebaseMessagingToken;
 
-
+  /// 
   static Geoflutterfire geo = Geoflutterfire();
 
   /// Display translation text in the device language.
@@ -250,7 +250,7 @@ class Service {
   ///   fieldName: "this is optional, default value is 'location'"
   /// );
   /// ```
-  static updateUserLocation({
+  static Future<void> updateUserLocation({
     @required double latitude,
     @required double longitude,
     String fieldName = 'location',
@@ -260,7 +260,8 @@ class Service {
       longitude: longitude,
     );
 
-    return await ff.usersPublicCol.doc(ff.user.uid).set(
+    /// TODO: refactor to new conform with the new structure
+    return await ff.db.collection('meta').doc('user.public.${ff.user.uid}').set(
       {fieldName: point.data},
       SetOptions(merge: true),
     );
@@ -289,10 +290,11 @@ class Service {
 
     // query for "nearby me"
     // [radius] is by kilometers
-    return geo.collection(collectionRef: ff.usersPublicCol).within(
+    /// TODO: refactor to new conform with the new structure
+    return geo.collection(collectionRef: ff.db.collection('meta')).within(
           center: point,
           radius: searchRadius,
-          field: 'location',
+          field: 'user.public.${ff.user.uid}.location',
           strictMode: true,
         );
   }
