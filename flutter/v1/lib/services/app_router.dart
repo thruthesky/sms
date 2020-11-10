@@ -8,6 +8,7 @@ import 'package:v1/screens/forum/forum.screen.dart';
 import 'package:v1/screens/forum/forum.view.screen.dart';
 import 'package:v1/screens/home/home.screen.dart';
 import 'package:v1/screens/login/login.screen.dart';
+import 'package:v1/screens/map/map.screen.dart';
 import 'package:v1/screens/mobile-auth/mobile_auth.screen.dart';
 import 'package:v1/screens/mobile-auth/mobile_code_verification.screen.dart';
 import 'package:v1/screens/profile/profile.screen.dart';
@@ -37,7 +38,7 @@ class AppRouter extends NavigatorObserver {
     RouteNames.forumEdit: ForumEditScreen(),
     RouteNames.forumView: ForumViewScreen(),
     RouteNames.inAppPurchase: InAppPurchase(),
-  };
+    RouteNames.map: MapScreen(),
 
   static GetPageRoute generate(RouteSettings routeSettings) {
     // This will be different especially for `forum` route.

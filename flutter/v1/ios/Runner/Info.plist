@@ -83,6 +83,12 @@
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>$(EXECUTABLE_NAME) need access to Camera.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>$(EXECUTABLE_NAME) needs access to Location</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>$(EXECUTABLE_NAME) needs access to Location</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>$(EXECUTABLE_NAME) needs access to Location</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>$(EXECUTABLE_NAME) need access to Microphone.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
@@ -90,6 +96,7 @@
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>
+		<string>location</string>
 		<string>remote-notification</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
@@ -111,5 +118,7 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>io.flutter.embedded_views_preview</key>
+	<true/>
 </dict>
 </plist>
