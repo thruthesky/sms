@@ -113,32 +113,33 @@ class _HomeScreenState extends State<HomeScreen> {
                   RouteNames.forum,
                   arguments: {'category': 'qna'},
                 ),
-              child: Text('QnA'),
-            ),
-            RaisedButton(
-              onPressed: () => Get.toNamed(RouteNames.forum,
-                  arguments: {'category': 'discussion'}),
-              child: Text('Discussion'),
-            ),
-            RaisedButton(
-              onPressed: () => Get.toNamed(RouteNames.forum,
-                  arguments: {'category': 'reminder'}),
-              child: Text('Reminder'),
-            ),
-            RaisedButton(
-              onPressed: () => Get.toNamed(RouteNames.forumView,
-                  arguments: {'id': '0YJHJum1EYb6ZaFOVNPx'}),
-              child: Text('Post View'),
-            ),
-            RaisedButton(
-              onPressed: () => Get.toNamed(RouteNames.search),
-              child: Text('Search'),
-            ),
-            RaisedButton(
-              onPressed: () => Get.toNamed(RouteNames.inAppPurchase),
-              child: Text('Store'),
-            ),
-          ],
+                child: Text('QnA'),
+              ),
+              RaisedButton(
+                onPressed: () => Get.toNamed(RouteNames.forum,
+                    arguments: {'category': 'discussion'}),
+                child: Text('Discussion'),
+              ),
+              RaisedButton(
+                onPressed: () => Get.toNamed(RouteNames.forum,
+                    arguments: {'category': 'reminder'}),
+                child: Text('Reminder'),
+              ),
+              RaisedButton(
+                onPressed: () => Get.toNamed(RouteNames.forumView,
+                    arguments: {'id': '0YJHJum1EYb6ZaFOVNPx'}),
+                child: Text('Post View'),
+              ),
+              RaisedButton(
+                onPressed: () => Get.toNamed(RouteNames.search),
+                child: Text('Search'),
+              ),
+              RaisedButton(
+                onPressed: () => Get.toNamed(RouteNames.inAppPurchase),
+                child: Text('Store'),
+              ),
+            ],
+          ),
         ),
       ),
     );

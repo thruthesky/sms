@@ -39,6 +39,7 @@ class AppRouter extends NavigatorObserver {
     RouteNames.forumView: ForumViewScreen(),
     RouteNames.inAppPurchase: InAppPurchase(),
     RouteNames.map: MapScreen(),
+  };
 
   static GetPageRoute generate(RouteSettings routeSettings) {
     // This will be different especially for `forum` route.
