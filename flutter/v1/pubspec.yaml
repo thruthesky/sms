@@ -30,6 +30,7 @@ dependencies:
   fireflutter:
     path: packages/fireflutter
 
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
