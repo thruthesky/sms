@@ -26,6 +26,9 @@ dependencies:
   google_maps_flutter: ^1.0.6
   location: ^3.0.2
 
+  # TODO: move to fireflutter 
+  geoflutterfire: ^2.2.1
+
   kakao_flutter_sdk: ^0.6.0-beta.1
   fireflutter:
     path: packages/fireflutter

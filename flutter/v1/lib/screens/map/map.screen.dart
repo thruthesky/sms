@@ -6,6 +6,7 @@ import 'package:location/location.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:v1/services/global_variables.dart';
 import 'package:v1/services/service.dart';
+import 'package:v1/services/spaces.dart';
 import 'package:v1/widgets/commons/app_bar.dart';
 import 'package:v1/widgets/commons/app_drawer.dart';
 import 'package:v1/widgets/commons/spinner.dart';
@@ -41,85 +42,87 @@ class _MapWidgetState extends State<MapWidget> {
 
   StreamSubscription subscription;
 
-  // "Near Me" search radius by kilometers
-  // TODO: this can be added as part of app settings
-  double searchRadius = 2;
-
   // markers
   // TODO: fill with markers of "near me" locations
   Map<String, Marker> markers = {};
 
-  _getCurrentLocation() async {
+  _initLocation() async {
     // check if service is enabled
     locationServiceEnabled = await location.serviceEnabled();
     if (!locationServiceEnabled) {
       // request if not enabled
       locationServiceEnabled = await location.requestService();
       if (!locationServiceEnabled) {
+        setState(() => gettingLocation = false);
         return;
       }
     }
 
     // check if have permission to use location service
     permissionStatus = await location.hasPermission();
+    if (permissionStatus == PermissionStatus.deniedForever) {
+      setState(() => gettingLocation = false);
+      return;
+    }
     if (permissionStatus == PermissionStatus.denied) {
       // request if permission is not granted.
       permissionStatus = await location.requestPermission();
       if (permissionStatus != PermissionStatus.granted) {
+        setState(() => gettingLocation = false);
         return;
       }
     }
 
-    // get current location of the user. base on device's location.
-    LocationData currentLoccation = await location.getLocation();
+    try {
+      // get current location of the user. base on device's location.
+      LocationData currentLocation = await location.getLocation();
+      // update user's new location
+      await Service.updateUserLocation(
+        latitude: currentLocation.latitude,
+        longitude: currentLocation.longitude,
+      );
 
-    // update user's new location
-    ff.updateUserLocation(
-      latitude: currentLoccation.latitude,
-      longitude: currentLoccation.longitude,
-    );
+      // create position for the initial map location.
+      final LatLng position = LatLng(
+        currentLocation.latitude,
+        currentLocation.longitude,
+      );
 
-    // create position for the initial map location.
-    final LatLng position = LatLng(
-      currentLoccation.latitude,
-      currentLoccation.longitude,
-    );
+      // set current location as the initial position for the map.
+      initialLocation = CameraPosition(
+        target: position,
+        zoom: 15,
+      );
 
-    // set current location as the initial position for the map.
-    initialLocation = CameraPosition(
-      target: position,
-      zoom: 14.4746,
-    );
+      // get other locations "near me".
+      _getLocationsNearMe(position);
 
-    // get other locations "near me".
-    _getLocationsNearMe(position);
-
-    setState(() {
-      gettingLocation = false;
-    });
+      setState(() {
+        gettingLocation = false;
+      });
+    } catch (e) {
+      return Service.error(e);
+    }
   }
 
   _getLocationsNearMe(LatLng position) async {
-    try {
-     subscription = ff
+    subscription = Service
         .findLocationsNearMe(
           latitude: position.latitude,
           longitude: position.longitude,
         )
         .listen(_updateMapMarkers);
-    } catch(e) {
-      Service.error(e);
-    }
   }
 
   // TODO: add info window
   _updateMapMarkers(List<DocumentSnapshot> documents) {
-    // print('Locations near me:');
+    print('Locations near me:');
+    print(documents);
     documents.forEach((document) {
       Map<String, dynamic> data = document.data();
       GeoPoint pos = data['location']['geopoint'];
       String markerID = document.id;
-      // print(data);
+      print(data);
 
       if (markerID != ff.user.uid) {
         setState(() {
@@ -134,7 +137,7 @@ class _MapWidgetState extends State<MapWidget> {
 
   @override
   void initState() {
-    _getCurrentLocation();
+    _initLocation();
     super.initState();
   }
 
@@ -152,7 +155,18 @@ class _MapWidgetState extends State<MapWidget> {
 
     if (!locationServiceEnabled)
       return Center(
-        child: Text('Enable Location Service'),
+        child: Column(
+          children: [
+            Text('Enable Location Service'),
+            SizedBox(height: Space.md),
+            RaisedButton(
+              onPressed: () {
+                _initLocation();
+              },
+              child: Text('Retry'),
+            )
+          ],
+        ),
       );
 
     if (permissionStatus == PermissionStatus.deniedForever ||
@@ -161,16 +175,29 @@ class _MapWidgetState extends State<MapWidget> {
         child: Text('This app doesn\'t have permission to access Location'),
       );
 
-    return GoogleMap(
-      initialCameraPosition: initialLocation,
-      onMapCreated: (controller) {
-        setState(() {
-          mapController = controller;
-        });
-      },
-      // toSet() removes duplicates if there's any.
-      markers: markers.values.toSet(),
-      myLocationEnabled: true,
+    return Stack(
+      children: [
+        GoogleMap(
+          initialCameraPosition: initialLocation,
+          onMapCreated: (controller) {
+            setState(() {
+              mapController = controller;
+            });
+          },
+          // toSet() removes duplicates if there's any.
+          markers: markers.values.toSet(),
+          myLocationEnabled: true,
+        ),
+        Positioned(
+          child: Container(
+            color: Colors.white,
+            padding: EdgeInsets.all(Space.sm),
+            child: Text('${markers.values.toSet().length} person near you'),
+          ),
+          top: Space.md,
+          left: Space.md,
+        ),
+      ],
     );
   }
 }
