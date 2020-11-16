@@ -119,9 +119,10 @@ class _ForumScreenState extends State<ForumScreen> {
               }
 
               // TODO @lancelynyrd double check if no errors
-              ff.updateProfile({}, meta: {
-                'public': {"$topic": notificationPost}
-              });
+              ff.updateProfile(
+                {},
+                public: {"$topic": notificationPost},
+              );
               // Service.usersRef
               //     .doc(ff.user.uid)
               //     .collection('meta')

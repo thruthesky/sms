@@ -2,8 +2,11 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+
+import 'package:v1/widgets/commons/app_drawer.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:v1/services/consumable_store.dart';
+
 
 const bool _kAutoConsume = true;
 
@@ -154,15 +157,16 @@ class _InAppPurchaseState extends State<InAppPurchase> {
       );
     }
 
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('IAP Example'),
-        ),
-        body: Stack(
+    
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('IAP Example'),
+      ),
+      endDrawer: CommonAppDrawer(), 
+      body: Stack(
           children: stack,
         ),
-      ),
     );
   }
 
