@@ -101,7 +101,7 @@ class _UsersNearMeState extends State<UsersNearMe> {
         // GeoPoint pos = data['location']['geopoint'];
         // print(data);
 
-        // if this is the current user's data. don't mark it on the map.
+        // if this is the current user's data. don't add it to the list.
         if (document.id == ff.user.uid) return;
         if (!mounted) return;
 
