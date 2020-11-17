@@ -28,6 +28,7 @@ class _MainAppState extends State<MainApp> {
     super.initState();
 
     ff.init(
+      openProfile: true,
       enableNotification: true,
       firebaseServerToken:
           'AAAAjdyAvbM:APA91bGist2NNTrrKTZElMzrNV0rpBLV7Nn674NRow-uyjG1-Uhh5wGQWyQEmy85Rcs0wlEpYT2uFJrSnlZywLzP1hkdx32FKiPJMI38evdRZO0x1vBJLc-cukMqZBKytzb3mzRfmrgL',

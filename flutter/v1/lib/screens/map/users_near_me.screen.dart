@@ -41,6 +41,11 @@ class _UsersNearMeState extends State<UsersNearMe> {
 
   Map<String, dynamic> usersNearMe = {};
 
+  /// todo Updating user location
+  /// * When app starts update user location if user has logged in.
+  /// * When user logs in.
+  /// * When user moves to another location.
+  /// ! move this code to main. This must work in background since it may take time.
   _initLocation() async {
     // check if service is enabled
     isLocationServiceEnabled = await location.serviceEnabled();
