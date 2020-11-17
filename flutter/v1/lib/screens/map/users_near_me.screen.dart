@@ -41,10 +41,11 @@ class _UsersNearMeState extends State<UsersNearMe> {
 
   Map<String, dynamic> usersNearMe = {};
 
-  /// todo Updating user location
+  /// todo Updating user location on firestore
   /// * When app starts update user location if user has logged in.
   /// * When user logs in.
   /// * When user moves to another location.
+  /// todo interval should be adjustable and the default is 30 seconds.
   /// ! move this code to main. This must work in background since it may take time.
   _initLocation() async {
     // check if service is enabled
