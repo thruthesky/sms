@@ -43,7 +43,6 @@ class _MapWidgetState extends State<MapWidget> {
   StreamSubscription subscription;
 
   // markers
-  // TODO: fill with markers of "near me" locations
   Map<String, Marker> markers = {};
 
   _initLocation() async {
@@ -125,6 +124,7 @@ class _MapWidgetState extends State<MapWidget> {
       print(data);
 
       if (markerID != ff.user.uid) {
+        if (!mounted) return;
         setState(() {
           markers[markerID] = Marker(
             markerId: MarkerId(markerID),

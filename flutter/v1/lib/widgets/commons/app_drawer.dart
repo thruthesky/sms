@@ -23,7 +23,7 @@ class _CommonAppDrawerState extends State<CommonAppDrawer> {
             StreamBuilder(
               stream: ff.userChange,
               builder: (context, snapshot) {
-                if (ff.userIsLoggedOut) {
+                if (!ff.loggedIn) {
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [

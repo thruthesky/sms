@@ -260,7 +260,7 @@ class Service {
       longitude: longitude,
     );
 
-    // TODO: refactor to new conform with the new structure
+    // TODO: refactor to conform with the new structure
     CollectionReference colRef =
         ff.db.collection('meta').doc('user').collection('public');
 
@@ -295,7 +295,7 @@ class Service {
 
     // query for "nearby me"
     // [radius] is by kilometers
-    // TODO: refactor to new conform with the new structure
+    // TODO: refactor to conform with the new structure
     CollectionReference colRef =
         ff.db.collection('meta').doc('user').collection('public');
     return geo.collection(collectionRef: colRef).within(
