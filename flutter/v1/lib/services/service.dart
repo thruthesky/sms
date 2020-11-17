@@ -276,8 +276,8 @@ class Service {
   ///
   /// ```dart
   /// FireFlutter.findLocationsNearMe(
-  ///   latitude: position.latitude,
-  ///   longitude: position.longitude,
+  ///   latitude: _latitude,
+  ///   longitude: _longitude,
   ///   searchRadius: ...                // optional, default value is `2`.
   /// )
   /// ```

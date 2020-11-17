@@ -64,7 +64,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: Text('Settings'),
                         ),
                         RaisedButton(
-                          onPressed: () => Get.toNamed(RouteNames.map),
+                          onPressed: () => Get.toNamed(RouteNames.usersNearMe),
                           child: Text('Who\'s Near Me?'),
                         ),
                       ],

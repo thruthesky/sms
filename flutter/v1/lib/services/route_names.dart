@@ -14,5 +14,5 @@ class RouteNames {
   static const String mobileAuth = '/mobileAuth';
   static const String mobileCodeVerification = '/mobileCodeVerification';
   static const String search = '/search';
-  static const String map = '/map';
+  static const String usersNearMe = '/usersNearMe';
 }

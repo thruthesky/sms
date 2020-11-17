@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:v1/services/global_variables.dart';
@@ -11,39 +10,34 @@ import 'package:v1/widgets/commons/app_bar.dart';
 import 'package:v1/widgets/commons/app_drawer.dart';
 import 'package:v1/widgets/commons/spinner.dart';
 
-class MapScreen extends StatelessWidget {
+class UsersNearMeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CommonAppBar(
-        title: Text('Map Screen'),
+        title: Text('Users Near Me'),
       ),
       endDrawer: CommonAppDrawer(),
-      body: MapWidget(),
+      body: Container(
+          padding: EdgeInsets.all(Space.pageWrap), child: UsersNearMe()),
     );
   }
 }
 
-class MapWidget extends StatefulWidget {
+class UsersNearMe extends StatefulWidget {
   @override
-  _MapWidgetState createState() => _MapWidgetState();
+  _UsersNearMeState createState() => _UsersNearMeState();
 }
 
-class _MapWidgetState extends State<MapWidget> {
+class _UsersNearMeState extends State<UsersNearMe> {
   Location location = new Location();
 
-  GoogleMapController mapController;
-  CameraPosition initialLocation;
-
-  bool gettingLocation = true;
-
+  bool loadingLocations = true;
   bool locationServiceEnabled;
   PermissionStatus permissionStatus;
-
   StreamSubscription subscription;
 
-  // markers
-  Map<String, Marker> markers = {};
+  Map<String, dynamic> usersNearMe = {};
 
   _initLocation() async {
     // check if service is enabled
@@ -52,7 +46,7 @@ class _MapWidgetState extends State<MapWidget> {
       // request if not enabled
       locationServiceEnabled = await location.requestService();
       if (!locationServiceEnabled) {
-        setState(() => gettingLocation = false);
+        setState(() => loadingLocations = false);
         return;
       }
     }
@@ -60,14 +54,15 @@ class _MapWidgetState extends State<MapWidget> {
     // check if have permission to use location service
     permissionStatus = await location.hasPermission();
     if (permissionStatus == PermissionStatus.deniedForever) {
-      setState(() => gettingLocation = false);
+      setState(() => loadingLocations = false);
       return;
     }
+
     if (permissionStatus == PermissionStatus.denied) {
       // request if permission is not granted.
       permissionStatus = await location.requestPermission();
       if (permissionStatus != PermissionStatus.granted) {
-        setState(() => gettingLocation = false);
+        setState(() => loadingLocations = false);
         return;
       }
     }
@@ -75,63 +70,46 @@ class _MapWidgetState extends State<MapWidget> {
     try {
       // get current location of the user. base on device's location.
       LocationData currentLocation = await location.getLocation();
+
       // update user's new location
       await Service.updateUserLocation(
         latitude: currentLocation.latitude,
         longitude: currentLocation.longitude,
       );
 
-      // create position for the initial map location.
-      final LatLng position = LatLng(
-        currentLocation.latitude,
-        currentLocation.longitude,
+      // get other users "near me".
+      _getUsersNearMe(
+        latitude: currentLocation.latitude,
+        longitude: currentLocation.longitude,
       );
-
-      // set current location as the initial position for the map.
-      initialLocation = CameraPosition(
-        target: position,
-        zoom: 15,
-      );
-
-      // get other locations "near me".
-      _getLocationsNearMe(position);
 
       setState(() {
-        gettingLocation = false;
+        loadingLocations = false;
       });
     } catch (e) {
       return Service.error(e);
     }
   }
 
-  _getLocationsNearMe(LatLng position) async {
-    subscription = Service
-        .findLocationsNearMe(
-          latitude: position.latitude,
-          longitude: position.longitude,
-        )
-        .listen(_updateMapMarkers);
-  }
+  _getUsersNearMe({double latitude, double longitude}) {
+    subscription = Service.findLocationsNearMe(
+      latitude: latitude,
+      longitude: longitude,
+    ).listen((List<DocumentSnapshot> documents) {
+      documents.forEach((document) {
+        // Map<String, dynamic> data = document.data();
+        // GeoPoint pos = data['location']['geopoint'];
+        // print(data);
 
-  // TODO: add info window
-  _updateMapMarkers(List<DocumentSnapshot> documents) {
-    print('Locations near me:');
-    print(documents);
-    documents.forEach((document) {
-      Map<String, dynamic> data = document.data();
-      GeoPoint pos = data['location']['geopoint'];
-      String markerID = document.id;
-      print(data);
-
-      if (markerID != ff.user.uid) {
+        // if this is the current user's data. don't mark it on the map.
+        if (document.id == ff.user.uid) return;
         if (!mounted) return;
+
+        // TODO: get other user's info near me.
         setState(() {
-          markers[markerID] = Marker(
-            markerId: MarkerId(markerID),
-            position: LatLng(pos.latitude, pos.longitude),
-          );
+          usersNearMe.putIfAbsent(document.id, () => document.id);
         });
-      }
+      });
     });
   }
 
@@ -151,7 +129,7 @@ class _MapWidgetState extends State<MapWidget> {
 
   @override
   Widget build(BuildContext context) {
-    if (gettingLocation) return Center(child: CommonSpinner());
+    if (loadingLocations) return Center(child: CommonSpinner());
 
     if (!locationServiceEnabled)
       return Center(
@@ -175,28 +153,14 @@ class _MapWidgetState extends State<MapWidget> {
         child: Text('This app doesn\'t have permission to access Location'),
       );
 
-    return Stack(
+    return Column(
       children: [
-        GoogleMap(
-          initialCameraPosition: initialLocation,
-          onMapCreated: (controller) {
-            setState(() {
-              mapController = controller;
-            });
-          },
-          // toSet() removes duplicates if there's any.
-          markers: markers.values.toSet(),
-          myLocationEnabled: true,
-        ),
-        Positioned(
-          child: Container(
-            color: Colors.white,
-            padding: EdgeInsets.all(Space.sm),
-            child: Text('${markers.values.toSet().length} person near you'),
+        Text('Users near you: '),
+        for (String uid in usersNearMe.values)
+          Padding(
+            padding: EdgeInsets.only(top: Space.md),
+            child: Text('$uid'),
           ),
-          top: Space.md,
-          left: Space.md,
-        ),
       ],
     );
   }
