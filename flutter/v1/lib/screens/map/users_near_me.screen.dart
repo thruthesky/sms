@@ -19,7 +19,9 @@ class UsersNearMeScreen extends StatelessWidget {
       ),
       endDrawer: CommonAppDrawer(),
       body: Container(
-          padding: EdgeInsets.all(Space.pageWrap), child: UsersNearMe()),
+        padding: EdgeInsets.all(Space.pageWrap),
+        child: UsersNearMe(),
+      ),
     );
   }
 }
@@ -32,8 +34,8 @@ class UsersNearMe extends StatefulWidget {
 class _UsersNearMeState extends State<UsersNearMe> {
   Location location = new Location();
 
-  bool loadingLocations = true;
-  bool locationServiceEnabled;
+  bool isLoadingLocations = true;
+  bool isLocationServiceEnabled;
   PermissionStatus permissionStatus;
   StreamSubscription subscription;
 
@@ -41,12 +43,12 @@ class _UsersNearMeState extends State<UsersNearMe> {
 
   _initLocation() async {
     // check if service is enabled
-    locationServiceEnabled = await location.serviceEnabled();
-    if (!locationServiceEnabled) {
+    isLocationServiceEnabled = await location.serviceEnabled();
+    if (!isLocationServiceEnabled) {
       // request if not enabled
-      locationServiceEnabled = await location.requestService();
-      if (!locationServiceEnabled) {
-        setState(() => loadingLocations = false);
+      isLocationServiceEnabled = await location.requestService();
+      if (!isLocationServiceEnabled) {
+        setState(() => isLoadingLocations = false);
         return;
       }
     }
@@ -54,7 +56,7 @@ class _UsersNearMeState extends State<UsersNearMe> {
     // check if have permission to use location service
     permissionStatus = await location.hasPermission();
     if (permissionStatus == PermissionStatus.deniedForever) {
-      setState(() => loadingLocations = false);
+      setState(() => isLoadingLocations = false);
       return;
     }
 
@@ -62,7 +64,7 @@ class _UsersNearMeState extends State<UsersNearMe> {
       // request if permission is not granted.
       permissionStatus = await location.requestPermission();
       if (permissionStatus != PermissionStatus.granted) {
-        setState(() => loadingLocations = false);
+        setState(() => isLoadingLocations = false);
         return;
       }
     }
@@ -84,7 +86,7 @@ class _UsersNearMeState extends State<UsersNearMe> {
       );
 
       setState(() {
-        loadingLocations = false;
+        isLoadingLocations = false;
       });
     } catch (e) {
       return Service.error(e);
@@ -129,9 +131,9 @@ class _UsersNearMeState extends State<UsersNearMe> {
 
   @override
   Widget build(BuildContext context) {
-    if (loadingLocations) return Center(child: CommonSpinner());
+    if (isLoadingLocations) return Center(child: CommonSpinner());
 
-    if (!locationServiceEnabled)
+    if (!isLocationServiceEnabled)
       return Center(
         child: Column(
           children: [
