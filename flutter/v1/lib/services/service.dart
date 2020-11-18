@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:location/location.dart';
 import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:devicelocale/devicelocale.dart';
@@ -228,7 +231,6 @@ class Service {
         ff.user.phoneNumber.isNullOrBlank) {
       Get.toNamed(RouteNames.mobileAuth);
     } else {
-      // reset `AppRouter.navStack`
       Get.offAllNamed(RouteNames.home);
     }
   }
@@ -248,8 +250,9 @@ class Service {
   ///   fieldName: "this is optional, default value is 'location'"
   /// );
   /// ```
-  /// 
-  /// TODO: move to fireflutter package
+  ///
+  /// TODO: move to fireflutter package.
+  /// TODO: update user location only when it has changes.
   static Future<void> updateUserLocation({
     @required double latitude,
     @required double longitude,
@@ -260,11 +263,7 @@ class Service {
       longitude: longitude,
     );
 
-    // TODO: refactor to conform with the new structure
-    CollectionReference colRef =
-        ff.db.collection('meta').doc('user').collection('public');
-
-    return await colRef.doc(ff.user.uid).set(
+    return await ff.publicDoc.set(
       {fieldName: point.data},
       SetOptions(merge: true),
     );
@@ -275,15 +274,15 @@ class Service {
   /// [searchRadius] is by kilometers, default value is set to `2`
   ///
   /// ```dart
-  /// FireFlutter.findLocationsNearMe(
+  /// FireFlutter.findUsersNearMe(
   ///   latitude: _latitude,
   ///   longitude: _longitude,
   ///   searchRadius: ...                // optional, default value is `2`.
   /// )
   /// ```
-  /// 
+  ///
   /// TODO: move to fireflutter package
-  static Stream<List<DocumentSnapshot>> findLocationsNearMe({
+  static Stream<List<DocumentSnapshot>> findUsersNearMe({
     @required double latitude,
     @required double longitude,
     double searchRadius = 2,
@@ -295,14 +294,54 @@ class Service {
 
     // query for "nearby me"
     // [radius] is by kilometers
-    // TODO: refactor to conform with the new structure
-    CollectionReference colRef =
-        ff.db.collection('meta').doc('user').collection('public');
-    return geo.collection(collectionRef: colRef).within(
+    return geo.collection(collectionRef: ff.publicCol).within(
           center: point,
           radius: searchRadius,
           field: 'location',
           strictMode: true,
         );
+  }
+
+  static Location location = new Location();
+
+  static Stream<LocationData> userLocation;
+
+  /// initialize location service use, and returns user location.
+  ///
+  /// [updateInterval] is in seconds.
+  /// [updateDisctance] is the distance limit whenever location change updates.
+  /// it will update depending on the value of [updateInterval] and [updateDistance].
+  ///
+  /// NOTE: [updateInterval] only works on android.
+  ///
+  /// todo Updating user location on firestore
+  /// * When app starts update user location if user has logged in.
+  /// * When user logs in.
+  /// * When user moves to another location.
+  /// todo interval should be adjustable and the default is 30 seconds.
+  static initUserLocation({
+    // int updateInterval = 30,
+    double updateDistance = 10,
+  }) {
+    // interval is in milliseconds
+    // NOTE: [interval] only works for android.
+    // NOTE: this is future
+    location.changeSettings(
+      // interval: updateInterval * 1000,
+      distanceFilter: updateDistance,
+      accuracy: LocationAccuracy.high,
+    );
+
+    location.onLocationChanged.listen((newLocation) {
+      if (ff.notLoggedIn) return;
+
+      // TODO: Update user location
+      updateUserLocation(
+        latitude: newLocation.latitude,
+        longitude: newLocation.longitude,
+      );
+    });
+
+    userLocation = location.onLocationChanged.asBroadcastStream();
   }
 }

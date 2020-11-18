@@ -50,6 +50,7 @@ class _MainAppState extends State<MainApp> {
     KakaoContext.javascriptClientId = '2cdb6b324434311d304ab3f367f9edf3';
 
     Service.initLocale().then((value) => Get.updateLocale(Locale(value)));
+    Service.initUserLocation();
 
     /// Settings changed.
     ///
@@ -103,14 +104,6 @@ class _MainAppState extends State<MainApp> {
 
     // Timer(Duration(milliseconds: 300),
     //     () => Get.toNamed('forum', arguments: {'category': 'qna'}));
-
-    // ff.firebaseInitialized.listen((value) async {
-    //   if (value == false) return;
-    //   ff.db
-    //       .collection('users-public')
-    //       .doc(ff.user.uid)
-    //       .set({'geopoint': 'abcd'}, SetOptions(merge: true));
-    // });
   }
 
   @override

@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:location/location.dart';
+import 'package:v1/services/service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:v1/services/global_variables.dart';
-import 'package:v1/services/service.dart';
 import 'package:v1/services/spaces.dart';
 import 'package:v1/widgets/commons/app_bar.dart';
 import 'package:v1/widgets/commons/app_drawer.dart';
@@ -32,82 +32,35 @@ class UsersNearMe extends StatefulWidget {
 }
 
 class _UsersNearMeState extends State<UsersNearMe> {
-  Location location = new Location();
+  bool loadingLocations = true;
+  PermissionStatus locationPermission;
 
-  bool isLoadingLocations = true;
-  bool isLocationServiceEnabled;
-  PermissionStatus permissionStatus;
-  StreamSubscription subscription;
-
+  StreamSubscription locationSubscription;
+  StreamSubscription nearMeSubscription;
   Map<String, dynamic> usersNearMe = {};
 
-  /// todo Updating user location on firestore
-  /// * When app starts update user location if user has logged in.
-  /// * When user logs in.
-  /// * When user moves to another location.
-  /// todo interval should be adjustable and the default is 30 seconds.
-  /// ! move this code to main. This must work in background since it may take time.
   _initLocation() async {
-    // check if service is enabled
-    isLocationServiceEnabled = await location.serviceEnabled();
-    if (!isLocationServiceEnabled) {
-      // request if not enabled
-      isLocationServiceEnabled = await location.requestService();
-      if (!isLocationServiceEnabled) {
-        setState(() => isLoadingLocations = false);
-        return;
-      }
+    locationPermission = await Service.location.hasPermission();
+
+    if (locationPermission != PermissionStatus.granted){
+      return setState(() => loadingLocations = false);
     }
 
-    // check if have permission to use location service
-    permissionStatus = await location.hasPermission();
-    if (permissionStatus == PermissionStatus.deniedForever) {
-      setState(() => isLoadingLocations = false);
-      return;
-    }
-
-    if (permissionStatus == PermissionStatus.denied) {
-      // request if permission is not granted.
-      permissionStatus = await location.requestPermission();
-      if (permissionStatus != PermissionStatus.granted) {
-        setState(() => isLoadingLocations = false);
-        return;
-      }
-    }
-
-    try {
-      // get current location of the user. base on device's location.
-      LocationData currentLocation = await location.getLocation();
-
-      // update user's new location
-      await Service.updateUserLocation(
-        latitude: currentLocation.latitude,
-        longitude: currentLocation.longitude,
-      );
-
-      // get other users "near me".
-      _getUsersNearMe(
-        latitude: currentLocation.latitude,
-        longitude: currentLocation.longitude,
-      );
-
-      setState(() {
-        isLoadingLocations = false;
-      });
-    } catch (e) {
-      return Service.error(e);
-    }
+    locationSubscription = Service.userLocation.listen(_getUsersNearMe);
   }
 
-  _getUsersNearMe({double latitude, double longitude}) {
-    subscription = Service.findLocationsNearMe(
-      latitude: latitude,
-      longitude: longitude,
+  _getUsersNearMe(LocationData location) {
+    nearMeSubscription = Service.findUsersNearMe(
+      latitude: location.latitude,
+      longitude: location.longitude,
     ).listen((List<DocumentSnapshot> documents) {
+      setState(() => loadingLocations = false);
+
+      if (documents.isEmpty) setState(() => usersNearMe = {});
+
       documents.forEach((document) {
-        // Map<String, dynamic> data = document.data();
-        // GeoPoint pos = data['location']['geopoint'];
-        // print(data);
+        print("user location near me");
+        print(document.id);
 
         // if this is the current user's data. don't add it to the list.
         if (document.id == ff.user.uid) return;
@@ -115,7 +68,7 @@ class _UsersNearMeState extends State<UsersNearMe> {
 
         // TODO: get other user's info near me.
         setState(() {
-          usersNearMe.putIfAbsent(document.id, () => document.id);
+          usersNearMe.putIfAbsent(document.id, () => document.data());
         });
       });
     });
@@ -129,45 +82,42 @@ class _UsersNearMeState extends State<UsersNearMe> {
 
   @override
   void dispose() {
-    if (subscription != null) {
-      subscription.cancel();
+    if (locationSubscription != null) {
+      locationSubscription.cancel();
+      if (nearMeSubscription != null) {
+        nearMeSubscription.cancel();
+      }
     }
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (isLoadingLocations) return Center(child: CommonSpinner());
-
-    if (!isLocationServiceEnabled)
+    if (loadingLocations)
       return Center(
-        child: Column(
-          children: [
-            Text('Enable Location Service'),
-            SizedBox(height: Space.md),
-            RaisedButton(
-              onPressed: () {
-                _initLocation();
-              },
-              child: Text('Retry'),
-            )
-          ],
-        ),
+        child: CommonSpinner(),
       );
 
-    if (permissionStatus == PermissionStatus.deniedForever ||
-        permissionStatus == PermissionStatus.denied)
+    if (locationPermission != PermissionStatus.granted)
       return Center(
-        child: Text('This app doesn\'t have permission to access Location'),
+        child: Text(
+            'This app doesn\'t have the permission to use location service.'),
       );
 
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text('Users near you: '),
-        for (String uid in usersNearMe.values)
+        Text('${usersNearMe.length} User near you: '),
+        for (dynamic user in usersNearMe.values)
           Padding(
             padding: EdgeInsets.only(top: Space.md),
-            child: Text('$uid'),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Photo URL: ${user['photoURL']}'),
+                Text('Display Name: ${user['displayName']}'),
+              ],
+            ),
           ),
       ],
     );
