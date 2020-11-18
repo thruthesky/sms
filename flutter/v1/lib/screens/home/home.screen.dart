@@ -26,7 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
               StreamBuilder(
                   stream: ff.userChange,
                   builder: (context, snapshot) {
-                    if (ff.userIsLoggedOut) {
+                    if (!ff.loggedIn) {
                       return Column(
                         children: [
                           RaisedButton(
@@ -64,7 +64,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: Text('Settings'),
                         ),
                         RaisedButton(
-                          onPressed: () => Get.toNamed(RouteNames.map),
+                          onPressed: () => Get.toNamed(RouteNames.usersNearMe),
                           child: Text('Who\'s Near Me?'),
                         ),
                       ],
