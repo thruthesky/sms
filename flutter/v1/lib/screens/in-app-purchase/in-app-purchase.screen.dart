@@ -7,14 +7,14 @@ import 'package:v1/widgets/commons/app_drawer.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:v1/services/consumable_store.dart';
 
-
 const bool _kAutoConsume = true;
 
-const String _kConsumableId = 'consumable';
+const String _kConsumableId = 'iap101';
 const List<String> _kProductIds = <String>[
   _kConsumableId,
-  'upgrade',
-  'subscription'
+  'iap102',
+  'iap103',
+  'subs101'
 ];
 
 class InAppPurchase extends StatefulWidget {
@@ -157,16 +157,14 @@ class _InAppPurchaseState extends State<InAppPurchase> {
       );
     }
 
-    
-
     return Scaffold(
       appBar: AppBar(
         title: Text('IAP Example'),
       ),
-      endDrawer: CommonAppDrawer(), 
+      endDrawer: CommonAppDrawer(),
       body: Stack(
-          children: stack,
-        ),
+        children: stack,
+      ),
     );
   }
 
