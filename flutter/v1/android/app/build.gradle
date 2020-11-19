@@ -74,9 +74,12 @@ flutter {
 }
 
 dependencies {
-    def billing_version = "3.0.0"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation "com.android.billingclient:billing-ktx:$billing_version"
+    
+    // Copied from google https://developer.android.com/google/play/billing/integrate
+    // def billing_version = "3.0.0"
+    // implementation "com.android.billingclient:billing-ktx:$billing_version"
+    implementation 'com.android.billingclient:billing:1.2' // copied from in app purchase sample app
 }
 
 apply plugin: 'com.google.gms.google-services'
