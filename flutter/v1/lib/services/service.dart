@@ -302,9 +302,7 @@ class Service {
         );
   }
 
-  static Location location = new Location();
-
-  static Stream<LocationData> userLocation;
+  static final Location location = new Location();
 
   /// initialize location service use, and returns user location.
   ///
@@ -322,26 +320,29 @@ class Service {
   static initUserLocation({
     // int updateInterval = 30,
     double updateDistance = 10,
-  }) {
+  }) async {
+    Location location = new Location();
+
+    print('initUserLocation');
     // interval is in milliseconds
     // NOTE: [interval] only works for android.
-    // NOTE: this is future
-    location.changeSettings(
-      // interval: updateInterval * 1000,
-      distanceFilter: updateDistance,
-      accuracy: LocationAccuracy.high,
-    );
+    // location.changeSettings(
+    //   // interval: updateInterval * 1000,
+    //   distanceFilter: updateDistance,
+    //   accuracy: LocationAccuracy.high,
+    // );
 
+    // listen to user location changes
     location.onLocationChanged.listen((newLocation) {
+      print('location update');
       if (ff.notLoggedIn) return;
 
-      // TODO: Update user location
-      updateUserLocation(
-        latitude: newLocation.latitude,
-        longitude: newLocation.longitude,
-      );
+      // TODO: Update user location if logged in
+      print('update user location on firestore');
+      // updateUserLocation(
+      //   latitude: newLocation.latitude,
+      //   longitude: newLocation.longitude,
+      // );
     });
-
-    userLocation = location.onLocationChanged.asBroadcastStream();
   }
 }

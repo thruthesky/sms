@@ -50,6 +50,8 @@ class _MainAppState extends State<MainApp> {
     KakaoContext.javascriptClientId = '2cdb6b324434311d304ab3f367f9edf3';
 
     Service.initLocale().then((value) => Get.updateLocale(Locale(value)));
+
+    // initialize user location.
     Service.initUserLocation();
 
     /// Settings changed.

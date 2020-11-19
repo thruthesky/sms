@@ -31,25 +31,25 @@ class UsersNearMe extends StatefulWidget {
   _UsersNearMeState createState() => _UsersNearMeState();
 }
 
-class _UsersNearMeState extends State<UsersNearMe> {
+class _UsersNearMeState extends State<UsersNearMe> with WidgetsBindingObserver {
   bool loadingLocations = true;
-  PermissionStatus locationPermission;
+  bool hasLocationPermission = true;
 
-  StreamSubscription locationSubscription;
   StreamSubscription nearMeSubscription;
   Map<String, dynamic> usersNearMe = {};
 
-  _initLocation() async {
-    locationPermission = await Service.location.hasPermission();
-
-    if (locationPermission != PermissionStatus.granted){
-      return setState(() => loadingLocations = false);
-    }
-
-    locationSubscription = Service.userLocation.listen(_getUsersNearMe);
+  checkPermission() async {
+    PermissionStatus permission = await Service.location.hasPermission();
+    hasLocationPermission = permission == PermissionStatus.granted;
+    setState(() {
+      if (hasLocationPermission) {
+        loadingLocations = false;
+      }
+    });
   }
 
   _getUsersNearMe(LocationData location) {
+    print('_getUsersNearMe');
     nearMeSubscription = Service.findUsersNearMe(
       latitude: location.latitude,
       longitude: location.longitude,
@@ -76,50 +76,77 @@ class _UsersNearMeState extends State<UsersNearMe> {
 
   @override
   void initState() {
-    _initLocation();
+    checkPermission();
+    WidgetsBinding.instance.addObserver(this);
     super.initState();
+  }
+
+  /// Workaround: [see](https://github.com/Baseflow/flutter-permission-handler/issues/247)
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
+    if (state == AppLifecycleState.resumed) {
+      setState(() => loadingLocations = true);
+      checkPermission();
+      Service.initUserLocation();
+    }
   }
 
   @override
   void dispose() {
-    if (locationSubscription != null) {
-      locationSubscription.cancel();
-      if (nearMeSubscription != null) {
-        nearMeSubscription.cancel();
-      }
+    WidgetsBinding.instance.removeObserver(this);
+    if (nearMeSubscription != null) {
+      nearMeSubscription.cancel();
     }
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (loadingLocations)
+    if (!hasLocationPermission)
       return Center(
-        child: CommonSpinner(),
-      );
-
-    if (locationPermission != PermissionStatus.granted)
-      return Center(
-        child: Text(
-            'This app doesn\'t have the permission to use location service.'),
-      );
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Text('${usersNearMe.length} User near you: '),
-        for (dynamic user in usersNearMe.values)
-          Padding(
-            padding: EdgeInsets.only(top: Space.md),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Photo URL: ${user['photoURL']}'),
-                Text('Display Name: ${user['displayName']}'),
-              ],
+        child: Column(
+          children: [
+            Text(
+              'This app doesn\'t have the permission to use location service.',
             ),
-          ),
-      ],
+            RaisedButton(
+              onPressed: () {
+                ff.openAppSettings();
+              },
+              child: Text('Changes App Settings'),
+            )
+          ],
+        ),
+      );
+
+    return StreamBuilder(
+      stream: Service.location.onLocationChanged,
+      builder: (c, s) {
+        if (s.hasData) {
+          _getUsersNearMe(s.data);
+
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text('${usersNearMe.length} User near you: '),
+              for (dynamic user in usersNearMe.values)
+                Padding(
+                  padding: EdgeInsets.only(top: Space.md),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Photo URL: ${user['photoURL']}'),
+                      Text('Display Name: ${user['displayName']}'),
+                    ],
+                  ),
+                ),
+            ],
+          );
+        } else {
+          return Center(
+            child: CommonSpinner(),
+          );
+        }
+      },
     );
   }
 }
