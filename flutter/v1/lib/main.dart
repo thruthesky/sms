@@ -28,6 +28,7 @@ class _MainAppState extends State<MainApp> {
     super.initState();
 
     ff.init(
+      enableLocation: true,
       openProfile: true,
       enableNotification: true,
       firebaseServerToken:
@@ -49,10 +50,26 @@ class _MainAppState extends State<MainApp> {
     KakaoContext.clientId = 'f2ab9c07815d4cf099a5e8b4d82398d4';
     KakaoContext.javascriptClientId = '2cdb6b324434311d304ab3f367f9edf3';
 
+    /// for, i18n
     Service.initLocale().then((value) => Get.updateLocale(Locale(value)));
 
     // initialize user location.
-    Service.initUserLocation();
+    location.change.listen((value) async {
+      // if (await location.instance.hasPermission() == PermissionStatus.denied) {
+      //   /// TODO: the app has no permission to use location. Inform it to user.
+      //   print(
+      //       'TODO: the app has no permission to use location. Inform it to user.');
+      // } else {
+      //   print('TODO: locationPermission is on now');
+      // }
+      // if (location.locationService == false) {
+      //   /// TODO: Location service is disabled in the device setting. Inform it to user.
+      //   print(
+      //       'TODO: Location service is disabled in the device setting. Inform it to user.');
+      // } else {
+      //   print('TODO: locationSerivce is on now');
+      // }
+    });
 
     /// Settings changed.
     ///

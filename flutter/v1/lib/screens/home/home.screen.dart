@@ -10,7 +10,42 @@ class HomeScreen extends StatefulWidget {
   _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
+  // check permissions when app is resumed
+  // this is when permissions are changed in app settings outside of app
+  //
+  // [see](https://github.com/Baseflow/flutter-permission-handler/issues/247)
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
+    print('---> Does it come here?');
+    // if state is resumed, do initialize user location again.
+    if (state == AppLifecycleState.resumed) {
+      permission = await location.hasPermission();
+      service = await location.instance.serviceEnabled();
+      setState(() {});
+    }
+  }
+
+  bool permission = false;
+  bool service = false;
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addObserver(this);
+
+    () async {
+      permission = await location.hasPermission();
+      service = await location.instance.serviceEnabled();
+      setState(() {});
+    }();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    WidgetsBinding.instance.removeObserver(this);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -115,6 +150,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 child: Text('QNA'),
               ),
+              Text('Location Service: ' + (service ? 'ON' : 'OFF')),
+              Text('Location Permission: ' + (permission ? 'ON' : 'OFF')),
             ],
           ),
         ),

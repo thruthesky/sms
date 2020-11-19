@@ -327,7 +327,7 @@ class Service {
   static LocationData lastKnownUserLocation;
 
   ///
-  static bool hasLocationPermission;
+  static bool hasLocationPermission = false;
 
   /// initialize location service use, and returns user location.
   ///
