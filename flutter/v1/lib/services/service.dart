@@ -344,7 +344,6 @@ class Service {
     onInitialLocation(LocationData locationData),
   }) async {
     print('initUserLocation');
-
     bool locationServiceEnabled;
     PermissionStatus permissionStatus;
 
@@ -389,7 +388,6 @@ class Service {
           lastKnownUserLocation = location;
           onInitialLocation(lastKnownUserLocation);
         }).catchError(error);
-        // userLocation = location.onLocationChanged.asBroadcastStream();
       }
     }
 

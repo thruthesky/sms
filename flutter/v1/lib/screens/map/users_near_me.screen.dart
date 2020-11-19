@@ -71,15 +71,11 @@ class _UsersNearMeState extends State<UsersNearMe> with WidgetsBindingObserver {
 
   @override
   void initState() {
-    if (Service.lastKnownUserLocation == null) {
-      Service.initUserLocation(onInitialLocation: getUsersNearMe);
-    } else {
+    if (Service.lastKnownUserLocation != null) {
       getUsersNearMe(Service.lastKnownUserLocation);
     }
 
-    if (Service.userLocation != null) {
-      locationSubscription = Service.userLocation.listen(getUsersNearMe);
-    }
+    locationSubscription = Service.userLocation.listen(getUsersNearMe);
 
     WidgetsBinding.instance.addObserver(this);
     super.initState();
