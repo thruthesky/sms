@@ -21,7 +21,8 @@ class _HomeScreenState extends State<HomeScreen> {
       endDrawer: CommonAppDrawer(),
       body: SafeArea(
         child: SingleChildScrollView(
-          child: Column(
+          child: Center(
+            child: Column(
             children: [
               StreamBuilder(
                   stream: ff.userChange,
@@ -141,6 +142,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
         ),
+          )
       ),
     );
   }

@@ -14,7 +14,10 @@ const List<String> _kProductIds = <String>[
   _kConsumableId,
   'iap102',
   'iap103',
-  'subs101'
+  'subs101',
+  'consumable',
+  'upgrade',
+  'subscription'
 ];
 
 class InAppPurchase extends StatefulWidget {
