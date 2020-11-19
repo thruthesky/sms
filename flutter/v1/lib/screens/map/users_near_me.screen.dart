@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:location/location.dart';
 import 'package:v1/services/service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -33,23 +34,17 @@ class UsersNearMe extends StatefulWidget {
 
 class _UsersNearMeState extends State<UsersNearMe> with WidgetsBindingObserver {
   bool loadingLocations = true;
-  bool hasLocationPermission = true;
 
+  // Subscriptions
+  StreamSubscription locationSubscription;
   StreamSubscription nearMeSubscription;
+
+  // Other user's location near the current user's location.
   Map<String, dynamic> usersNearMe = {};
 
-  checkPermission() async {
-    PermissionStatus permission = await Service.location.hasPermission();
-    hasLocationPermission = permission == PermissionStatus.granted;
-    setState(() {
-      if (hasLocationPermission) {
-        loadingLocations = false;
-      }
-    });
-  }
-
-  _getUsersNearMe(LocationData location) {
-    print('_getUsersNearMe');
+  getUsersNearMe(LocationData location) {
+    print('getUsersNearMe');
+    // set subscription.
     nearMeSubscription = Service.findUsersNearMe(
       latitude: location.latitude,
       longitude: location.longitude,
@@ -76,17 +71,30 @@ class _UsersNearMeState extends State<UsersNearMe> with WidgetsBindingObserver {
 
   @override
   void initState() {
-    checkPermission();
+    if (Service.lastKnownUserLocation == null) {
+      Service.initUserLocation(onInitialLocation: getUsersNearMe);
+    } else {
+      getUsersNearMe(Service.lastKnownUserLocation);
+    }
+
+    if (Service.userLocation != null) {
+      locationSubscription = Service.userLocation.listen(getUsersNearMe);
+    }
+
     WidgetsBinding.instance.addObserver(this);
     super.initState();
   }
 
-  /// Workaround: [see](https://github.com/Baseflow/flutter-permission-handler/issues/247)
+  // check permissions when app is resumed
+  // this is when permissions are changed in app settings outside of app
+  //
+  // [see](https://github.com/Baseflow/flutter-permission-handler/issues/247)
   void didChangeAppLifecycleState(AppLifecycleState state) async {
+    // if state is resumed, do initialize user location again.
     if (state == AppLifecycleState.resumed) {
-      setState(() => loadingLocations = true);
-      checkPermission();
-      Service.initUserLocation();
+      if (await Service.location.hasPermission() == PermissionStatus.granted) {
+        setState(() => Service.hasLocationPermission = true);
+      }
     }
   }
 
@@ -96,12 +104,15 @@ class _UsersNearMeState extends State<UsersNearMe> with WidgetsBindingObserver {
     if (nearMeSubscription != null) {
       nearMeSubscription.cancel();
     }
+    if (locationSubscription != null) {
+      locationSubscription.cancel();
+    }
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (!hasLocationPermission)
+    if (!Service.hasLocationPermission)
       return Center(
         child: Column(
           children: [
@@ -118,35 +129,24 @@ class _UsersNearMeState extends State<UsersNearMe> with WidgetsBindingObserver {
         ),
       );
 
-    return StreamBuilder(
-      stream: Service.location.onLocationChanged,
-      builder: (c, s) {
-        if (s.hasData) {
-          _getUsersNearMe(s.data);
+    if (loadingLocations) return Center(child: CommonSpinner());
 
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text('${usersNearMe.length} User near you: '),
-              for (dynamic user in usersNearMe.values)
-                Padding(
-                  padding: EdgeInsets.only(top: Space.md),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Photo URL: ${user['photoURL']}'),
-                      Text('Display Name: ${user['displayName']}'),
-                    ],
-                  ),
-                ),
-            ],
-          );
-        } else {
-          return Center(
-            child: CommonSpinner(),
-          );
-        }
-      },
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text('${usersNearMe.length} User near you: '),
+        for (dynamic user in usersNearMe.values)
+          Padding(
+            padding: EdgeInsets.only(top: Space.md),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Photo URL: ${user['photoURL']}'),
+                Text('Display Name: ${user['displayName']}'),
+              ],
+            ),
+          ),
+      ],
     );
   }
 }

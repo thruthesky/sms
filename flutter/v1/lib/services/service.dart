@@ -19,12 +19,33 @@ class Service {
   /// ```
   static String locale;
   static final FirebaseMessaging firebaseMessaging = new FirebaseMessaging();
+  static final Location location = new Location();
   static final CollectionReference usersRef =
       FirebaseFirestore.instance.collection('users');
   static String firebaseMessagingToken;
 
   /// TODO: move to fireflutter
   static Geoflutterfire geo = Geoflutterfire();
+
+  /// Realtime update of user's location.
+  ///
+  /// can be used in [StreamBuilder] widger or simply listened to.
+  ///```dart
+  /// // listening without StreamBuilder widget
+  /// StreamSubscription subscription = Service.userLocation.listen((location) {
+  ///   // ... do something.
+  /// });
+  ///
+  /// // using StreamBuilder widget
+  /// StreamBulder(
+  ///   stream: Service.userLocation,
+  ///   builder: (context, snapshopt) {
+  ///     // ... do something.
+  ///   }
+  /// );
+  ///```
+  static Stream<LocationData> get userLocation =>
+      location.onLocationChanged.asBroadcastStream();
 
   /// Display translation text in the device language.
   ///
@@ -302,15 +323,16 @@ class Service {
         );
   }
 
-  static final Location location = new Location();
+  /// User's last known location.
+  static LocationData lastKnownUserLocation;
+
+  ///
+  static bool hasLocationPermission;
 
   /// initialize location service use, and returns user location.
   ///
-  /// [updateInterval] is in seconds.
   /// [updateDisctance] is the distance limit whenever location change updates.
-  /// it will update depending on the value of [updateInterval] and [updateDistance].
-  ///
-  /// NOTE: [updateInterval] only works on android.
+  /// [onInitialLocation] provides a
   ///
   /// todo Updating user location on firestore
   /// * When app starts update user location if user has logged in.
@@ -318,31 +340,72 @@ class Service {
   /// * When user moves to another location.
   /// todo interval should be adjustable and the default is 30 seconds.
   static initUserLocation({
-    // int updateInterval = 30,
     double updateDistance = 10,
+    onInitialLocation(LocationData locationData),
   }) async {
-    Location location = new Location();
-
     print('initUserLocation');
-    // interval is in milliseconds
-    // NOTE: [interval] only works for android.
-    // location.changeSettings(
-    //   // interval: updateInterval * 1000,
-    //   distanceFilter: updateDistance,
-    //   accuracy: LocationAccuracy.high,
-    // );
 
+    bool locationServiceEnabled;
+    PermissionStatus permissionStatus;
+
+    // check if service is enabled
+    locationServiceEnabled = await location.serviceEnabled();
+    if (!locationServiceEnabled) {
+      // request if not enabled
+      locationServiceEnabled = await location.requestService();
+      if (!locationServiceEnabled) {
+        return;
+      }
+    }
+
+    // check if have permission to use location service
+    permissionStatus = await location.hasPermission();
+    if (permissionStatus == PermissionStatus.denied) {
+      // request if permission is not granted.
+      permissionStatus = await location.requestPermission();
+      if (permissionStatus != PermissionStatus.granted) {
+        return hasLocationPermission = false;
+      }
+    }
+    hasLocationPermission = true;
+
+    print('permission granted');
+
+    // Changes settings to whenever the `onChangeLocation` should emit new locations.
+    location.changeSettings(
+      distanceFilter: updateDistance,
+      accuracy: LocationAccuracy.high,
+    );
+
+    // get initial location.
+    if (onInitialLocation != null) {
+      // return last location if already set.
+      if (lastKnownUserLocation != null) {
+        onInitialLocation(lastKnownUserLocation);
+      }
+      // if not, get device's location.
+      else {
+        await location.getLocation().then((location) {
+          lastKnownUserLocation = location;
+          onInitialLocation(lastKnownUserLocation);
+        }).catchError(error);
+        // userLocation = location.onLocationChanged.asBroadcastStream();
+      }
+    }
+
+    print('location on changed listen');
     // listen to user location changes
     location.onLocationChanged.listen((newLocation) {
-      print('location update');
       if (ff.notLoggedIn) return;
 
+      // update last known location.
+      lastKnownUserLocation = newLocation;
       // TODO: Update user location if logged in
       print('update user location on firestore');
       // updateUserLocation(
       //   latitude: newLocation.latitude,
       //   longitude: newLocation.longitude,
       // );
-    });
+    }).onError(error);
   }
 }
