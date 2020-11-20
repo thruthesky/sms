@@ -57,12 +57,7 @@ class _ForumScreenState extends State<ForumScreen> {
     ff.fetchPosts(forum);
 
     if (ff.loggedIn) {
-      Service.usersRef
-          .doc(ff.user.uid)
-          .collection('meta')
-          .doc('public')
-          .get()
-          .then(
+      ff.publicDoc.get().then(
         (DocumentSnapshot doc) {
           if (!doc.exists) {
             // It's not an error. User may not have documentation. see README
