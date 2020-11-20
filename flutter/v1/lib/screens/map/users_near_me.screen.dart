@@ -32,59 +32,35 @@ class UsersNearMe extends StatefulWidget {
 }
 
 class _UsersNearMeState extends State<UsersNearMe> with WidgetsBindingObserver {
-  bool loadingLocations = true;
+  // bool loadingLocations = true;
   bool serviceEnabled = false;
   bool hasPermission = false;
 
   // Subscriptions
   StreamSubscription locationSubscription;
-  StreamSubscription nearMeSubscription;
+  StreamSubscription usersSubscription;
 
-  // Other user's location near the current user's location.
-  Map<String, dynamic> usersNearMe = {};
-
-  getUsersNearMe(location) {
-    print('getUsersNearMe');
-    // set subscription.
-    nearMeSubscription = Service.findUsersNearMe(
-      latitude: location.latitude,
-      longitude: location.longitude,
-    ).listen((List<DocumentSnapshot> documents) {
-      setState(() => loadingLocations = false);
-
-      if (documents.isEmpty) setState(() => usersNearMe = {});
-
-      documents.forEach((document) {
-        print("user location near me");
-        print(document.id);
-
-        // if this is the current user's data. don't add it to the list.
-        if (document.id == ff.user.uid) return;
-        if (!mounted) return;
-
-        // TODO: get other user's info near me.
-        setState(() {
-          usersNearMe.putIfAbsent(document.id, () => document.data());
-        });
-      });
-    });
-  }
-
-  initLocation() async {
+  Map<String, dynamic> users = {};
+  checkPermission() async {
     hasPermission = await location.hasPermission();
     serviceEnabled = await location.instance.serviceEnabled();
-    locationSubscription = location.change.listen((value) {
-      if (value != null && value['geopoint'] != null) {
-        print('location.change');
-        getUsersNearMe(value['geopoint']);
-      }
-    });
     setState(() {});
   }
 
   @override
   void initState() {
-    initLocation();
+    locationSubscription = location.change.listen((point) {
+      print(
+          "User changed his location. Search users again based on the user's new location");
+    });
+    usersSubscription = location.users.listen((users) {
+      print("Got users near me");
+      print(users);
+      setState(() {
+        this.users = users;
+      });
+    });
+    checkPermission();
     WidgetsBinding.instance.addObserver(this);
     super.initState();
   }
@@ -94,17 +70,18 @@ class _UsersNearMeState extends State<UsersNearMe> with WidgetsBindingObserver {
   //
   // [see](https://github.com/Baseflow/flutter-permission-handler/issues/247)
   void didChangeAppLifecycleState(AppLifecycleState state) async {
+    print('in users near me screen');
     // if state is resumed, do initialize user location again.
     if (state == AppLifecycleState.resumed) {
-      initLocation();
+      checkPermission();
     }
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    if (nearMeSubscription != null) {
-      nearMeSubscription.cancel();
+    if (usersSubscription != null) {
+      usersSubscription.cancel();
     }
     if (locationSubscription != null) {
       locationSubscription.cancel();
@@ -131,13 +108,15 @@ class _UsersNearMeState extends State<UsersNearMe> with WidgetsBindingObserver {
         ),
       );
 
-    if (loadingLocations) return Center(child: CommonSpinner());
+    // if (loadingLocations) return Center(child: CommonSpinner());
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text('${usersNearMe.length} User near you: '),
-        for (dynamic user in usersNearMe.values)
+        Text('Location Service: ' + (serviceEnabled ? 'ON' : 'OFF')),
+        Text('Location Permission: ' + (hasPermission ? 'ON' : 'OFF')),
+        Text('${users.length} User near you: '),
+        for (dynamic user in users.values)
           Padding(
             padding: EdgeInsets.only(top: Space.md),
             child: Column(

@@ -17,7 +17,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   // [see](https://github.com/Baseflow/flutter-permission-handler/issues/247)
   void didChangeAppLifecycleState(AppLifecycleState state) async {
     print('---> Does it come here?');
-    // if state is resumed, do initialize user location again.
+
+    /// If the app resumed(from background), check the status again.
     if (state == AppLifecycleState.resumed) {
       permission = await location.hasPermission();
       service = await location.instance.serviceEnabled();

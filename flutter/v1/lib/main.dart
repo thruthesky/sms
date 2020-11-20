@@ -28,7 +28,6 @@ class _MainAppState extends State<MainApp> {
     super.initState();
 
     ff.init(
-      enableLocation: true,
       openProfile: true,
       enableNotification: true,
       firebaseServerToken:
