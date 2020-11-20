@@ -2,13 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:v1/services/service.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:v1/services/global_variables.dart';
 import 'package:v1/services/spaces.dart';
 import 'package:v1/widgets/commons/app_bar.dart';
 import 'package:v1/widgets/commons/app_drawer.dart';
-import 'package:v1/widgets/commons/spinner.dart';
 
 class UsersNearMeScreen extends StatelessWidget {
   @override
@@ -37,7 +34,7 @@ class _UsersNearMeState extends State<UsersNearMe> with WidgetsBindingObserver {
   bool hasPermission = false;
 
   // Subscriptions
-  StreamSubscription locationSubscription;
+  // StreamSubscription locationSubscription;
   StreamSubscription usersSubscription;
 
   Map<String, dynamic> users = {};
@@ -49,16 +46,8 @@ class _UsersNearMeState extends State<UsersNearMe> with WidgetsBindingObserver {
 
   @override
   void initState() {
-    locationSubscription = location.change.listen((point) {
-      print(
-          "User changed his location. Search users again based on the user's new location");
-    });
     usersSubscription = location.users.listen((users) {
-      print("Got users near me");
-      print(users);
-      setState(() {
-        this.users = users;
-      });
+      setState(() => this.users = users);
     });
     checkPermission();
     WidgetsBinding.instance.addObserver(this);
@@ -83,9 +72,9 @@ class _UsersNearMeState extends State<UsersNearMe> with WidgetsBindingObserver {
     if (usersSubscription != null) {
       usersSubscription.cancel();
     }
-    if (locationSubscription != null) {
-      locationSubscription.cancel();
-    }
+    // if (locationSubscription != null) {
+    //   locationSubscription.cancel();
+    // }
     super.dispose();
   }
 
@@ -124,6 +113,7 @@ class _UsersNearMeState extends State<UsersNearMe> with WidgetsBindingObserver {
               children: [
                 Text('Photo URL: ${user['photoURL']}'),
                 Text('Display Name: ${user['displayName']}'),
+                Text('Distance: ${user['distance']} KM'),
               ],
             ),
           ),

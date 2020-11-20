@@ -54,20 +54,7 @@ class _MainAppState extends State<MainApp> {
 
     // initialize user location.
     location.change.listen((value) async {
-      // if (await location.instance.hasPermission() == PermissionStatus.denied) {
-      //   /// TODO: the app has no permission to use location. Inform it to user.
-      //   print(
-      //       'TODO: the app has no permission to use location. Inform it to user.');
-      // } else {
-      //   print('TODO: locationPermission is on now');
-      // }
-      // if (location.locationService == false) {
-      //   /// TODO: Location service is disabled in the device setting. Inform it to user.
-      //   print(
-      //       'TODO: Location service is disabled in the device setting. Inform it to user.');
-      // } else {
-      //   print('TODO: locationSerivce is on now');
-      // }
+      print('[MAIN] : location change');
     });
 
     /// Settings changed.
