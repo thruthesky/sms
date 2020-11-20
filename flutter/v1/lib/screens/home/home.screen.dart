@@ -16,7 +16,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   //
   // [see](https://github.com/Baseflow/flutter-permission-handler/issues/247)
   void didChangeAppLifecycleState(AppLifecycleState state) async {
-    print('---> Does it come here?');
+    // print('---> Does it come here?');
 
     /// If the app resumed(from background), check the status again.
     if (state == AppLifecycleState.resumed) {

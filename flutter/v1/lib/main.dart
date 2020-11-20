@@ -53,9 +53,9 @@ class _MainAppState extends State<MainApp> {
     Service.initLocale().then((value) => Get.updateLocale(Locale(value)));
 
     // initialize user location.
-    location.change.listen((value) async {
-      print('[MAIN] : location change');
-    });
+    // location.change.listen((value) async {
+    //   print('[MAIN] : location change');
+    // });
 
     /// Settings changed.
     ///

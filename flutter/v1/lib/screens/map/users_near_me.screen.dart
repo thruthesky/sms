@@ -32,6 +32,8 @@ class _UsersNearMeState extends State<UsersNearMe> with WidgetsBindingObserver {
   bool serviceEnabled = false;
   bool hasPermission = false;
 
+  // Subscriptions
+  StreamSubscription locationSubscription;
   StreamSubscription usersSubscription;
 
   Map<String, dynamic> users = {};
@@ -43,10 +45,15 @@ class _UsersNearMeState extends State<UsersNearMe> with WidgetsBindingObserver {
 
   @override
   void initState() {
+    checkPermission();
+    locationSubscription = location.change.listen((point) {
+      print('[USERS NEAR ME] : location change');
+    });
     usersSubscription = location.users.listen((users) {
+      print('[USERS NEAR ME] : location users');
+      print(users);
       setState(() => this.users = users);
     });
-    checkPermission();
     WidgetsBinding.instance.addObserver(this);
     super.initState();
   }
@@ -68,6 +75,9 @@ class _UsersNearMeState extends State<UsersNearMe> with WidgetsBindingObserver {
     WidgetsBinding.instance.removeObserver(this);
     if (usersSubscription != null) {
       usersSubscription.cancel();
+    }
+    if (locationSubscription != null) {
+      locationSubscription.cancel();
     }
     super.dispose();
   }
