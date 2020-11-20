@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:location/location.dart';
 import 'package:v1/services/service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:v1/services/global_variables.dart';
@@ -34,6 +33,8 @@ class UsersNearMe extends StatefulWidget {
 
 class _UsersNearMeState extends State<UsersNearMe> with WidgetsBindingObserver {
   bool loadingLocations = true;
+  bool serviceEnabled = false;
+  bool hasPermission = false;
 
   // Subscriptions
   StreamSubscription locationSubscription;
@@ -42,7 +43,7 @@ class _UsersNearMeState extends State<UsersNearMe> with WidgetsBindingObserver {
   // Other user's location near the current user's location.
   Map<String, dynamic> usersNearMe = {};
 
-  getUsersNearMe(LocationData location) {
+  getUsersNearMe(location) {
     print('getUsersNearMe');
     // set subscription.
     nearMeSubscription = Service.findUsersNearMe(
@@ -69,16 +70,21 @@ class _UsersNearMeState extends State<UsersNearMe> with WidgetsBindingObserver {
     });
   }
 
+  initLocation() async {
+    hasPermission = await location.hasPermission();
+    serviceEnabled = await location.instance.serviceEnabled();
+    locationSubscription = location.change.listen((value) {
+      if (value != null && value['geopoint'] != null) {
+        print('location.change');
+        getUsersNearMe(value['geopoint']);
+      }
+    });
+    setState(() {});
+  }
+
   @override
   void initState() {
-    if (Service.lastKnownUserLocation != null) {
-      getUsersNearMe(Service.lastKnownUserLocation);
-    } else {
-      Service.initUserLocation(onInitialLocation: getUsersNearMe);
-    }
-
-    locationSubscription = Service.userLocation.listen(getUsersNearMe);
-
+    initLocation();
     WidgetsBinding.instance.addObserver(this);
     super.initState();
   }
@@ -90,9 +96,7 @@ class _UsersNearMeState extends State<UsersNearMe> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) async {
     // if state is resumed, do initialize user location again.
     if (state == AppLifecycleState.resumed) {
-      if (await Service.location.hasPermission() == PermissionStatus.granted) {
-        setState(() => Service.hasLocationPermission = true);
-      }
+      initLocation();
     }
   }
 
@@ -110,7 +114,7 @@ class _UsersNearMeState extends State<UsersNearMe> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    if (!Service.hasLocationPermission)
+    if (!hasPermission)
       return Center(
         child: Column(
           children: [
