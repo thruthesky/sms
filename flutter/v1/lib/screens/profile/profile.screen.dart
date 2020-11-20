@@ -270,7 +270,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                           onPressed: () => Get.toNamed(
                             RouteNames.mobileAuth,
-                            arguments: {'canNavigateBack': true},
+                            arguments: {
+                              'canNavigateBack': true,
+                              'InternationalNo': ff.user.phoneNumber,
+                            },
                           ),
                         )
                       ],
