@@ -29,12 +29,9 @@ class UsersNearMe extends StatefulWidget {
 }
 
 class _UsersNearMeState extends State<UsersNearMe> with WidgetsBindingObserver {
-  // bool loadingLocations = true;
   bool serviceEnabled = false;
   bool hasPermission = false;
 
-  // Subscriptions
-  // StreamSubscription locationSubscription;
   StreamSubscription usersSubscription;
 
   Map<String, dynamic> users = {};
@@ -72,9 +69,6 @@ class _UsersNearMeState extends State<UsersNearMe> with WidgetsBindingObserver {
     if (usersSubscription != null) {
       usersSubscription.cancel();
     }
-    // if (locationSubscription != null) {
-    //   locationSubscription.cancel();
-    // }
     super.dispose();
   }
 
@@ -96,8 +90,6 @@ class _UsersNearMeState extends State<UsersNearMe> with WidgetsBindingObserver {
           ],
         ),
       );
-
-    // if (loadingLocations) return Center(child: CommonSpinner());
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
