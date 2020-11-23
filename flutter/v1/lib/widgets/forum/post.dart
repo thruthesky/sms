@@ -84,15 +84,15 @@ class _PostState extends State<Post> {
               children: [
                 /// TODO when `setState` is being called, it will redraw post and its comments.
                 /// If the two `VoteButton` goes into a separate widget, it won't draw its whole post.
-                VoteButton(
-                    post: widget.post,
-                    choice: VoteChoice.like,
-                    state: setState),
-                VoteButton(
-                    post: widget.post,
-                    choice: VoteChoice.dislike,
-                    padding: EdgeInsets.only(left: 2),
-                    state: setState),
+                // VoteButton(
+                //     post: widget.post,
+                //     choice: VoteChoice.like,
+                //     state: setState),
+                // VoteButton(
+                //     post: widget.post,
+                //     choice: VoteChoice.dislike,
+                //     padding: EdgeInsets.only(left: 2),
+                //     state: setState),
                 if (Service.isMine(widget.post)) ...[
                   IconButton(
                     icon: Icon(Icons.edit),

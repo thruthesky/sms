@@ -97,18 +97,18 @@ class _CommentState extends State<Comment> {
                       /// buttons
                       Row(
                         children: [
-                          VoteButton(
-                            post: widget.post,
-                            comment: widget.comment,
-                            choice: VoteChoice.like,
-                            state: setState,
-                          ),
-                          VoteButton(
-                            post: widget.post,
-                            comment: widget.comment,
-                            choice: VoteChoice.dislike,
-                            state: setState,
-                          ),
+                          // VoteButton(
+                          //   post: widget.post,
+                          //   comment: widget.comment,
+                          //   choice: VoteChoice.like,
+                          //   state: setState,
+                          // ),
+                          // VoteButton(
+                          //   post: widget.post,
+                          //   comment: widget.comment,
+                          //   choice: VoteChoice.dislike,
+                          //   state: setState,
+                          // ),
                           if (Service.isMine(widget.comment)) ...[
                             IconButton(
                               icon: Icon(Icons.edit),
