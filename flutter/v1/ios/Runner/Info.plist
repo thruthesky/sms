@@ -16,7 +16,7 @@
 		<string>ko</string>
 	</array>
 	<key>CFBundleName</key>
-	<string>v1</string>
+	<string>SMS IAP</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -67,27 +67,27 @@
 	<string>SMS APP</string>
 	<key>FirebaseAppDelegateProxyEnabled</key>
 	<false/>
-<key>LSApplicationQueriesSchemes</key>
-<array>
-	<string>fbapi</string>
-	<string>fb-messenger-share-api</string>
-	<string>fbauth2</string>
-	<string>fbshareextension</string>
-	<string>kakaof2ab9c07815d4cf099a5e8b4d82398d4</string>
-	<string>kakaokompassauth</string>
-	<string>storykompassauth</string>
-	<string>kakaolink</string>
-	<string>kakaotalk-5.9.7</string>
-</array>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>fbapi</string>
+		<string>fb-messenger-share-api</string>
+		<string>fbauth2</string>
+		<string>fbshareextension</string>
+		<string>kakaof2ab9c07815d4cf099a5e8b4d82398d4</string>
+		<string>kakaokompassauth</string>
+		<string>storykompassauth</string>
+		<string>kakaolink</string>
+		<string>kakaotalk-5.9.7</string>
+	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>$(EXECUTABLE_NAME) need access to Camera.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>$(EXECUTABLE_NAME) needs access to Location</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>$(EXECUTABLE_NAME) needs access to Location</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>$(EXECUTABLE_NAME) needs access to Location</string>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>$(EXECUTABLE_NAME) needs access to Location</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>$(EXECUTABLE_NAME) need access to Microphone.</string>
