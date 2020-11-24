@@ -1,9 +1,12 @@
+import 'package:fireflutter/fireflutter.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:v1/services/global_variables.dart';
 import 'package:v1/services/route_names.dart';
 import 'package:v1/widgets/commons/app_bar.dart';
 import 'package:v1/widgets/commons/app_drawer.dart';
+
+import 'file:///Users/ace/apps/sms/flutter/v1/packages/fireflutter/test/location.test.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -26,6 +29,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     }
   }
 
+  testLocation() {
+    FireFlutter ff = FireFlutter();
+    UserLocation location = UserLocation(inject: ff, radius: 100000);
+    ff.init();
+    LocationTest lt = LocationTest(ff, location);
+    lt.runLocationTest();
+  }
+
   bool permission = false;
   bool service = false;
   @override
@@ -39,6 +50,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       service = await location.instance.serviceEnabled();
       setState(() {});
     }();
+
+
+    testLocation();
   }
 
   @override

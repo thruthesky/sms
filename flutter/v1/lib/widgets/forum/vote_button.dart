@@ -46,11 +46,11 @@ class _VoteButtonState extends State<VoteButton> {
         if (obj['voteDisabled'] == true) return;
         widget.state(() => obj['voteDisabled'] = true);
         try {
-          await ff.vote(
-            postId: widget.post['id'],
-            commentId: widget.comment == null ? null : widget.comment['id'],
-            choice: widget.choice,
-          );
+          // await ff.vote(
+          //   postId: widget.post['id'],
+          //   commentId: widget.comment == null ? null : widget.comment['id'],
+          //   choice: widget.choice,
+          // );
         } catch (e) {
           Service.error(e);
         }

@@ -86,11 +86,11 @@ class _PostState extends State<Post> {
                 /// If the two `VoteButton` goes into a separate widget, it won't draw its whole post.
                 VoteButton(
                     post: widget.post,
-                    choice: VoteChoice.like,
+                    // choice: VoteChoice.like,
                     state: setState),
                 VoteButton(
                     post: widget.post,
-                    choice: VoteChoice.dislike,
+                    // choice: VoteChoice.dislike,
                     padding: EdgeInsets.only(left: 2),
                     state: setState),
                 if (Service.isMine(widget.post)) ...[

@@ -100,13 +100,13 @@ class _CommentState extends State<Comment> {
                           VoteButton(
                             post: widget.post,
                             comment: widget.comment,
-                            choice: VoteChoice.like,
+                            // choice: VoteChoice.like,
                             state: setState,
                           ),
                           VoteButton(
                             post: widget.post,
                             comment: widget.comment,
-                            choice: VoteChoice.dislike,
+                            // choice: VoteChoice.dislike,
                             state: setState,
                           ),
                           if (Service.isMine(widget.comment)) ...[
