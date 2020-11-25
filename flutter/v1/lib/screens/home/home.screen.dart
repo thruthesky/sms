@@ -41,6 +41,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   bool service = false;
   @override
   void initState() {
+    // testLocation();
+
     super.initState();
 
     WidgetsBinding.instance.addObserver(this);
@@ -52,7 +54,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     }();
 
 
-    // testLocation();
   }
 
   @override
