@@ -9,13 +9,13 @@ import 'package:v1/services/consumable_store.dart';
 
 const bool _kAutoConsume = true;
 
-const String _kConsumableId = 'iap101';
+const String _kConsumableId = 'consumable';
 const List<String> _kProductIds = <String>[
   _kConsumableId,
-  'iap102',
-  'iap103',
-  'subs101',
-  'consumable',
+  // 'iap101'
+  // 'iap102',
+  // 'iap103',
+  // 'subs101',
   'upgrade',
   'subscription'
 ];
@@ -236,10 +236,10 @@ class _InAppPurchaseState extends State<InAppPurchase> {
         PurchaseDetails previousPurchase = purchases[productDetails.id];
         return ListTile(
             title: Text(
-              productDetails.title,
+              productDetails.title ?? 'no title',
             ),
             subtitle: Text(
-              productDetails.description,
+              productDetails.description ?? 'no description',
             ),
             trailing: previousPurchase != null
                 ? Icon(Icons.check)
