@@ -29,13 +29,13 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     }
   }
 
-  testLocation() {
-    FireFlutter ff = FireFlutter();
-    UserLocation location = UserLocation(inject: ff, radius: 100000);
-    ff.init();
-    LocationTest lt = LocationTest(ff, location);
-    lt.runLocationTest();
-  }
+  // testLocation() {
+  //   FireFlutter ff = FireFlutter();
+  //   UserLocation location = UserLocation(inject: ff);
+  //   ff.init();
+  //   LocationTest lt = LocationTest(ff, location);
+  //   lt.runLocationTest();
+  // }
 
   bool permission = false;
   bool service = false;
@@ -52,7 +52,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     }();
 
 
-    testLocation();
+    // testLocation();
   }
 
   @override
